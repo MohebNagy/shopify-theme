@@ -1,0 +1,604 @@
+{% doc %}
+  Modify the "Product type list" section to match the luxury horizontal slider style, structural components, and precise product card rendering of the Related Products section.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-product-type-list-{{ ai_gen_id }} {
+    display: block;
+    background-color: #000000;
+    padding: {{ block.settings.section_padding }}px 0;
+    border-top: 1px solid #111111;
+    overflow: hidden;
+  }
+
+  .ai-product-type-list__container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .ai-product-type-list__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  /* 🌟 جعل العنوان رابط قابل للضغط بتأثير فخم وبداية الأنيمايشن */
+  .ai-product-type-list__title-{{ ai_gen_id }} {
+    font-family: "Playfair Display", serif;
+    font-size: {{ block.settings.heading_size }}px;
+    margin: 0 0 12px 0;
+    letter-spacing: 1px;
+    text-align: center;
+    
+    opacity: 0;
+    transform: translateY(-15px);
+    transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  
+  .ai-product-type-list-{{ ai_gen_id }}.slider-activated .ai-product-type-list__title-{{ ai_gen_id }} {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .collection-title-link {
+    color: #C8A060;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .collection-title-link:hover {
+    color: #F7F4EE;
+  }
+
+  .luxury-divider-{{ ai_gen_id }} {
+    width: 50px;
+    height: 1px;
+    background-color: #C8A060;
+    margin: 0 auto {{ block.settings.grid_spacing }}px;
+    opacity: 0;
+    transition: opacity 1s ease 0.2s;
+  }
+  
+  .ai-product-type-list-{{ ai_gen_id }}.slider-activated .luxury-divider-{{ ai_gen_id }} {
+    opacity: 1;
+  }
+
+  .ai-product-type-list-{{ ai_gen_id }} .slider-wrapper {
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: 10px;
+    scrollbar-width: none; 
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .ai-product-type-list-{{ ai_gen_id }} .slider-wrapper::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .ai-product-type-list-{{ ai_gen_id }} .grid {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: {{ block.settings.grid_gap }}px;
+    scroll-snap-type: x mandatory;
+  }
+
+  /* 🌟 تعديل هنا: تجهيز كروت السلايدر للأنيميشن الأفقي الفخم من اليمين إلى اليسار */
+  .ai-product-type-list-{{ ai_gen_id }} .slider-item {
+    flex: 0 0 calc(25% - 18px) !important;
+    width: calc(25% - 18px) !important;
+    scroll-snap-align: start;
+    display: flex; 
+    
+    opacity: 0;
+    transform: translateX(40px); /* البداية من اليمين بدل الأسفل */
+    transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform, opacity;
+  }
+
+  /* 🌟 تشغيل الـ Stagger Effect الأفقي الفخم للكروت عند ظهور السكشن */
+  .ai-product-type-list-{{ ai_gen_id }}.slider-activated .slider-item {
+    opacity: 1;
+    transform: translateX(0); /* يستقر في مكانه الطبيعي */
+    transition-delay: calc(var(--slider-item-index, 0) * 0.12s); /* التتابع الزمني المظبوط */
+  }
+
+  /* تصميم كارت الـ See All الفاخر */
+  .see-all-card-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+    background: #111111;
+    border: 1px solid #242424;
+    color: #C8A060;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .see-all-card-{{ ai_gen_id }}:hover {
+    border-color: #C8A060;
+    background: #1a1a1a;
+    color: #F7F4EE;
+  }
+
+  .see-all-text-{{ ai_gen_id }} {
+    font-family: "Playfair Display", serif;
+    font-size: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+  }
+
+  .scroll-indicator-bar-{{ ai_gen_id }} {
+    width: 120px; 
+    height: 2px; 
+    background-color: #1a1a1a; 
+    margin: 30px auto 0; 
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: scaleX(0.8);
+    transition: opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s;
+  }
+  
+  .ai-product-type-list-{{ ai_gen_id }}.slider-activated .scroll-indicator-bar-{{ ai_gen_id }} {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .scroll-progress-thumb-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #C8A060; 
+    width: 30%; 
+    transform: translateX(0%);
+    transition: transform 0.05s linear;
+    will-change: transform;
+  }
+
+  .ai-product-type-list-{{ ai_gen_id }} .grid .product-card, 
+  .ai-product-type-list-{{ ai_gen_id }} .grid .card {
+    border-radius: 0px !important;
+    border: 1px solid #242424 !important;
+    background: #111111 !important;
+    height: 100% !important;
+    width: 100%;
+  }
+
+  .ai-product-type-list-{{ ai_gen_id }} .grid img {
+    border-radius: 0px !important;
+    object-fit: cover !important;
+  }
+
+  .ai-product-type-list__empty-state-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 60px 20px;
+    color: #F7F4EE;
+    opacity: 0.6;
+  }
+
+  @media(max-width: 1024px) {
+    .ai-product-type-list-{{ ai_gen_id }} .slider-item {
+      flex: 0 0 calc(40% - 12px) !important;
+      width: calc(40% - 12px) !important;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-product-type-list-{{ ai_gen_id }} {
+      padding: 60px 0;
+    }
+    .ai-product-type-list__container-{{ ai_gen_id }} {
+      padding: 0 16px;
+    }
+    .ai-product-type-list__title-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.8);
+    }
+    .ai-product-type-list-{{ ai_gen_id }} .grid {
+      gap: 16px;
+    }
+    .ai-product-type-list-{{ ai_gen_id }} .slider-item {
+      flex: 0 0 calc(50% - 8px) !important;
+      width: calc(50% - 8px) !important;
+      /* في الموبايل تظهر الكروت فوراً بدون تتابع لتسريع السكرول اللمسي */
+      transition-delay: 0s !important;
+    }
+    .scroll-indicator-bar-{{ ai_gen_id }} {
+      width: 90px;
+    }
+    .see-all-text-{{ ai_gen_id }} {
+      font-size: 16px;
+    }
+  }
+  
+  /* 🛡️ حماية الـ Fallback */
+  .no-js .ai-product-type-list__title-{{ ai_gen_id }},
+  .no-js .luxury-divider-{{ ai_gen_id }},
+  .no-js .slider-item,
+  .no-js .scroll-indicator-bar-{{ ai_gen_id }} {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+{% endstyle %}
+
+<product-type-list-{{ ai_gen_id }}
+  class="ai-product-type-list-{{ ai_gen_id }}"
+  id="slider-section-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-product-type-list__container-{{ ai_gen_id }}">
+    
+    {% if block.settings.collection != blank %}
+      {% assign collection = block.settings.collection %}
+    {% endif %}
+
+    {% if block.settings.heading != blank %}
+      <div class="ai-product-type-list__header-{{ ai_gen_id }}">
+        <h2 class="ai-product-type-list__title-{{ ai_gen_id }}">
+          <a href="#shopify-section-template--28822967976305__grid" class="collection-title-link collection-scroll-trigger" data-collection-handle="{{ collection.handle }}">
+            {{ block.settings.heading }}
+          </a>
+        </h2>
+      </div>
+      <div class="luxury-divider-{{ ai_gen_id }}"></div>
+    {% endif %}
+
+    {% if collection != blank %}
+      {% assign products_to_show = block.settings.products_limit %}
+      
+      {% if collection.products.size > 0 %}
+        <div class="slider-wrapper" id="SliderWrapper-{{ ai_gen_id }}">
+          <div class="grid">
+            {% for product in collection.products limit: products_to_show %}
+              <div class="slider-item" style="--slider-item-index: {{ forloop.index0 }};">
+                {% render 'product-card', product: product %}
+              </div>
+            {% endfor %}
+
+            {% if collection.products_count > 6 %}
+              <div class="slider-item" style="--slider-item-index: 6;">
+                <a href="#shopify-section-template--28822967976305__grid" class="see-all-card-{{ ai_gen_id }} collection-scroll-trigger" data-collection-handle="{{ collection.handle }}">
+                  <span class="see-all-text-{{ ai_gen_id }}">See All</span>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="scroll-indicator-bar-{{ ai_gen_id }}">
+          <div class="scroll-progress-thumb-{{ ai_gen_id }}" id="ScrollThumb-{{ ai_gen_id }}"></div>
+        </div>
+      {% else %}
+        <div class="ai-product-type-list__empty-state-{{ ai_gen_id }}">
+          <p>This collection has no products yet.</p>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="ai-product-type-list__empty-state-{{ ai_gen_id }}">
+        <p>Select a collection to display products.</p>
+      </div>
+    {% endif %}
+  </div>
+</product-type-list-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    if (!customElements.get('product-type-list-{{ ai_gen_id }}')) {
+      customElements.define('product-type-list-{{ ai_gen_id }}', class ProductTypeList extends HTMLElement {
+        constructor() {
+          super();
+        }
+        connectedCallback() {
+          // 🔮 محرك الأنيمايشن المستقل للـ السلايدر
+          const section = this;
+          if ('IntersectionObserver' in window) {
+            const animObserver = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  section.classList.add('slider-activated');
+                  animObserver.unobserve(entry.target);
+                }
+              });
+            }, { rootMargin: "0px 0px -40px 0px", threshold: 0.05 }); // تحسين وقت الاستجابة عند التمرير
+            animObserver.observe(section);
+          } else {
+            section.classList.add('slider-activated');
+          }
+
+          setTimeout(() => {
+            const slider = this.querySelector('#SliderWrapper-{{ ai_gen_id }}');
+            const thumb = this.querySelector('#ScrollThumb-{{ ai_gen_id }}');
+            
+            if (slider && thumb) {
+              const updateThumb = () => {
+                const maxScroll = slider.scrollWidth - slider.clientWidth;
+                if (maxScroll <= 0) {
+                  thumb.style.width = '100%';
+                  thumb.style.transform = 'translateX(0)';
+                  return;
+                }
+                
+                const scrollRatio = slider.scrollLeft / maxScroll;
+                const thumbWidthPercent = 30; 
+                const maxTranslatePercent = 100 - thumbWidthPercent;
+                const currentTranslateX = scrollRatio * maxTranslatePercent;
+                
+                thumb.style.width = `${thumbWidthPercent}%`;
+                thumb.style.transform = `translateX(${(currentTranslateX / thumbWidthPercent) * 100}%)`;
+              };
+
+              slider.addEventListener('scroll', updateThumb, { passive: true });
+              window.addEventListener('resize', updateThumb, { passive: true });
+              updateThumb();
+            }
+          }, 100);
+        }
+      });
+    }
+    
+  })();
+// 🎯 كود التمرير التلقائي وتحديث الـ Collection Grid والفلاتر ديناميكياً (AJAX)
+  setTimeout(() => {
+    const scrollTriggers = document.querySelectorAll('.collection-scroll-trigger');
+    const targetGridSection = document.getElementById('shopify-section-template--28822967976305__grid');
+
+    scrollTriggers.forEach(trigger => {
+      // 🛡️ حارس ضد التكرار: لو فيه أكتر من بلوك "Product type list" في نفس الصفحة،
+      // الكود ده بيتنفذ مرة لكل بلوك ويدور على كل الـ triggers في الصفحة كلها،
+      // فمن غير الحارس ده كل trigger كان بياخد event listener مكرر بعدد البلوكات،
+      // وده اللي كان بيسبب الـ fetch يتبعت أكتر من مرة ويحصل "reload" ظاهري متكرر.
+      if (trigger.dataset.scrollBound === '1') return;
+      trigger.dataset.scrollBound = '1';
+
+      trigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        const collectionHandle = this.getAttribute('data-collection-handle');
+        
+        if (!collectionHandle) return;
+
+        if (targetGridSection) {
+          // 1. عمل Auto Scroll سلس وسريع للـ Grid
+          targetGridSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          // 2. تأثير جاري التحميل (شفافية خفيفة للشبكة والفلاتر)
+          const productsGrid = targetGridSection.querySelector('.products-grid');
+          const desktopFilters = targetGridSection.querySelector('.desktop-filters');
+          const filtersDrawerContent = targetGridSection.querySelector('.filters-drawer__content');
+          
+          if (productsGrid) productsGrid.style.opacity = '0.4';
+          if (desktopFilters) desktopFilters.style.opacity = '0.4';
+
+          // 3. جلب محتوى الكوليكشن الجديدة بالكامل بالسكشن الخاص بها
+          fetch(`/collections/${collectionHandle}?section_id=template--28822967976305__grid`)
+            .then(response => response.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(html, 'text/html');
+              
+              const newGridContent = doc.querySelector('.products-grid');
+              const newDesktopFilters = doc.querySelector('.desktop-filters');
+              const newDrawerContent = doc.querySelector('.filters-drawer__content');
+              const newPagination = doc.getElementById('productsPagination');
+
+              // ✨ تحديث المنتجات
+              if (newGridContent && productsGrid) {
+                productsGrid.innerHTML = newGridContent.innerHTML;
+                productsGrid.style.opacity = '1';
+
+                // أنيميشن المنتجات الجديدة
+                const newCards = productsGrid.querySelectorAll('.product-search-item');
+                const isMobile = window.innerWidth <= 768;
+                newCards.forEach((card, index) => {
+                  card.style.transitionDelay = isMobile ? '0s' : `${index * 0.02}s`;
+                  card.classList.add('show');
+                });
+              }
+
+              // ✨ تحديث فلاتر الديسكتوب
+              if (newDesktopFilters && desktopFilters) {
+                desktopFilters.innerHTML = newDesktopFilters.innerHTML;
+                desktopFilters.style.opacity = '1';
+                desktopFilters.classList.add('show');
+              }
+
+              // ✨ تحديث فلاتر الموبايل (الدرج الجانبي)
+              if (newDrawerContent && filtersDrawerContent) {
+                filtersDrawerContent.innerHTML = newDrawerContent.innerHTML;
+              }
+
+              // ✨ تحديث الترقيم
+              const oldPagination = targetGridSection.querySelector('#productsPagination');
+              if (oldPagination) {
+                if (newPagination) {
+                  oldPagination.innerHTML = newPagination.innerHTML;
+                  oldPagination.style.display = 'block';
+                } else {
+                  oldPagination.style.display = 'none';
+                }
+              }
+
+              // 💥 خطوة حاسمة: إعادة ربط الـ Event Listeners للفلاتر الجديدة لكي تعمل عند الضغط عليها
+              rebindGridFilters(targetGridSection);
+              
+              // تحديث الـ URL صامتاً
+              window.history.pushState({}, '', `/collections/${collectionHandle}`);
+            })
+            .catch(err => {
+              console.error('Error fetching collection:', err);
+              if (productsGrid) productsGrid.style.opacity = '1';
+              if (desktopFilters) desktopFilters.style.opacity = '1';
+            });
+
+        } else {
+          window.location.href = `/collections/${collectionHandle}#shopify-section-template--28822967976305__grid`;
+        }
+      });
+    });
+
+    // دالة مخصصة لإعادة تشغيل أحداث الفلاتر المستلمة من الـ AJAX
+    function rebindGridFilters(section) {
+      const buildFilterUrl = (isMobile) => {
+        const newParams = new URLSearchParams();
+        const searchInput = document.getElementById('luxurySearchInput');
+        if (searchInput && searchInput.value.trim().length > 0) {
+          newParams.append('local_q', searchInput.value.trim());
+        }
+        const contextWrapper = isMobile ? document.getElementById('filtersDrawer') : section.querySelector('.desktop-filters');
+        if (contextWrapper) {
+          contextWrapper.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+            if (input.name) newParams.append(input.name, input.value);
+          });
+          contextWrapper.querySelectorAll('.price-inputs-wrapper input').forEach(input => {
+            if (input.value && input.name) newParams.append(input.name, input.value);
+          });
+        }
+        return newParams.toString() ? window.location.pathname + '?' + newParams.toString() : window.location.pathname;
+      };
+
+      // ربط تشيك بوكس الديسكتوب
+      section.querySelectorAll('.desktop-filters input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => { window.location.href = buildFilterUrl(false); });
+      });
+
+      // ربط فورم الأسعار
+      section.querySelectorAll('.price-filter-form').forEach(form => {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const isMobile = form.closest('.filters-drawer') !== null;
+          window.location.href = buildFilterUrl(isMobile);
+        });
+      });
+    }
+  }, 300);
+
+  // 🎯 محرك الـ Backdoor لتشغيل الـ Collection Grid تلقائياً عند القفز من المنيو
+  document.addEventListener('DOMContentLoaded', function() {
+    // 🛡️ حارس ضد التكرار: نفس مبدأ الحارس اللي فوق، لو الكود ده اتنفذ من بلوك
+    // تاني قبل كده خلاص، منسيبهوش يشغل نفس الـ trigger تاني ويعمل fetch إضافي
+    if (window.__collectionBackdoorHandled) return;
+    window.__collectionBackdoorHandled = true;
+
+    // 1. قراءة الـ Parameter من الرابط
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetCollection = urlParams.get('open_collection');
+
+    if (targetCollection) {
+      // 2. البحث عن أي Trigger في الصفحة يحمل نفس اسم الكوليكشن (العنوان أو See All)
+      // تم استخدام الملف المرجعي ai_gen_block_93a6dc1.liquid لضمان استهداف الـ Triggers المظبوطة
+      const customTrigger = document.querySelector(`.collection-scroll-trigger[data-collection-handle="${targetCollection}"]`);
+
+      if (customTrigger) {
+        // تأخير بسيط جداً لضمان تحميل بقية سكريبتات الصفحة واستقرار الـ DOM
+        setTimeout(() => {
+          customTrigger.click();
+          
+          // 3. تنظيف الـ URL صامتاً حتى لا يتكرر التشغيل إذا قام العميل بعمل Refresh للصفحة
+          const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+          window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+        }, 400); 
+      } else {
+        // Fallback: لو السيكشن مش موجود في الصفحة الحالية، يتم التوجيه إجبارياً للسيكشن بالـ ID
+        const targetGrid = document.getElementById('shopify-section-template--28822967976305__grid');
+        if (targetGrid) {
+          targetGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product type list",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You May Also Like"
+    },
+    {
+      "type": "header",
+      "content": "Layout & Spacing"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 10,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding (Top/Bottom)",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "grid_spacing",
+      "label": "Divider bottom spacing",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product type list"
+    }
+  ]
+}
+{% endschema %}

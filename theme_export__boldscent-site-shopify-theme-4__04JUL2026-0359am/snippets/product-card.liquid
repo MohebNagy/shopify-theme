@@ -1,0 +1,495 @@
+<div class="product-card-wrapper" data-wishlist-item-wrapper>
+  <a href="{{ product.url }}" class="product-card scale-hover">
+    
+    {%- comment -%} 
+      🌟 الزر المعزول كلياً بميزة التشغيل الذاتي الفوري
+    {%- endcomment -%}
+    <span 
+      class="custom-wishlist-trigger" 
+      data-product-id="{{ product.id }}"
+      aria-label="Add to wishlist"
+      role="button"
+      tabindex="0"
+    >
+      <svg class="icon-heart-clean" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </span>
+
+    {% if product.featured_image %}
+      <div class="product-card-media">
+        <img
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          alt="{{ product.featured_image.alt | escape | default: product.title }}"
+          loading="lazy"
+          width="600"
+          height="600"
+        >
+      </div>
+    {% else %}
+      <div class="product-card-media placeholder-media">
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder' }}
+      </div>
+    {% endif %}
+
+    <div class="product-card-info">
+      <h3>{{ product.title }}</h3>
+      
+      {% assign scent_output = "" %}
+      {% if product.metafields.shopify.scent.value != blank %}
+        {% capture scent_list %}
+          {% for scent_item in product.metafields.shopify.scent.value %}
+            {{ scent_item.label | default: scent_item.name | default: scent_item }}
+            {% unless forloop.last %} • {% endunless %}
+          {% endfor %}
+        {% endcapture %}
+        {% assign scent_output = scent_list | strip %}
+      {% endif %}
+
+      {% if scent_output == blank or scent_output == "" %}
+        {% if product.metafields.custom.scent.value != blank %}
+          {% capture custom_scent_list %}
+            {% for scent_item in product.metafields.custom.scent.value %}
+              {{ scent_item.label | default: scent_item.name | default: scent_item }}
+              {% unless forloop.last %} • {% endunless %}
+            {% endfor %}
+          {% endcapture %}
+          {% assign scent_output = custom_scent_list | strip %}
+        {% endif %}
+      {% endif %}
+
+      {% if scent_output contains "Metaobject" or scent_output contains "metaobject" or scent_output contains "Drop" %}
+        {% assign scent_output = "" %}
+      {% endif %}
+
+      {% if scent_output != blank and scent_output != "" %}
+        <p class="fragrance-family">{{ scent_output }}</p>
+      {% endif %}
+
+      {%- comment -%} التحقق ما إذا كان المنتج عبارة عن الـ Bundle {%- endcomment -%}
+      {% assign is_bundle = false %}
+      {% if product.type == 'Bundle' or product.tags contains 'bundle' %}
+        {% assign is_bundle = true %}
+      {% endif %}
+
+      {%- comment -%} إظهار الـ Badge فقط لو المنتج مش عارض الـ Bundle {%- endcomment -%}
+      {% unless is_bundle %}
+        {% assign gender_output = "" %}
+        {% if product.metafields.shopify.target_gender.value != blank %}
+          {% if product.metafields.shopify.target_gender.type contains "list" %}
+            {% capture gender_list %}
+              {% for gender_item in product.metafields.shopify.target_gender.value %}
+                {{ gender_item.label | default: gender_item.name | default: gender_item }}
+                {% unless forloop.last %} • {% endunless %}
+              {% endfor %}
+            {% endcapture %}
+            {% assign gender_output = gender_list | strip %}
+          {% else %}
+            {% assign gender_output = product.metafields.shopify.target_gender.value.label | default: product.metafields.shopify.target_gender.value.name %}
+          {% endif %}
+        {% else %}
+          {% assign gender_output = product.type %}
+        {% endif %}
+
+        {% if gender_output contains "Metaobject" or gender_output contains "metaobject" %}
+          {% assign gender_output = "" %}
+        {% endif %}
+
+        {% if gender_output != blank and gender_output != "" %}
+          <div class="perfume-type-badge">
+            For {{ gender_output | replace: "For ", "" | replace: "for ", "" }}
+          </div>
+        {% endif %}
+      {% endunless %}
+      
+      <div class="product-card__variants-display">
+        {% if is_bundle %}
+          {%- comment -%} استخراج سعر الـ All 50ml وسعر الـ All 100ml {%- endcomment -%}
+          {% assign price_50 = "" %}
+          {% assign price_100 = "" %}
+          
+          {% for variant in product.variants %}
+            {% assign variant_title_down = variant.title | downcase %}
+            {% if variant_title_down contains '50ml' %}
+              {% assign price_50 = variant.price | money %}
+            {% elsif variant_title_down contains '100ml' %}
+              {% assign price_100 = variant.price | money %}
+            {% endif %}
+          {% endfor %}
+
+          {% if price_50 == blank %}{% assign price_50 = product.price_min | money %}{% endif %}
+          {% if price_100 == blank %}{% assign price_100 = product.price_max | money %}{% endif %}
+
+          <div class="variant-price-item bundle-range-display">
+            <span class="variant-price-value">{{ price_50 }} – {{ price_100 }}</span>
+          </div>
+        {% else %}
+          <div class="variant-price-item">
+            <span class="variant-size-label">50ML</span>
+            <span class="variant-divider">-</span>
+            <span class="variant-price-value">
+              {{ product.variants.first.price | money }}
+            </span>
+          </div>
+        {% endif %}
+      </div>
+
+      {% unless is_bundle %}
+        <button 
+          type="button"
+          class="btn-quick-add" 
+          data-product-id="{{ product.id }}" 
+          data-variant-id="{{ product.variants.first.id }}"
+        >
+          <span class="btn-text">Quick Add</span>
+          <span class="btn-loader" style="display: none;">ADDING...</span>
+        </button>
+      {% endunless %}
+    </div>
+  </a>
+</div>
+
+<style>
+.product-card-wrapper {
+  position: relative;
+  width: 100%;
+}
+.product-card {
+  display: flex;
+  flex-direction: column;
+  background: #111111;
+  border: 1px solid #242424 !important;
+  padding: 0px; 
+  text-align: center;
+  text-decoration: none;
+  color: #F7F4EE;
+  border-radius: 0px !important; 
+  overflow: hidden;
+  height: 100%;
+  transition: border-color 0.35s ease, transform 0.35s ease;
+}
+.product-card:hover {
+  border-color: #C8A060 !important;
+  transform: translateY(-5px);
+}
+.product-card-media {
+  position: relative;
+  width: 100%;
+  padding-bottom: 135%; 
+  height: 0;
+  overflow: hidden;
+  background: #050505;
+}
+.product-card img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-card{
+  overflow:hidden;
+}
+
+.product-card img{
+  transition:transform .8s ease;
+}
+
+.product-search-item:hover img{
+  transform:scale(1.05);
+}
+
+.product-card-info {
+  padding: 20px 15px 15px; 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.product-card h3 {
+  font-family: "Playfair Display", serif;
+  color: #F7F4EE; 
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+.product-card .fragrance-family,
+.product-card .perfume-type-badge {
+  font-family: "Montserrat", sans-serif;
+  color: #A3ADB5;
+  font-size: 12px;
+  margin: 0 0 8px 0;
+}
+.product-card__variants-display {
+  margin-top: auto; 
+  padding-top: 14px;
+  border-top: 1px solid #1c1c1c;
+}
+.variant-price-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+}
+.bundle-range-display .variant-price-value {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+.variant-size-label { color: #A3ADB5; text-transform: uppercase; }
+.variant-divider { color: #444444; margin: 0 8px; }
+.variant-price-value { color: #C8A060; font-weight: 500; }
+
+.btn-quick-add {
+  background: #C8A060;
+  color: #0B0B0B;
+  padding: 12px 20px;
+  border: none;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: 100%;
+  margin-top: 15px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.product-card:hover .btn-quick-add {
+  opacity: 1;
+  visibility: visible;
+}
+
+.custom-wishlist-trigger {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 999 !important; 
+  background: transparent !important;
+  border: none !important;
+  padding: 5px;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444444 !important;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.custom-wishlist-trigger:hover {
+  color: #C8A060 !important;
+  transform: scale(1.15);
+}
+.custom-wishlist-trigger.is-active,
+.custom-wishlist-trigger[data-active="true"] {
+  color: #C8A060 !important;
+}
+.custom-wishlist-trigger.is-active svg {
+  fill: #C8A060 !important;
+}
+.custom-wishlist-trigger svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  pointer-events: none; 
+}
+@media (max-width: 768px) {
+  .product-card-info { padding: 12px 10px 10px; }
+  .custom-wishlist-trigger { top: 12px; right: 12px; width: 24px; height: 24px; }
+  .custom-wishlist-trigger svg { width: 18px; height: 18px; }
+  .btn-quick-add { display: none !important; }
+}
+</style>
+
+<script>
+(function() {
+  function initCardWishlist() {
+    const triggers = document.querySelectorAll('.custom-wishlist-trigger:not([data-bound])');
+    const storageKey = 'bold_wishlist';
+    
+    let savedItems = [];
+    try {
+      const localData = localStorage.getItem(storageKey);
+      savedItems = localData ? JSON.parse(localData).map(id => String(id).trim()) : [];
+    } catch(e) {}
+
+    triggers.forEach(trigger => {
+      trigger.setAttribute('data-bound', 'true');
+      const productId = String(trigger.getAttribute('data-product-id')).trim();
+
+      if (savedItems.includes(productId)) {
+        trigger.classList.add('is-active');
+        trigger.setAttribute('data-active', 'true');
+        trigger.style.color = '#C8A060';
+      }
+
+      trigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let currentList = [];
+        try {
+          currentList = JSON.parse(localStorage.getItem(storageKey)) || [];
+          currentList = currentList.map(id => String(id).trim());
+        } catch(err) {}
+
+        if (currentList.includes(productId)) {
+          currentList = currentList.filter(id => id !== productId);
+          this.classList.remove('is-active');
+          this.removeAttribute('data-active');
+          this.style.color = '#444444';
+        } else {
+          currentList.push(productId);
+          this.classList.add('is-active');
+          this.setAttribute('data-active', 'true');
+          this.style.color = '#C8A060';
+          
+          this.style.transform = 'scale(1.25)';
+          setTimeout(() => this.style.transform = '', 180);
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(currentList));
+
+        const formInput = document.getElementById('ajax-wishlist-note-input');
+        const form = document.getElementById('ajax-wishlist-sync-form');
+        if (formInput && form) {
+          formInput.value = currentList.join(',');
+          fetch('/contact', { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCardWishlist);
+  } else {
+    initCardWishlist();
+  }
+  document.addEventListener('shopify:section:load', initCardWishlist);
+  window.addEventListener('scroll', initCardWishlist); 
+})();
+(function() {
+  function initCardFeatures() {
+    const wishlistTriggers = document.querySelectorAll('.custom-wishlist-trigger:not([data-bound])');
+    const storageKey = 'bold_wishlist';
+    
+    let savedItems = [];
+    try {
+      const localData = localStorage.getItem(storageKey);
+      savedItems = localData ? JSON.parse(localData).map(id => String(id).trim()) : [];
+    } catch(e) {}
+
+    wishlistTriggers.forEach(trigger => {
+      trigger.setAttribute('data-bound', 'true');
+      const productId = String(trigger.getAttribute('data-product-id')).trim();
+
+      if (savedItems.includes(productId)) {
+        trigger.classList.add('is-active');
+        trigger.setAttribute('data-active', 'true');
+        trigger.style.color = '#C8A060';
+      }
+
+      trigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let currentList = [];
+        try { currentList = JSON.parse(localStorage.getItem(storageKey)) || []; currentList = currentList.map(id => String(id).trim()); } catch(err) {}
+
+        if (currentList.includes(productId)) {
+          currentList = currentList.filter(id => id !== productId);
+          this.classList.remove('is-active');
+          this.removeAttribute('data-active');
+          this.style.color = '#444444';
+        } else {
+          currentList.push(productId);
+          this.classList.add('is-active');
+          this.setAttribute('data-active', 'true');
+          this.style.color = '#C8A060';
+          this.style.transform = 'scale(1.25)';
+          setTimeout(() => this.style.transform = '', 180);
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(currentList));
+
+        const formInput = document.getElementById('ajax-wishlist-note-input');
+        const form = document.getElementById('ajax-wishlist-sync-form');
+        if (formInput && form) {
+          formInput.value = currentList.join(',');
+          fetch('/contact', { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        }
+      });
+    });
+
+    const quickAddButtons = document.querySelectorAll('.btn-quick-add:not([data-bound])');
+    
+    quickAddButtons.forEach(button => {
+      button.setAttribute('data-bound', 'true');
+      
+      button.addEventListener('click', function(e) {
+        e.preventDefault();  
+        e.stopPropagation(); 
+
+        const variantId = this.getAttribute('data-variant-id');
+        if (!variantId) return;
+
+        const btnText = this.querySelector('.btn-text');
+        const btnLoader = this.querySelector('.btn-loader');
+
+        if (btnText && btnLoader) {
+          btnText.style.display = 'none';
+          btnLoader.style.display = 'inline-block';
+        }
+        this.style.pointerEvents = 'none';
+
+        fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: [{ id: parseInt(variantId), quantity: 1 }]
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (btnText && btnLoader) {
+            btnLoader.textContent = 'ADDED ✓';
+            this.style.background = '#F7F4EE';
+            this.style.color = '#0B0B0B';
+          }
+
+          document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true, detail: data }));
+          if (window.theme && window.theme.refreshCart) { window.theme.refreshCart(); } 
+
+          setTimeout(() => {
+            if (btnText && btnLoader) {
+              btnText.style.display = 'inline-block';
+              btnLoader.style.display = 'none';
+              btnLoader.textContent = 'ADDING...';
+            }
+            this.style.background = '#C8A060';
+            this.style.color = '#0B0B0B';
+            this.style.pointerEvents = 'auto';
+          }, 2000);
+        })
+        .catch(error => {
+          console.error('Error adding to cart:', error);
+          if (btnText && btnLoader) {
+            btnText.style.display = 'inline-block';
+            btnLoader.style.display = 'none';
+          }
+          this.style.pointerEvents = 'auto';
+        });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCardFeatures);
+  } else {
+    initCardFeatures();
+  }
+  document.addEventListener('shopify:section:load', initCardFeatures);
+  window.addEventListener('scroll', initCardFeatures); 
+})();
+</script>

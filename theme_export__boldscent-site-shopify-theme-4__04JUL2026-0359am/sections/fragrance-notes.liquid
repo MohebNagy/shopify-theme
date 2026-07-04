@@ -1,0 +1,184 @@
+<section class="fragrance-notes" aria-label="Fragrance Notes">
+  <div class="container">
+    <h2 class="fragrance-notes__title">Fragrance Notes</h2>
+
+    {% assign top_notes = product.metafields.custom.top_notes.value %}
+    {% assign heart_notes = product.metafields.custom.heart_notes.value %}
+    {% assign base_notes = product.metafields.custom.base_notes.value %}
+
+    <div class="fragrance-notes__grid">
+      
+      <div class="fragrance-notes__col">
+        <h3 class="fragrance-notes__heading">Top Notes</h3>
+        <div class="fragrance-notes__list">
+          {% if top_notes != blank %}
+            {% for note in top_notes %}
+              <span class="note-item">{{ note }}</span>{% unless forloop.last %}<span class="note-separator"> • </span>{% endunless %}
+            {% endfor %}
+          {% else %}
+            <span class="no-notes-fallback">No notes specified</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="fragrance-notes__col">
+        <h3 class="fragrance-notes__heading">Heart Notes</h3>
+        <div class="fragrance-notes__list">
+          {% if heart_notes != blank %}
+            {% for note in heart_notes %}
+              <span class="note-item">{{ note }}</span>{% unless forloop.last %}<span class="note-separator"> • </span>{% endunless %}
+            {% endfor %}
+          {% else %}
+            <span class="no-notes-fallback">No notes specified</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="fragrance-notes__col">
+        <h3 class="fragrance-notes__heading">Base Notes</h3>
+        <div class="fragrance-notes__list">
+          {% if base_notes != blank %}
+            {% for note in base_notes %}
+              <span class="note-item">{{ note }}</span>{% unless forloop.last %}<span class="note-separator"> • </span>{% endunless %}
+            {% endfor %}
+          {% else %}
+            <span class="no-notes-fallback">No notes specified</span>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .fragrance-notes {
+    padding: 80px 0;
+    border-top: none !important; /* تم إلغاء الخط الرمادي العلوي تماماً لدمج السكشن */
+    background: #000000; /* متوافق مع الطابع المعتم الفاخر */
+  }
+
+  .fragrance-notes__title {
+    font-family: "Playfair Display", serif;
+    color: #C8A060;
+    font-size: 36px;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+  }
+
+  .fragrance-notes__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .fragrance-notes__heading {
+    font-family: "Playfair Display", serif;
+    color: #F7F4EE;
+    font-size: 20px;
+    margin-top: 0;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .fragrance-notes__list {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #A3ADB5;
+  }
+
+  .note-item {
+    color: #A3ADB5;
+    display: inline-block;
+  }
+
+  .note-separator {
+    color: #C8A060; /* جعل النقطة الفاصلة باللون الذهبي لتعطي لمسة جمالية فاخرة */
+    font-weight: bold;
+    padding: 0 4px;
+  }
+
+  .no-notes-fallback {
+    color: #555555;
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  @media(max-width: 768px) {
+    .fragrance-notes { padding: 60px 0; }
+    .fragrance-notes__title { font-size: 30px; margin-bottom: 30px; }
+    .fragrance-notes__grid { grid-template-columns: 1fr; gap: 30px; }
+  }
+
+  .fragrance-notes__title{
+    opacity:0;
+    transform:translateY(30px);
+    transition:
+      opacity .8s ease,
+      transform .8s ease;
+  }
+
+  .fragrance-notes.visible .fragrance-notes__title{
+    opacity:1;
+    transform:none;
+  }
+
+  .fragrance-notes__col{
+    opacity:0;
+    transform:translateY(40px);
+    transition:
+      opacity .9s ease,
+      transform .9s cubic-bezier(.22,1,.36,1);
+  }
+
+  .fragrance-notes.visible .fragrance-notes__col{
+    opacity:1;
+    transform:none;
+  }
+
+  .fragrance-notes.visible .fragrance-notes__col:nth-child(1){
+    transition-delay:.15s;
+  }
+
+  .fragrance-notes.visible .fragrance-notes__col:nth-child(2){
+    transition-delay:.3s;
+  }
+
+  .fragrance-notes.visible .fragrance-notes__col:nth-child(3){
+    transition-delay:.45s;
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+
+  const notesSection=document.querySelector(".fragrance-notes");
+
+  if(!notesSection) return;
+
+  const observer=new IntersectionObserver(entries=>{
+
+    if(entries[0].isIntersecting){
+      notesSection.classList.add("visible");
+      observer.disconnect();
+    }
+
+  },{
+    threshold:.15
+  });
+
+  observer.observe(notesSection);
+
+});
+</script>
+
+{% schema %}
+{
+  "name": "Fragrance Notes",
+  "settings": [],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

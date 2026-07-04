@@ -1,0 +1,68 @@
+<div class="auth container">
+
+  <h2>Create Account</h2>
+
+  {% form 'create_customer' %}
+    {{ form.errors | default_errors }}
+
+    <input type="text" name="customer[first_name]" placeholder="First Name" required autocomplete="given-name">
+    <input type="text" name="customer[last_name]" placeholder="Last Name" required autocomplete="family-name">
+    <input type="email" name="customer[email]" placeholder="Email" required autocomplete="email">
+    <input type="password" name="customer[password]" placeholder="Password" required autocomplete="new-password">
+
+    <button type="submit" class="btn-primary">Sign Up</button>
+  {% endform %}
+
+  <p class="auth-link">
+    <a href="{{ routes.account_login_url }}">Already have an account?</a>
+  </p>
+
+</div>
+
+<style>
+.auth{
+  max-width:400px;
+  margin:100px auto;
+  padding:0 20px;
+}
+
+.auth h2{
+  font-family:"Playfair Display";
+  color:#C8A060;
+  margin-bottom:30px;
+  text-align:center;
+}
+
+.auth input{
+  width:100%;
+  margin:10px 0;
+  padding:15px;
+  background:#111;
+  border:1px solid #242424;
+  color:#fff;
+  border-radius:8px;
+}
+
+.auth button{
+  width:100%;
+  margin-top:10px;
+}
+
+.auth-link{
+  text-align:center;
+  margin-top:20px;
+}
+
+.auth-link a{
+  color:#C8A060;
+  font-family:Montserrat;
+  font-size:14px;
+}
+</style>
+
+{% schema %}
+{
+  "name": "Register Form",
+  "settings": []
+}
+{% endschema %}

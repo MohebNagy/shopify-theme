@@ -1,0 +1,348 @@
+<div class="search-drawer" id="searchDrawer" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-drawer-inner">
+    
+    <form action="{{ routes.search_url }}" method="get" role="search" id="searchDrawerForm" style="width: 100%; margin: 0;">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="options[prefix]" value="last">
+
+      <div class="search-input-container-row">
+        <div class="search-input-wrapper">
+          <input type="text" name="q" id="searchInput" placeholder="Search BOLD perfumes..." autocomplete="off" aria-label="Search">
+          <span class="search-underline"></span>
+        </div>
+        <button id="closeSearch" type="button" class="close-search" aria-label="Close search">
+          {% render 'icon', name: 'close' %}
+        </button>
+      </div>
+    </form>
+
+    <div class="search-results-wrapper">
+      <div class="search-results" id="predictiveSearchResults"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* الـ Drawer مع توزيع مسافات احترافي وتأثير فصل ناعم */
+.search-drawer {
+  position: fixed;
+  top: var(--header-height, 70px);
+  left: 0;
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - var(--header-height, 70px));
+  background: rgba(11, 11, 11, 0.97); /* سواد فخم وأقل شفافية لعدم تداخل النصوص */
+  backdrop-filter: blur(20px); /* زيادة قيمة الـ Blur لمنع تشتت العين بالمنتجات في الخلفية */
+  -webkit-backdrop-filter: blur(20px);
+  padding: 35px 25px; /* مسافة داخلية متوازنة تمنح السكشن فخامته */
+  z-index: 4000;
+  border-bottom: 1px solid #1c1c1c;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px); /* تقليل مسافة الارتداد ليكون الإنزلاق أنعم */
+  transition: opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              visibility 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow-y: auto;
+}
+
+.search-drawer.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.search-drawer-inner {
+  max-width: 750px; /* توازن مثالي لعرض شريط البحث على اللاب */
+  margin: 0 auto;
+}
+
+/* ضبط السطر المحتوي على البحث والإغلاق بمحاذاة عمودية دقيقة */
+.search-input-container-row {
+  display: flex;
+  align-items: center; /* تضمن توسط العناصر رأسياً تماماً */
+  justify-content: space-between;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex-grow: 1;
+}
+
+#searchInput {
+  width: 100%;
+  font-family: "Playfair Display", serif;
+  font-size: 22px; /* حجم راقٍ ومقروء بوضوح */
+  font-weight: 400;
+  padding: 12px 0; /* مسافة عمودية تعطي الـ Input وزناً بصرياً منضبطاً */
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #242424;
+  color: #F7F4EE;
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #C8A060;
+  transition: width 0.4s ease;
+}
+
+#searchInput:focus ~ .search-underline {
+  width: 100%;
+}
+
+.close-search {
+  background: none;
+  border: none;
+  color: #F7F4EE;
+  font-size: 16px; /* تصغير حجم الأيقونة طفيفاً لتتناسق مع رقة خط البحث */
+  cursor: pointer;
+  padding: 8px; /* توسيع منطقة الضغط لتسهيل الإغلاق */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.close-search:hover {
+  color: #C8A060;
+  transform: rotate(90deg);
+}
+
+/* تجميل نتائج البحث المقترحة */
+.search-results-wrapper {
+  max-height: 55vh;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+.search-results {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.search-results.has-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.search-results a {
+  display: flex;
+  gap: 15px;
+  padding: 14px 10px;
+  color: #A3ADB5;
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  align-items: center;
+  border-bottom: 1px solid #141414;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.search-results a:hover {
+  color: #F7F4EE;
+  background: #111111;
+}
+
+.search-results img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 0;
+  border: 1px solid #242424;
+}
+
+.search-results .product-title {
+  font-family: "Playfair Display", serif;
+  color: #F7F4EE;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.search-results .product-price {
+  color: #C8A060;
+  font-size: 13px;
+}
+
+/* معالجة أطراف الموبايل لعدم الالتصاق بالحواف */
+@media (max-width: 749px) {
+  .search-drawer {
+    padding: 25px 20px; /* مسافة أمان جانبية كافية للموبايل */
+        /* إخفاء الـ scrollbar مع بقاء الـ scroll */
+    -ms-overflow-style: none; /* IE و Edge القديم */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .search-drawer::-webkit-scrollbar,
+  .search-results-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+
+  .search-results-wrapper {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  #searchInput {
+    font-size: 18px; /* حجم خط ناعم ومثالي لشاشات الهواتف */
+    padding: 8px 0;
+  }
+  .search-input-container-row {
+    gap: 15px; /* تقليص الفجوة لتوفير مساحة للكتابة */
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchDrawer = document.getElementById('searchDrawer');
+  const searchInput = document.getElementById('searchInput');
+  const closeSearch = document.getElementById('closeSearch');
+  const searchResults = document.getElementById('predictiveSearchResults');
+  const searchForm = document.getElementById('searchDrawerForm');
+
+  function updateHeaderHeight() {
+    const header = document.querySelector('header, .header, #shopify-section-header');
+    if (header) {
+      const height = header.offsetHeight;
+      document.documentElement.style.setProperty('--header-height', height + 'px');
+      header.style.position = 'sticky'; 
+      header.style.zIndex = '4500';
+    }
+  }
+
+  // إرسال البحث مقيداً بالبحث في عناوين المنتجات فقط title:query*
+  if (searchForm && searchInput) {
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (query.length > 0) {
+        window.location.href = `/search?type=product&q=title:${encodeURIComponent(query)}*`;
+      }
+    });
+  }
+
+  updateHeaderHeight();
+  window.addEventListener('resize', updateHeaderHeight);
+
+  // 1. Predictive Search (تم تعديل الـ API أيضاً ليبحث في الاسم فقط حتى تتطابق التجربتان)
+  let timeoutId;
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const query = searchInput.value.trim();
+      clearTimeout(timeoutId);
+
+      if (query.length < 2) {
+        searchResults.innerHTML = '';
+        searchResults.classList.remove('has-content');
+        return;
+      }
+
+      timeoutId = setTimeout(() => {
+        fetch(`/search/suggest.json?q=title:${encodeURIComponent(query)}*&resources[type]=product&resources[limit]=5`)
+          .then(response => response.json())
+          .then(suggestions => {
+            const products = suggestions.resources.results.products;
+            if (products.length > 0) {
+              let html = '';
+              products.forEach(product => {
+                html += `
+                  <a href="${product.url}">
+                    <img src="${product.image || 'https://via.placeholder.com/60'}" alt="${product.title}">
+                    <div>
+                      <div class="product-title">${product.title}</div>
+                      <div class="product-price">${product.price_formatted || ''}</div>
+                    </div>
+                  </a>
+                `;
+              });
+              searchResults.innerHTML = html;
+              searchResults.classList.add('has-content');
+            } else {
+              searchResults.innerHTML = '<div style="padding:20px; color:#A3ADB5; font-family:Montserrat;">No perfumes found.</div>';
+              searchResults.classList.add('has-content');
+            }
+          })
+          .catch(error => console.error('Error fetching search results:', error));
+      }, 300);
+    });
+  }
+
+  // 2. Open Drawer
+  function openDrawer(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    updateHeaderHeight();
+    searchDrawer.classList.add('active');
+    setTimeout(() => {
+      if (searchInput) searchInput.focus();
+    }, 300);
+  }
+
+  const searchSelectors = [
+    '[href*="/search"]',
+    '.search-trigger',
+    '#searchIcon',
+    '.header__icon--search',
+    '.header-search-toggle',
+    '.mobile-search-icon',
+    '.menu-drawer__search-toggle',
+    'button[aria-label*="Search"]',
+    'button[aria-label*="search"]',
+    'a[aria-label*="search"]'
+  ];
+
+  function initSearchTriggers() {
+    searchSelectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(button => {
+        if (!button.dataset.searchBound) {
+          button.addEventListener('click', openDrawer);
+          button.dataset.searchBound = 'true';
+        }
+      });
+    });
+  }
+
+  initSearchTriggers();
+
+  const observer = new MutationObserver(function() {
+    initSearchTriggers();
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // 3. Close Drawer
+  function closeDrawer() {
+    searchDrawer.classList.remove('active');
+  }
+
+  if (closeSearch) {
+    closeSearch.addEventListener('click', closeDrawer);
+  }
+  
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDrawer();
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Search Drawer",
+  "settings": []
+}
+{% endschema %}

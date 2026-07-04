@@ -1,0 +1,489 @@
+{% comment %} 
+  تعديل احترافي متكامل لصفحة الـ Discovery Set لبراند BOLD.
+  تم توحيد الهيكل، الكلاسات، الأنيميشن، وتصميم الموبايل ليتطابق 100% مع صفحة المنتج العادي.
+{% endcomment %}
+
+<div class="product-info discovery-builder-mode" id="productInfoContainer">
+
+  {%- if product.type != blank -%}
+    <span class="product-gender-badge">{{ product.type | upcase }}</span>
+  {%- endif -%}
+
+  <h1>{{ product.title }}</h1>
+
+  {% comment %} استخراج الـ Inspired By ديناميكياً بنفس المنطق الفخم الخاص بك {% endcomment %}
+  {% assign inspired_tag = blank %}
+  {% for tag in product.tags %}
+    {% assign downcased_tag = tag | downcase %}
+    {% if downcased_tag contains 'inspired by' or downcased_tag contains 'inspired-by' %}
+      {% assign inspired_tag = tag | replace: 'inspired by', '' | replace: 'Inspired by', '' | replace: 'inspired-by', '' | replace: 'Inspired-by', '' | strip %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  {% if inspired_tag != blank %}
+    <p class="inspired-by">Inspired by {{ inspired_tag }}</p>
+  {% else %}
+    <p class="inspired-by">Customize your exclusive box. Select your preferred testers below.</p>
+  {% endif %}
+
+  <p class="price" id="productPrice">
+    {%- assign current_variant = product.selected_or_first_available_variant -%}
+    <span class="current-price" id="currentPriceDisplay">{{ current_variant.price | money }}</span>
+    <span class="compare-price" id="comparePriceDisplay" style="{% unless current_variant.compare_at_price > current_variant.price %}display: none;{% endunless %} text-decoration: line-through; color: #888888; font-size: 16px; margin-left: 10px;">
+      {{ current_variant.compare_at_price | money }}
+    </span>
+  </p>
+
+  <div class="builder-step" style="margin: 20px 0;">
+    <span class="step-label" style="display:block; font-size:12px; letter-spacing:1px; color:#888; text-transform:uppercase; margin-bottom:8px;">Tester Size</span>
+    <div class="fixed-size-badge" style="display:inline-block; background:#111; border:1px solid #C8A060; color:#C8A060; padding:10px 20px; font-size:14px; border-radius:6px;">3ML / VIAL</div>
+  </div>
+
+  {% comment %} 1. اختيار الكمية (Package Quantity) مستوحى من ستايل الـ Variants الفخم الخاص بك {% endcomment %}
+  <div class="builder-step" style="margin: 25px 0;">
+    <span class="step-label" style="display:block; font-size:12px; letter-spacing:1px; color:#888; text-transform:uppercase; margin-bottom:8px;">Package Quantity</span>
+    <div class="variants">
+      {% for variant in product.variants %}
+        {% assign tester_count = variant.title | split: ' ' | first | plus: 0 %}
+        <button
+          class="variant-btn package-selector{% if variant == product.selected_or_first_available_variant %} active{% endif %}"
+          type="button"
+          data-id="{{ variant.id }}"
+          data-price="{{ variant.price | money }}"
+          data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money }}{% else %}false{% endif %}"
+          data-limit="{{ tester_count }}"
+        >
+          {{ tester_count }}
+        </button>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% comment %} 2. شبكة اختيار العطور الاحترافية المدمجة بسلاسة {% endcomment %}
+  <div class="builder-step" style="margin: 35px 0;">
+    <span class="step-label" style="display:block; font-size:14px; letter-spacing:1px; color:#F7F4EE; text-transform:uppercase; margin-bottom:12px;">
+      Select Your Fragrances (<span id="selectionCounter" style="color: #C8A060; font-weight:600;">0</span> / <span id="maxLimitDisplay">3</span>)
+    </span>
+    
+    <div class="scent-selection-grid">
+       {% for perfume in collections['all'].products %}
+          <div class="scent-card" data-name="{{ perfume.title }}">
+             <div class="scent-card-img">
+                {% if perfume.featured_image %}
+                  <img src="{{ perfume.featured_image | img_url: '400x400', crop: 'center' }}" alt="{{ perfume.title }}" loading="lazy">
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder' }}
+                {% endif %}
+             </div>
+             <span class="scent-name">{{ perfume.title }}</span>
+             <div class="selection-indicator"><i class="fa-solid fa-check"></i></div>
+          </div>
+       {% endfor %}
+    </div>
+  </div>
+
+  {% comment %} حقول مخفية لربط العينات بالسلة {% endcomment %}
+  <div id="hiddenProperties"></div>
+
+  {% comment %} أزرار الشراء الفاخرة بنفس تصميم وعناوين أزرار صفحتك الإفتراضية {% endcomment %}
+  <div class="purchase-buttons-wrapper" id="mainPurchaseButtons" style="margin-top: 30px;">
+    <button
+      class="buy-it-now-luxury disabled-builder-btn"
+      id="addToCartBtn"
+      type="button"
+      disabled
+      data-product-id="{{ product.id }}"
+      data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+    >
+      Select <span id="btnRemainingCount">3</span> Scents To Add
+    </button>
+  </div>
+
+</div>
+
+{% comment %} 🌟 الـ Sticky Add to Cart الفخم والممتد بالكامل بناءً على طلبك الإسترجاعي ليتطابق مع الزر الرئيسي السفلي {% endcomment %}
+<div class="sticky-atc-bar" id="stickyAtcBar">
+  <div class="sticky-atc-container">
+    <button
+      class="add-to-cart-luxury disabled"
+      id="stickyAddToCartBtn"
+      type="button"
+      disabled
+    >
+      Select <span>3</span> Scents To Add
+    </button>
+  </div>
+</div>
+
+<style>
+/* 🌟 جلب جميع استايلات صفحة المنتج العادي الخاصة بك لضمان التطابق الكامل 🌟 */
+.product-info,
+.product-info h1,
+.product-info p,
+.product-info span,
+.product-info button,
+.product-info input {
+  font-family: "Montserrat", serif;
+}
+
+.product-info {
+  max-width: 620px;
+}
+
+.product-gender-badge {
+  display: inline-block;
+  background: #111111;
+  border: 1px solid #242424;
+  color: #C8A060;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 6px 16px;
+  margin-top: 35px;
+  border-radius: 2px;
+}
+
+.product-info h1 {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  font-size: 42px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.inspired-by {
+  font-size: 16px;
+  color: #888888 !important;
+  margin: 5px 0 15px 0;
+  letter-spacing: 1px;
+}
+
+.price {
+  color: #F7F4EE;
+  font-size: 22px;
+  font-weight: 500;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+}
+
+.variant-btn {
+  background: #111;
+  border: 1px solid #242424;
+  color: #F7F4EE;
+  padding: 10px 20px;
+  margin: 5px 5px 5px 0;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.variant-btn.active {
+  border-color: #C8A060;
+  background: rgba(200, 160, 96, 0.05);
+}
+
+/* ستايل شبكة العطور المنسق */
+.scent-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 15px;
+}
+.scent-card {
+    background: #0A0A0A;
+    border: 1px solid #1C1C1C;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    border-radius: 6px;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+.scent-card-img { width: 100%; aspect-ratio: 1; overflow: hidden; margin-bottom: 10px; background: #000; border-radius: 4px; }
+.scent-card-img img { width: 100%; height: 100%; object-fit: cover; filter: opacity(0.6); transition: all 0.3s ease; }
+.scent-name { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: #A3ADB5; display: block; }
+.selection-indicator {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: #C8A060;
+    color: #000;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: scale(0); transition: all 0.25s ease;
+}
+.scent-card.selected { border-color: #C8A060; }
+.scent-card.selected .scent-card-img img { filter: opacity(1); }
+.scent-card.selected .selection-indicator { opacity: 1; transform: scale(1); }
+
+/* أزرار الشراء الفاخرة وحالة التعطيل في الصفحة */
+.purchase-buttons-wrapper {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+.buy-it-now-luxury {
+  width: 100%;
+  height: 52px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #C8A060;
+  border: none;
+  color: #000000;
+}
+.buy-it-now-luxury.disabled-builder-btn {
+  background: #111111;
+  border: 1px solid #242424;
+  color: #555555;
+  cursor: not-allowed;
+}
+
+/* 🌟 ستايل الـ Sticky Bar العريض والممتد بالكامل لبراند BOLD 🌟 */
+.sticky-atc-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #0B0B0B;
+    border-top: 1px solid #242424;
+    padding: 12px 24px;
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8);
+    box-sizing: border-box;
+}
+.sticky-atc-bar.show { transform: translateY(0); }
+.sticky-atc-container { max-width: 1200px; margin: 0 auto; width: 100%; }
+.sticky-atc-bar .add-to-cart-luxury { width: 100%; text-align: center; }
+
+/* زر الإضافة الفخم المدمج داخل الـ Sticky */
+.add-to-cart-luxury {
+    background: #C8A060;
+    color: #0B0B0B;
+    padding: 16px 30px;
+    border: none;
+    font-family: "Montserrat", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.add-to-cart-luxury.disabled { background: transparent; border: 1px solid #242424; color: #555555; cursor: not-allowed; }
+
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+
+/* 📱 تهيئة الأبعاد والتجاوب للموبايل طبق الأصل لصفحتك الإفتراضية */
+@media (max-width: 768px){
+  .product-info {
+    padding-bottom: 80px;
+    margin: 20px;
+  }
+  .product-info h1 { font-size: 32px; }
+  .purchase-buttons-wrapper { max-width: 100%; }
+  .sticky-atc-bar { padding: 10px 16px; }
+  .scent-selection-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+
+/* تأثير الأنيميشن التراكمي لظهور عناصر الصفحة الفخم */
+.product-info > *{
+  opacity:0;
+  transform:translateY(25px);
+}
+.product-info > *.info-visible{
+  opacity:1;
+  transform:translateY(0);
+  transition: opacity .8s ease, transform .8s cubic-bezier(.22,1,.36,1);
+}
+.buy-it-now-luxury { position:relative; overflow:hidden; }
+.buy-it-now-luxury::before {
+  content:""; position:absolute; top:0; left:-120%; width:100%; height:100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  transition:left .8s ease;
+}
+.buy-it-now-luxury:not(.disabled-builder-btn):hover::before { left:120%; }
+.variant-btn { transition: transform .3s ease, border-color .3s ease, background .3s ease; }
+.variant-btn:hover { transform:translateY(-3px); }
+.variant-btn.active { transform:translateY(-3px); }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const scentCards = document.querySelectorAll('.scent-card');
+    const counterDisplay = document.getElementById('selectionCounter');
+    const limitDisplay = document.getElementById('maxLimitDisplay');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const stickyAddToCartBtn = document.getElementById('stickyAddToCartBtn');
+    const packageButtons = document.querySelectorAll('.package-selector');
+    const propertiesContainer = document.getElementById('hiddenProperties');
+    
+    const priceDisplay = document.getElementById('currentPriceDisplay');
+    const comparePriceDisplay = document.getElementById('comparePriceDisplay');
+    const stickyBar = document.getElementById('stickyAtcBar');
+    
+    const scentGrid = document.querySelector('.scent-selection-grid');
+
+    let selectedScents = [];
+    let firstActive = document.querySelector('.package-selector.active');
+    let currentLimit = firstActive ? parseInt(firstActive.dataset.limit) : 3;
+    if(limitDisplay) limitDisplay.textContent = currentLimit;
+
+    packageButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const newLimit = parseInt(this.dataset.limit);
+            
+            packageButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            if(priceDisplay && this.dataset.price) priceDisplay.textContent = this.dataset.price;
+            addToCartBtn.setAttribute('data-variant-id', this.dataset.id);
+
+            if(comparePriceDisplay) {
+                if(this.dataset.comparePrice && this.dataset.comparePrice !== 'false') {
+                    comparePriceDisplay.textContent = this.dataset.comparePrice;
+                    comparePriceDisplay.style.display = 'inline-block';
+                } else {
+                    comparePriceDisplay.style.display = 'none';
+                }
+            }
+
+            if (newLimit >= currentLimit) {
+                currentLimit = newLimit;
+                if(limitDisplay) limitDisplay.textContent = currentLimit;
+                updateUI();
+            } else {
+                currentLimit = newLimit;
+                if(limitDisplay) limitDisplay.textContent = currentLimit;
+                resetSelections();
+            }
+        });
+    });
+
+    function resetSelections() {
+        selectedScents = [];
+        scentCards.forEach(c => c.classList.remove('selected'));
+        updateUI();
+    }
+
+    scentCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const scentName = this.dataset.name;
+
+            if (this.classList.contains('selected')) {
+                selectedScents = selectedScents.filter(s => s !== scentName);
+                this.classList.remove('selected');
+            } else {
+                if (selectedScents.length < currentLimit) {
+                    selectedScents.push(scentName);
+                    this.classList.add('selected');
+                } else {
+                    this.style.animation = 'shake 0.3s ease';
+                    setTimeout(() => this.style.animation = '', 300);
+                }
+            }
+            updateUI();
+        });
+    });
+
+    function updateUI() {
+        if(counterDisplay) counterDisplay.textContent = selectedScents.length;
+        
+        if(propertiesContainer) {
+            propertiesContainer.innerHTML = '';
+            selectedScents.forEach((scent, index) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `properties[Scent ${index + 1}]`;
+                input.value = scent;
+                propertiesContainer.appendChild(input);
+            });
+        }
+
+        checkValidation();
+    }
+
+    function checkValidation() {
+        let remaining = currentLimit - selectedScents.length;
+        
+        if (selectedScents.length === currentLimit) {
+            addToCartBtn.classList.remove('disabled-builder-btn');
+            addToCartBtn.disabled = false;
+            addToCartBtn.textContent = 'Add Discovery Set to Cart';
+
+            if (stickyAddToCartBtn) {
+                stickyAddToCartBtn.classList.remove('disabled');
+                stickyAddToCartBtn.disabled = false;
+                stickyAddToCartBtn.textContent = 'Add Discovery Set to Cart';
+            }
+        } else {
+            addToCartBtn.classList.add('disabled-builder-btn');
+            addToCartBtn.disabled = true;
+            addToCartBtn.innerHTML = `Select <span id="btnRemainingCount">${remaining}</span> more Scent${remaining > 1 ? 's' : ''} To Add`;
+
+            if (stickyAddToCartBtn) {
+                stickyAddToCartBtn.classList.add('disabled');
+                stickyAddToCartBtn.disabled = true;
+                stickyAddToCartBtn.innerHTML = `Select <span>${remaining}</span> more Scent${remaining > 1 ? 's' : ''} To Add`;
+            }
+        }
+    }
+
+    // 🌟 منطق الـ Scroll الذكي والمحدث: يظهر الشريط عند الدخول في شبكة العينات ويختفي عند العودة للزر الأساسي
+    window.addEventListener('scroll', function() {
+        if (!scentGrid || !stickyBar || !addToCartBtn) return;
+        
+        const gridTopPosition = scentGrid.getBoundingClientRect().top;
+        const mainBtnBounding = addToCartBtn.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        const isGridVisible = gridTopPosition < windowHeight - 50;
+        const isMainBtnVisibleOnScreen = (mainBtnBounding.top >= 0 && mainBtnBounding.bottom <= windowHeight);
+
+        if (isGridVisible && !isMainBtnVisibleOnScreen) {
+            stickyBar.classList.add("show");
+        } else {
+            stickyBar.classList.remove("show");
+        }
+    });
+
+    if (stickyAddToCartBtn) {
+        stickyAddToCartBtn.addEventListener('click', function() {
+            if(!addToCartBtn.disabled) {
+                addToCartBtn.click();
+            }
+        });
+    }
+    
+    checkValidation();
+});
+
+// تفعيل تأثير حركة ظهور العناصر التراكمية الفخمة عند التحميل
+window.addEventListener("load", ()=>{
+  const items = document.querySelectorAll("#productInfoContainer > *");
+  items.forEach((item,index)=>{
+    setTimeout(()=>{
+      item.classList.add("info-visible");
+    },index*120);
+  });
+});
+</script>

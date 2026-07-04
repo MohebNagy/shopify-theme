@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+
+  <title>
+    {{ page_title }}
+    {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+    {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  </title>
+
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+
+  {{ content_for_header }}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+  {{ 'components.css' | asset_url | stylesheet_tag }}
+  {{ 'utilities.css' | asset_url | stylesheet_tag }}
+  {{ 'animations.css' | asset_url | stylesheet_tag }}
+  {{ 'responsive.css' | asset_url | stylesheet_tag }}
+
+  <script>
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    window.Shopify = window.Shopify || {};
+    window.theme = {
+      moneyFormat: {{ shop.money_format | json }},
+      routes: {
+        cartAdd: {{ routes.cart_add_url | json }},
+        cartChange: {{ routes.cart_change_url | json }},
+        cartUpdate: {{ routes.cart_update_url | json }},
+        cartUrl: {{ routes.cart_url | json }},
+        predictiveSearch: {{ routes.predictive_search_url | json }}
+      }
+    };
+  </script>
+<link rel="shortcut icon" href="{{ 'logo.jpg' | asset_url }}" type="image/png">
+<link rel="apple-touch-icon" href="{{ 'logo.jpg' | asset_url }}">
+</head>
+
+<body class="bg-primary text-light template-{{ template.name | handle }}">
+
+  {% section 'announcement-bar' %}
+  {% section 'header' %}
+  {% section 'mobile-menu' %}
+  {% section 'search-drawer' %}
+  {% section 'cart-drawer' %}
+
+  <main id="MainContent" role="main">
+    {{ content_for_layout }}
+  </main>
+
+  {% section 'footer' %}
+
+  {{ 'theme.js' | asset_url | script_tag }}
+  {{ 'animations.js' | asset_url | script_tag }}
+  {{ 'header.js' | asset_url | script_tag }}
+  {{ 'mobile-menu.js' | asset_url | script_tag }}
+  {{ 'search.js' | asset_url | script_tag }}
+  {{ 'ajax-cart.js' | asset_url | script_tag }}
+  {{ 'slider.js' | asset_url | script_tag }}
+  {% if template.name == 'cart' %}
+    {{ 'cart-quantity.js' | asset_url | script_tag }}
+  {% endif %}
+
+
+  {% if template.name == 'product' %}
+    {{ 'product-gallery.js' | asset_url | script_tag }}
+    {{ 'product-variants.js' | asset_url | script_tag }}
+    {{ 'quantity-selector.js' | asset_url | script_tag }}
+    {{ 'accordion.js' | asset_url | script_tag }}
+    {{ 'fragrance-notes.js' | asset_url | script_tag }}
+  {% endif %}
+
+{%- if customer -%}
+  {%- comment -%}
+    🌟 نموذج AJAX مخفي لتحديث الـ Customer Note الخاص بقائمة الأمنيات صامتاً
+  {%- endcomment -%}
+
+  {{ 'wishlist.js' | asset_url | script_tag }}
+  
+  <div style="display: none !important;">
+    {%- form 'customer', id: 'ajax-wishlist-sync-form' -%}
+      <input type="hidden" name="contact[tags]" value="wishlist_synced">
+      <input type="text" id="ajax-wishlist-note-input" name="contact[note]" value="{{ customer.note | escape }}">
+      <button type="submit" id="ajax-wishlist-submit-btn">Sync</button>
+    {%- endform -%}
+  </div>
+  
+  {%- comment -%} تمرير الـ Note الحالية للجافا سكريبت لتقرأها عند تحميل الصفحة {%- endcomment -%}
+  <script>
+    window.BoldCustomerWishlistValue = {{ customer.note | json }} || "";
+  </script>
+{%- else -%}
+  <script>
+    window.BoldCustomerWishlistValue = null;
+  </script>
+{%- endif -%}
+</body>
+</html>
+
+<style>
+  /* ======================================================= */
+/* ✨ تنسيق صفحات السياسات الفخم (Minimal Luxury Policies) */
+/* ======================================================= */
+
+/* 1️⃣ تنسيق الحاوية الرئيسية والصفحة بالكامل */
+.shopify-policy__container {
+  max-width: 800px !important; /* تقليل العرض لراحة العين أثناء القراءة */
+  padding: 60px 24px !important;
+  background: #0B0B0B !important; /* اللون الأسود الفخم لـ BOLD */
+  color: #A3ADB5 !important; /* لون النصوص الهادئ المقروء */
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+/* 2️⃣ تنسيق العنوان الرئيسي للصفحة */
+.shopify-policy__title h1, 
+.shopify-policy__title {
+  font-family: "Playfair Display", serif !important;
+  color: #C8A060 !important; /* اللون الذهبي الفخم للعنوان الرئيسي */
+  font-size: 36px !important;
+  letter-spacing: 2px !important;
+  text-align: center !important;
+  margin-bottom: 50px !important;
+  border: none !important; /* إزالة أي خطوط افتراضية تحت العنوان */
+}
+
+/* 3️⃣ تنسيق العناوين الفرعية (مثل Returns) */
+.shopify-policy__body h2, 
+.shopify-policy__body h3 {
+  font-family: "Playfair Display", serif !important;
+  color: #F7F4EE !important; /* الأبيض الدافئ الفاخر للعناوين الفرعية */
+  font-size: 22px !important;
+  margin-top: 40px !important;
+  margin-bottom: 20px !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* 4️⃣ تنسيق الفقرات والنصوص العادية */
+.shopify-policy__body p, 
+.shopify-policy__body {
+  font-size: 15px !important;
+  line-height: 1.8 !important; /* مساحة مريحة وممتازة للقراءة */
+  color: #A3ADB5 !important;
+  margin-bottom: 20px !important;
+}
+
+/* 5️⃣ تنسيق القوائم النقطية (Bullet Points) */
+.shopify-policy__body ul, 
+.shopify-policy__body ol {
+  padding-left: 20px !important;
+  margin-bottom: 25px !important;
+}
+
+.shopify-policy__body li {
+  font-size: 14.5px !important;
+  line-height: 1.8 !important;
+  color: #8A949D !important; /* تفتيح لون النقط قليلاً لخلق تسلسل بصري مريح */
+  margin-bottom: 12px !important;
+  list-style-type: square !important; /* تغيير النقط الدائرية التقليدية لمربعات فخمة */
+}
+
+/* 📱 لمسة متجاوبة للموبايل */
+@media (max-width: 768px) {
+  .shopify-policy__container {
+    padding: 40px 20px !important;
+  }
+  .shopify-policy__title h1, 
+  .shopify-policy__title {
+    font-size: 28px !important;
+    margin-bottom: 35px !important;
+  }
+  .shopify-policy__body h2 {
+    font-size: 19px !important;
+  }
+}
+</style>

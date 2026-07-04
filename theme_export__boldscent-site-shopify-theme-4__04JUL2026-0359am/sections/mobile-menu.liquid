@@ -1,0 +1,143 @@
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-content">
+    
+    <nav>
+      <a href="{{ routes.all_products_collection_url }}" class="menu-link">Shop</a>
+      <a href="{{ routes.collections_url }}" class="menu-link">Collections</a>
+      <!-- 🌟 الرابط الجديد للـ Bundles -->
+      <a href="{{ routes.collections_url }}/?open_collection=bundles" class="menu-link">Bundles</a>
+      <a href="/products/discovery-set" class="menu-link">Discovery Set</a>
+      <a href="/pages/wishlist" class="menu-link">Wishlist</a>
+      <a href="/pages/contact" class="menu-link">Contact</a>
+      <a href="/pages/about" class="menu-link">About</a>
+      <a href="{{ routes.account_url }}" class="menu-link">Account</a>
+    </nav>
+
+  </div>
+</div>
+
+<style>
+/* ---------------------------------------------------------
+   ✨ تعديل أبعاد المنيو لتلتحم تماماً أسفل الهيدر وتمتد للقاع
+   --------------------------------------------------------- */
+.mobile-menu{
+  position: fixed;
+  
+  /* تبدأ من أسفل الهيدر والبار مباشرة */
+  top: 91px;
+  left: 0;
+  width: 75%; /* تغطي 75% من عرض الشاشة */
+  
+  /* تمتد لتغطي باقي ارتفاع الشاشة بالكامل حتى القاع لمنع ظهور الصفحة من أسفلها */
+  height: calc(100vh - 95px); 
+  height: calc(var(--visual-viewport-height, 100vh) - 95px); /* دعم ديناميكي للموبايل */
+  
+  background: #0B0B0B;
+  border-right: 1px solid #242424; 
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.6);
+  
+  transform: translateX(-100%);
+  visibility: hidden; 
+  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.5s ease;
+  
+  /* تحت الهيدر (1000) مباشرة */
+  z-index: 990; 
+  overflow-y: auto; /* السماح بعمل سكرول داخل المنيو نفسها إذا زادت العناصر */
+}
+
+.mobile-menu.active{
+  transform: translateX(0);
+  visibility: visible; 
+}
+
+/* ضبط المسافات الداخلية وبداية أول عنوان */
+.mobile-menu-content{
+  padding: 20px 30px; 
+}
+
+/* ---------------------------------------------------------
+   🚀 حركة العناوين المتتابعة الناعمة (Smooth Animation)
+   --------------------------------------------------------- */
+.mobile-menu .menu-link{
+  display: block;
+  margin: 25px 0; /* مسافات متوازنة وفخمة بين الروابط */
+  font-family: "Playfair Display", serif;
+  font-size: 21px;
+  color: #C8A060;
+  text-decoration: none;
+  letter-spacing: 2px;
+  
+  transform: translateX(-40px);
+  opacity: 0;
+  
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+}
+
+/* إلغاء الـ margin العلوي لأول عنصر ليلتحم انسيابياً مع الهيدر */
+.mobile-menu .menu-link:first-child {
+  margin-top: 10px;
+}
+
+.mobile-menu.active .menu-link {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* 🌟 التتابع الزمني لظهور العناصر الفخم (تم التحديث ليشمل العنصر الثامن الجديد) */
+.mobile-menu.active .menu-link:nth-child(1) { transition-delay: 0.1s; }
+.mobile-menu.active .menu-link:nth-child(2) { transition-delay: 0.18s; }
+.mobile-menu.active .menu-link:nth-child(3) { transition-delay: 0.26s; } /* الـ Bundles */
+.mobile-menu.active .menu-link:nth-child(4) { transition-delay: 0.34s; }
+.mobile-menu.active .menu-link:nth-child(5) { transition-delay: 0.42s; }
+.mobile-menu.active .menu-link:nth-child(6) { transition-delay: 0.50s; } 
+.mobile-menu.active .menu-link:nth-child(7) { transition-delay: 0.58s; }
+.mobile-menu.active .menu-link:nth-child(8) { transition-delay: 0.66s; } 
+
+.mobile-menu:not(.active) .menu-link {
+  transition-delay: 0s;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  /* حساب الارتفاع الحقيقي للشاشة على الموبايل لتفادي مشاكل متصفح Safari و Chrome الافتراضية */
+  function setViewportHeight() {
+    let vh = window.innerHeight;
+    document.documentElement.style.setProperty('--visual-viewport-height', `${vh}px`);
+  }
+  window.addEventListener('resize', setViewportHeight);
+  setViewportHeight();
+
+  /* دالة مخصصة لإغلاق المنيو وتنظيف الصفحة */
+  function closeMobileMenu() {
+    if (mobileMenu) {
+      mobileMenu.classList.remove('active');
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('position');
+      document.documentElement.style.removeProperty('overflow');
+      document.body.classList.remove('overflow-hidden', 'menu-open', 'modal-open');
+      document.documentElement.classList.remove('overflow-hidden', 'menu-open');
+    }
+  }
+
+  /* الإغلاق الذكي عند الضغط بالخارج (في أي مكان بالصفحة خارج المنيو وزر الفتح) */
+  document.addEventListener('click', function(e) {
+    if (mobileMenu && mobileMenu.classList.contains('active')) {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      
+      if (!mobileMenu.contains(e.target) && mobileMenuBtn && !mobileMenuBtn.contains(e.target)) {
+        closeMobileMenu();
+      }
+    }
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Mobile Menu",
+  "settings": []
+}
+{% endschema %}

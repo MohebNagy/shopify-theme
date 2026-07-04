@@ -1,0 +1,826 @@
+{%- assign current_collection = collection -%}
+{%- if current_collection == blank or current_collection.handle == blank -%}
+  {%- assign current_collection = collections['all'] -%}
+{%- endif -%}
+
+<section class="collection-grid">
+  <div class="container">
+    
+    <div class="collection-search-wrapper">
+      <div class="luxury-search-form">
+        <div class="search-input-group">
+          <input 
+            type="text" 
+            id="luxurySearchInput"
+            placeholder="SEARCH OUR FRAGRANCES..." 
+            aria-label="Search store"
+            autocomplete="off"
+          >
+          <button type="button" id="clearSearchBtn" class="search-clear-btn" style="display: none;" aria-label="Clear search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <span class="search-icon-fixed">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-actions-wrapper">
+      <button class="mobile-filter-btn" type="button" id="openFiltersDrawer" aria-label="Open filters">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        <span>FILTERS</span>
+      </button>
+      <button class="global-clear-btn-desktop" id="globalClearBtnMobile" style="display: none;" type="button">CLEAR ALL</button>
+    </div>
+
+    <div class="collection-page">
+
+      <aside class="filters desktop-filters" aria-label="Filters">
+        <div class="sidebar-header-group">
+          <h3>Filters</h3>
+          <button type="button" id="globalClearBtnDesktop" class="global-clear-link" style="display: none;">Reset All</button>
+        </div>
+
+        {% for filter in current_collection.filters %}
+          <div class="filter-group">
+            <h4>{{ filter.label }}</h4>
+
+            {% case filter.type %}
+              {% when 'list' %}
+                <ul class="filter-list">
+                  {% for value in filter.values %}
+                    <li>
+                      <label class="luxury-checkbox-label">
+                        <input
+                          type="checkbox"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %}
+                          {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                        >
+                        <span class="custom-checkbox"></span>
+                        <span class="filter-text">{{ value.label }} <span class="filter-count">({{ value.count }})</span></span>
+                      </label>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% when 'price_range' %}
+                <form class="price-filter-form">
+                  <div class="price-inputs-wrapper">
+                    <div class="price-field">
+                      <span>LE</span>
+                      <input 
+                        type="number" 
+                        name="{{ filter.min_value.param_name }}" 
+                        placeholder="Min" 
+                        value="{% if filter.min_value.value %}{{ filter.min_value.value | money_without_currency | replace: ',', '' | current_as_integer }}{% endif %}"
+                      >
+                    </div>
+                    <div class="price-field">
+                      <span>LE</span>
+                      <input 
+                        type="number" 
+                        name="{{ filter.max_value.param_name }}" 
+                        placeholder="Max" 
+                        value="{% if filter.max_value.value %}{{ filter.max_value.value | money_without_currency | replace: ',', '' | current_as_integer }}{% endif %}"
+                      >
+                    </div>
+                  </div>
+                  <button type="submit" class="btn-price-apply">Apply Price</button>
+                </form>
+            {% endcase %}
+          </div>
+        {% endfor %}
+      </aside>
+
+      <div class="filters-drawer" id="filtersDrawer" aria-hidden="true">
+        <div class="filters-drawer__overlay" id="filtersDrawerOverlay" tabindex="-1" aria-hidden="true"></div>
+
+        <div class="filters-drawer__panel" role="dialog" aria-modal="true" aria-label="Filters">
+          <div class="filters-drawer__header">
+            <h3>Filters</h3>
+            <button type="button" class="filters-drawer__close" id="closeFiltersDrawer" aria-label="Close filters">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div class="filters-drawer__content">
+            {% for filter in current_collection.filters %}
+              <div class="filter-group">
+                <h4>{{ filter.label }}</h4>
+
+                {% case filter.type %}
+                  {% when 'list' %}
+                    <ul class="filter-list">
+                      {% for value in filter.values %}
+                        <li>
+                          <label class="luxury-checkbox-label">
+                            <input
+                              type="checkbox"
+                              name="{{ value.param_name }}"
+                              value="{{ value.value }}"
+                              {% if value.active %}checked{% endif %}
+                              {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                            >
+                            <span class="custom-checkbox"></span>
+                            <span class="filter-text">{{ value.label }} <span class="filter-count">({{ value.count }})</span></span>
+                          </label>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% when 'price_range' %}
+                    <form class="price-filter-form">
+                      <div class="price-inputs-wrapper">
+                        <div class="price-field">
+                          <span>LE</span>
+                          <input 
+                            type="number" 
+                            name="{{ filter.min_value.param_name }}" 
+                            placeholder="Min" 
+                            value="{% if filter.min_value.value %}{{ filter.min_value.value | money_without_currency | replace: ',', '' | current_as_integer }}{% endif %}"
+                          >
+                        </div>
+                        <div class="price-field">
+                          <span>LE</span>
+                          <input 
+                            type="number" 
+                            name="{{ filter.max_value.param_name }}" 
+                            placeholder="Max" 
+                            value="{% if filter.max_value.value %}{{ filter.max_value.value | money_without_currency | replace: ',', '' | current_as_integer }}{% endif %}"
+                          >
+                        </div>
+                      </div>
+                      <button type="submit" class="btn-price-apply">Apply Price</button>
+                    </form>
+                {% endcase %}
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="filters-drawer__footer">
+            <button type="button" class="btn-drawer-clear" id="clearFiltersBtn">Clear All</button>
+            <button type="button" class="btn-drawer-apply" id="applyFiltersBtn">Apply Filters</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-wrapper">
+        {% paginate current_collection.products by 24 %}
+          <div class="products-grid" id="mainProductsGrid">
+            {% for product in current_collection.products %}
+              <div class="product-search-item" data-title="{{ product.title | downcase | escape }}" data-vendor="{{ product.vendor | downcase | escape }}">
+                {% render 'product-card', product: product %}
+              </div>
+            {% else %}
+              <p class="no-products-msg">No products found in this collection.</p>
+            {% endfor %}
+            <p class="no-search-results-msg" id="noSearchResults" style="display: none;">No fragrances match your search terms.</p>
+          </div>
+
+          {% if paginate.pages > 1 %}
+            <div class="pagination" id="productsPagination">
+              {{ paginate | default_pagination }}
+            </div>
+          {% endif %}
+        {% endpaginate %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  (function(){
+    const mainCollectionSection = document.querySelector('.collection-grid');
+    if (!mainCollectionSection) return; 
+
+    const searchInput = document.getElementById('luxurySearchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const productItems = mainCollectionSection.querySelectorAll('.product-search-item');
+    const noResultsMsg = document.getElementById('noSearchResults');
+    const paginationNode = document.getElementById('productsPagination');
+    const globalClearBtnDesktop = document.getElementById('globalClearBtnDesktop');
+    const globalClearBtnMobile = document.getElementById('globalClearBtnMobile');
+
+    const drawer = document.getElementById('filtersDrawer');
+    const openBtn = document.getElementById('openFiltersDrawer');
+    const closeBtn = document.getElementById('closeFiltersDrawer');
+    const overlay = document.getElementById('filtersDrawerOverlay');
+    const applyBtn = document.getElementById('applyFiltersBtn');
+    const clearBtn = document.getElementById('clearFiltersBtn');
+
+    function buildFilterUrl(isMobile) {
+      const newParams = new URLSearchParams();
+      if (searchInput && searchInput.value.trim().length > 0) {
+        newParams.append('local_q', searchInput.value.trim());
+      }
+      const contextWrapper = isMobile ? drawer : mainCollectionSection.querySelector('.desktop-filters');
+      if (contextWrapper) {
+        contextWrapper.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+          if (input.name) newParams.append(input.name, input.value);
+        });
+        contextWrapper.querySelectorAll('.price-inputs-wrapper input').forEach(input => {
+          if (input.value && input.name) {
+            newParams.append(input.name, input.value);
+          }
+        });
+      }
+      return newParams.toString() ? window.location.pathname + '?' + newParams.toString() : window.location.pathname;
+    }
+
+    function performLocalSearch(query) {
+      let visibleCount = 0;
+      const cleanQuery = query.trim().toLowerCase();
+      productItems.forEach(item => {
+        const title = (item.getAttribute('data-title') || '').toLowerCase();
+        const vendor = (item.getAttribute('data-vendor') || '').toLowerCase();
+        if (title.indexOf(cleanQuery) !== -1 || vendor.indexOf(cleanQuery) !== -1) {
+          item.style.display = 'block';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      if (cleanQuery.length > 0 && paginationNode) {
+        paginationNode.style.display = 'none';
+      } else if (paginationNode) {
+        paginationNode.style.display = 'block';
+      }
+
+      if (visibleCount === 0 && productItems.length > 0 && cleanQuery.length > 0) {
+        if(noResultsMsg) noResultsMsg.style.display = 'block';
+      } else {
+        if(noResultsMsg) noResultsMsg.style.display = 'none';
+      }
+    }
+
+    function toggleGlobalClearButtons(show) {
+      if(globalClearBtnDesktop) globalClearBtnDesktop.style.display = show ? 'inline-block' : 'none';
+      if(globalClearBtnMobile) globalClearBtnMobile.style.display = show ? 'inline-block' : 'none';
+    }
+
+    function checkActiveFilters() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let hasFilters = false;
+      urlParams.forEach((_, key) => {
+        if (key.startsWith('filter.')) hasFilters = true;
+      });
+      if(hasFilters || (searchInput && searchInput.value.trim().length > 0)) {
+        toggleGlobalClearButtons(true);
+      } else {
+        toggleGlobalClearButtons(false);
+      }
+    }
+
+    if (searchInput) {
+      const urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.has('local_q')) {
+        const queryVal = urlParams.get('local_q');
+        searchInput.value = queryVal;
+        if(clearSearchBtn) clearSearchBtn.style.display = 'block';
+        performLocalSearch(queryVal);
+      }
+
+      searchInput.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (value.trim().length > 0) {
+          if(clearSearchBtn) clearSearchBtn.style.display = 'block';
+          toggleGlobalClearButtons(true);
+        } else {
+          if(clearSearchBtn) clearSearchBtn.style.display = 'none';
+          checkActiveFilters();
+        }
+        performLocalSearch(value);
+      });
+    }
+
+    clearSearchBtn?.addEventListener('click', () => {
+      if(searchInput) searchInput.value = '';
+      clearSearchBtn.style.display = 'none';
+      performLocalSearch('');
+      const url = new URL(window.location.href);
+      if(url.searchParams.has('local_q')) {
+        url.searchParams.delete('local_q');
+        window.history.replaceState({}, '', url.toString());
+      }
+      checkActiveFilters();
+    });
+
+    function resetEverything() {
+      if(searchInput) searchInput.value = '';
+      window.location.href = window.location.pathname;
+    }
+    globalClearBtnDesktop?.addEventListener('click', resetEverything);
+    globalClearBtnMobile?.addEventListener('click', resetEverything);
+    clearBtn?.addEventListener('click', resetEverything);
+
+    const desktopCheckboxes = mainCollectionSection.querySelectorAll('.desktop-filters input[type="checkbox"]');
+    desktopCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        window.location.href = buildFilterUrl(false);
+      });
+    });
+
+    const priceForms = mainCollectionSection.querySelectorAll('.price-filter-form');
+    priceForms.forEach(form => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const isMobile = form.closest('.filters-drawer') !== null;
+        if (!isMobile) {
+          window.location.href = buildFilterUrl(false);
+        } else {
+          window.location.href = buildFilterUrl(true);
+        }
+      });
+    });
+
+    if (openBtn && drawer) {
+      openBtn.addEventListener('click', () => {
+        drawer.classList.add('active');
+        drawer.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
+      });
+      const closeDrawer = () => {
+        drawer.classList.remove('active');
+        drawer.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+      };
+      closeBtn?.addEventListener('click', closeDrawer);
+      overlay?.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+      applyBtn?.addEventListener('click', () => {
+        window.location.href = buildFilterUrl(true);
+      });
+    }
+
+    checkActiveFilters();
+
+/* =====================
+   Luxury Animations
+===================== */
+
+const observer = new IntersectionObserver((entries)=>{
+
+  entries.forEach(entry=>{
+
+    if(entry.isIntersecting){
+
+      entry.target.classList.add("show");
+
+      observer.unobserve(entry.target);
+
+    }
+
+  });
+
+},{
+  threshold:0.15
+});
+
+
+/* search */
+
+const searchSection=document.querySelector(".collection-search-wrapper");
+
+if(searchSection){
+
+  setTimeout(()=>{
+
+    searchSection.classList.add("show");
+
+  },150);
+
+}
+
+
+/* filters */
+
+const filters=document.querySelector(".desktop-filters");
+
+if(filters){
+
+  setTimeout(()=>{
+
+    filters.classList.add("show");
+
+  },300);
+
+}
+
+
+/* products */
+
+/* products */
+const isMobile = window.innerWidth <= 768;
+
+document.querySelectorAll(".product-search-item").forEach((card, index) => {
+  // على الموبايل لا يوجد تأخير نهائياً، وعلى الديسكتوب تأخير بسيط جداً وسريع (0.02 ثانية)
+  card.style.transitionDelay = isMobile ? '0s' : `${index * 0.02}s`;
+  observer.observe(card);
+});
+
+
+/* pagination */
+
+const pagination=document.querySelector(".pagination");
+
+if(pagination){
+
+  observer.observe(pagination);
+
+}
+
+  })();
+</script>
+
+<style>
+/* ======================================================= */
+/* 🔒 حماية الـ CSS وعزله بالكامل داخل كلاس الـ Collection */
+/* ======================================================= */
+.collection-grid {
+  padding: 60px 0;
+  background-color: #0B0B0B;
+}
+
+.collection-grid .container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.collection-grid .collection-search-wrapper {
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.collection-grid .luxury-search-form {
+  width: 100%;
+}
+
+.collection-grid .search-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #222222;
+  transition: border-color 0.3s ease;
+}
+
+.collection-grid .search-input-group:focus-within {
+  border-color: #C8A060;
+}
+
+.collection-grid .search-input-group input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 16px 80px 16px 0;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.collection-grid .search-input-group input:focus {
+  outline: none;
+}
+
+.collection-grid .search-input-group input::placeholder {
+  color: #444444;
+}
+
+.collection-grid .search-icon-fixed {
+  position: absolute;
+  right: 5px;
+  color: #666666;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.collection-grid .search-clear-btn {
+  position: absolute;
+  right: 35px;
+  background: none;
+  border: none;
+  color: #C8A060;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  transition: opacity 0.2s;
+  z-index: 5;
+}
+
+.collection-grid .collection-page {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 50px;
+  align-items: flex-start;
+}
+
+/* عزل وتحديد ستايل الفلاتر الجانبية */
+.collection-grid .desktop-filters {
+  background: #111111;
+  border: 1px solid #1A1A1A;
+  padding: 24px;
+  font-family: 'Montserrat', sans-serif;
+  border-radius: 4px;
+  position: sticky;
+  top: 40px;
+  display: block !important;
+  /* ضمان بقائها في الديسكتوب */
+}
+
+.collection-grid .sidebar-header-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #222222;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.collection-grid .sidebar-header-group h3 {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  font-size: 22px;
+  margin: 0;
+}
+
+.collection-grid .global-clear-link {
+  background: none;
+  border: none;
+  color: #888888;
+  font-size: 11px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.collection-grid .filter-group {
+  margin-bottom: 30px;
+}
+
+.collection-grid .filter-group h4 {
+  color: #F7F4EE;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 0 0 15px 0;
+}
+
+.collection-grid .filter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.collection-grid .luxury-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #A3ADB5;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.collection-grid .custom-checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #333333;
+  background: #0B0B0B;
+}
+
+.collection-grid .luxury-checkbox-label input {
+  position: absolute;
+  opacity: 0;
+}
+
+.collection-grid .luxury-checkbox-label input:checked ~ .custom-checkbox {
+  background: #C8A060;
+  border-color: #C8A060;
+}
+
+.collection-grid .price-inputs-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.collection-grid .price-field {
+  display: flex;
+  align-items: center;
+  background: #0B0B0B;
+  border: 1px solid #222222;
+  padding: 0 10px;
+  flex: 1;
+}
+
+.collection-grid .price-field input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 10px 6px;
+  color: #ffffff;
+}
+
+.collection-grid .btn-price-apply {
+  background: transparent;
+  border: 1px solid #C8A060;
+  color: #C8A060;
+  padding: 10px;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.collection-grid .products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.collection-grid .no-products-msg, 
+.collection-grid .no-search-results-msg {
+  color: #A3ADB5;
+  grid-column: span 3;
+  text-align: center;
+  padding: 60px 0;
+}
+
+.collection-grid .mobile-actions-wrapper {
+  display: none;
+}
+
+/* ======================================================= */
+/* 📱 ريسبونسيف الموبايل المعزول بالملي */
+/* ======================================================= */
+@media (max-width: 1024px) {
+  .collection-grid .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .collection-grid .container {
+    padding: 0 20px;
+  }
+
+  .collection-grid .collection-page {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* إخفاء فلاتر الديسكتوب فقط داخل نطاق سيكشن الكوليكشن وبأمان */
+  .collection-grid .desktop-filters {
+    display: none !important;
+  }
+
+  .collection-grid .mobile-actions-wrapper {
+    display: flex !important;
+    gap: 10px;
+    margin-bottom: 25px;
+    width: 100%;
+  }
+
+  .collection-grid .mobile-filter-btn,
+  .collection-grid .global-clear-btn-desktop {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .collection-grid .mobile-filter-btn {
+    background: #111111;
+    border: 1px solid #222222;
+    color: #F7F4EE;
+  }
+
+  .collection-grid .global-clear-btn-desktop {
+    background: transparent;
+    border: 1px solid #C8A060;
+    color: #C8A060;
+  }
+
+  .collection-grid .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+  }
+  
+  .collection-grid .no-products-msg, 
+  .collection-grid .no-search-results-msg {
+    grid-column: span 2;
+  }
+}
+
+/* درج الفلاتر (قائم بذاته وبأمان تافع) */
+.filters-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: none;
+}
+.filters-drawer.active { display: block; }
+.filters-drawer__overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);
+}
+.filters-drawer__panel { position: absolute; right: 0; top: 0; height: 100%; width: 340px; max-width: 85%; background: #0B0B0B; border-left: 1px solid #1E1E1E;
+display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s ease; }
+.filters-drawer.active .filters-drawer__panel { transform: translateX(0); }
+.filters-drawer__header { display: flex;
+align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid #1E1E1E; }
+.filters-drawer__header h3 { font-family: "Playfair Display", serif; color: #C8A060;
+font-size: 20px; margin: 0; }
+.filters-drawer__close { background: none; border: none; color: #F7F4EE; cursor: pointer; }
+.filters-drawer__content { padding: 24px 20px;
+overflow-y: auto; flex: 1; }
+.filters-drawer__footer { padding: 20px; border-top: 1px solid #1E1E1E; display: flex; gap: 12px; background: #111111;
+}
+.btn-drawer-clear { flex: 1; background: transparent; border: 1px solid #333333; color: #A3ADB5; padding: 14px; font-size: 12px; cursor: pointer;
+}
+.btn-drawer-apply { flex: 1; background: #C8A060; color: #000000; padding: 14px; font-size: 12px; font-weight: bold; cursor: pointer;
+}
+
+.collection-search-wrapper{
+  opacity:0;
+  transform:translateY(-30px);
+  transition:
+    opacity .9s ease,
+    transform .9s cubic-bezier(.22,1,.36,1);
+}
+
+.collection-search-wrapper.show{
+  opacity:1;
+  transform:none;
+}
+
+.desktop-filters{
+  opacity:0;
+  transform:translateX(-40px);
+  transition:
+    opacity .9s ease,
+    transform .9s cubic-bezier(.22,1,.36,1);
+}
+
+.desktop-filters.show{
+  opacity:1;
+  transform:none;
+}
+
+.product-search-item{
+  opacity:0;
+  transform:translateY(50px);
+  transition:
+    opacity .8s ease,
+    transform .8s cubic-bezier(.22,1,.36,1);
+}
+
+.product-search-item.show{
+  opacity:1;
+  transform:none;
+}
+
+.product-search-item .product-card{
+  transition:
+    transform .45s ease,
+    box-shadow .45s ease;
+}
+
+.product-search-item:hover .product-card{
+  transform:translateY(-10px);
+  box-shadow:
+      0 10px 35px rgba(200,160,96,.12);
+}
+
+.pagination{
+  opacity:0;
+  transform:translateY(25px);
+  transition:
+    opacity .8s ease,
+    transform .8s ease;
+}
+
+.pagination.show{
+  opacity:1;
+  transform:none;
+}
+</style>
+
+{% schema %}
+{
+  "name": "Collection Grid",
+  "settings": []
+}
+{% endschema %}

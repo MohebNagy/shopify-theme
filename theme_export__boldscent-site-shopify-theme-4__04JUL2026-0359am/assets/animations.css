@@ -1,0 +1,104 @@
+/* =========================
+   BOLD ANIMATIONS SYSTEM
+   Subtle Luxury Motion (300–500ms)
+========================= */
+
+:root {
+  --transition: all 0.3s ease;
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+}
+
+.scale-hover {
+  transition: transform 0.3s ease;
+}
+
+.scale-hover:hover {
+  transform: scale(1.02);
+}
+
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition: transform 0.6s ease;
+}
+
+.img-zoom:hover img {
+  transform: scale(1.08);
+}
+
+.btn-primary,
+.btn-secondary {
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-secondary:hover {
+  background: rgba(200,160,96,0.1);
+}
+
+.card,
+.product-card {
+  transition: all 0.3s ease;
+}
+
+.card:hover,
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+body {
+  animation: pageLoad 0.6s ease;
+}
+
+/* Ripple element injected by animations.js */
+.ripple {
+  position: absolute;
+  border-radius: 9999px;
+  width: 10px;
+  height: 10px;
+  background: rgba(200, 160, 96, 0.35);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(30);
+  }
+}
+
+@keyframes pageLoad {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

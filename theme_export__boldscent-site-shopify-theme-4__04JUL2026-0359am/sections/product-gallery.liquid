@@ -1,0 +1,421 @@
+<div class="product-gallery">
+
+  <div class="main-image">
+
+    <div class="product-wishlist">
+      <span
+        class="custom-wishlist-trigger"
+        data-product-id="{{ product.id }}"
+        aria-label="Add to wishlist"
+        role="button"
+        tabindex="0"
+      >
+        <svg class="icon-heart-clean" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </span>
+    </div>    
+
+    {% if product.images.size > 1 %}
+      <div class="gallery-arrow left">
+        &#10094;
+      </div>
+    {% endif %}
+
+    {% if product.featured_image %}
+      <img
+        id="mainProductImage"
+        src="{{ product.featured_image | image_url: width: 800 }}"
+        alt="{{ product.featured_image.alt | escape | default: product.title }}"
+        width="800"
+        height="800"
+      >
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder' }}
+    {% endif %}
+
+    {% if product.images.size > 1 %}
+      <div class="gallery-arrow right">
+        &#10095;
+      </div>
+    {% endif %}
+
+  </div>
+
+  {% if product.images.size > 1 %}
+    <div class="thumbnails">
+
+      {% for image in product.images %}
+        <img
+          class="thumb {% if forloop.first %}active{% endif %}"
+          src="{{ image | image_url: width: 200 }}"
+          data-full="{{ image | image_url: width: 800 }}"
+          alt="{{ image.alt | escape | default: product.title }}"
+          width="70"
+          height="70"
+          loading="lazy"
+        >
+      {% endfor %}
+
+    </div>
+  {% endif %}
+
+</div>
+
+
+<style>
+.product-gallery {
+  position: sticky;
+  top: 120px; 
+  margin-top: 40px; 
+  max-width: 550px; 
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.main-image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1; 
+  background: #0B0B0B;
+  border-radius: 12px;
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  display: block;
+}
+
+/* ---------------------------------------------------------
+   تنسيق الأسهم
+   --------------------------------------------------------- */
+.gallery-arrow {
+  position: absolute !important;
+  top: 50% !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: translateY(-50%) !important;
+  border-radius: 50%;
+  background: rgba(0,0,0,.55);
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 999;
+  user-select:none;
+  transition: background 0.3s ease;
+}
+
+.gallery-arrow.left { left: 15px !important; }
+.gallery-arrow.right { right: 15px !important; }
+
+.gallery-arrow:hover {
+  background: #C8A060;
+}
+
+/* ---------------------------------------------------------
+   الصور المصغرة
+   --------------------------------------------------------- */
+.thumbnails {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+  justify-content: center; 
+}
+
+.thumb {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 1px solid #242424;
+  border-radius: 6px;
+  transition: .3s;
+}
+
+.thumb.active {
+  border-color: #C8A060;
+}
+
+@media(max-width:768px){
+  .product-gallery {
+    margin-top: 0px; 
+  }
+  .gallery-arrow {
+    display:none !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   ستايل القلب المطابق تماماً لتصميم الكارد الناجح والفخم
+   --------------------------------------------------------- */
+/* ---------------------------------------------------------
+   تنسيق القلب بعد التكبير (مع الحفاظ على الفخامة والـ السنترة)
+   --------------------------------------------------------- */
+.product-wishlist {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 2000;
+}
+
+.product-wishlist .custom-wishlist-trigger {
+  position: relative;
+  z-index: 2001;
+  background: transparent !important;
+  border: none !important;
+  {% comment %} padding: 5px; {% endcomment %}
+  cursor: pointer;
+  
+  /* تكبير مساحة حاوية اللمس والضغط */
+  width: 36px;
+  height: 36px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444444 !important;
+  transition: transform 0.2s ease, color 0.2s ease;
+  pointer-events: auto !important;
+}
+
+.product-wishlist .custom-wishlist-trigger:hover {
+  color: #C8A060 !important;
+  transform: scale(1.15);
+}
+
+.product-wishlist .custom-wishlist-trigger.is-active,
+.product-wishlist .custom-wishlist-trigger[data-active="true"] {
+  color: #C8A060 !important;
+}
+
+.product-wishlist .custom-wishlist-trigger.is-active svg {
+  fill: #C8A060 !important;
+}
+
+/* تكبير الأيقونة نفسها من 24px لـ 30px */
+.product-wishlist svg {
+  top: 0px;
+  right: 0px;
+  width: 35px;
+  height: 35px;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .product-wishlist {
+    top: 12px;
+    right: 12px;
+  }
+  /* حجم مناسب ومريح للعين على شاشات الموبايل */
+  .product-wishlist .custom-wishlist-trigger { 
+    top: 0px;
+    right: 0px;
+    width: 35px; 
+    height: 35px; 
+  }
+  .product-wishlist svg { 
+    width: 24px; 
+    height: 24px; 
+  }
+}
+
+{% comment %} @media (max-width: 768px) {
+  .product-wishlist .custom-wishlist-trigger { top: 0px; right: 0px; width: 24px; height: 24px; }
+  .product-wishlist svg { width: 18px; height: 18px; }
+} {% endcomment %}
+
+.main-image{
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: #0B0B0B;
+  border-radius: 12px;
+}
+
+#mainProductImage{
+  transition:
+    opacity .35s ease,
+    transform .35s ease;
+}
+
+#mainProductImage.image-changing{
+  opacity:.3;
+  transform:scale(.98);
+}
+.thumb{
+  transition:
+    transform .35s ease,
+    border-color .35s ease,
+    opacity .35s ease;
+}
+
+.thumb:hover{
+  transform:translateY(-4px);
+}
+
+.thumb.active{
+  transform:translateY(-4px);
+}
+
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+
+  // 1. منطق حركة معرض الصور والألبوم
+  const mainImage=document.getElementById("mainProductImage");
+  const galleryBox = document.querySelector(".main-image");
+
+if (galleryBox) {
+  requestAnimationFrame(() => {
+    galleryBox.classList.add("gallery-visible");
+  });
+}
+  const thumbs=[...document.querySelectorAll(".thumb")];
+  let currentIndex=0;
+
+  function showImage(index){
+    if(index<0){
+      index=thumbs.length-1;
+    }
+    if(index>=thumbs.length){
+      index=0;
+    }
+    currentIndex=index;
+
+    mainImage.classList.add("image-changing");
+    setTimeout(() => {
+      mainImage.src = thumbs[currentIndex].dataset.full;
+    },120);
+    mainImage.onload = () => {
+      mainImage.classList.remove("image-changing");
+    };
+
+    thumbs.forEach(t=>t.classList.remove("active"));
+    thumbs[currentIndex].classList.add("active");
+  }
+
+  thumbs.forEach((thumb,index)=>{
+    thumb.addEventListener("click",()=>{
+      showImage(index);
+    });
+  });
+
+  const leftArrow=document.querySelector(".gallery-arrow.left");
+  const rightArrow=document.querySelector(".gallery-arrow.right");
+
+  if(leftArrow){
+    leftArrow.addEventListener("click",()=>{
+      showImage(currentIndex-1);
+    });
+  }
+
+  if(rightArrow){
+    rightArrow.addEventListener("click",()=>{
+      showImage(currentIndex+1);
+    });
+  }
+
+  /* swipe for mobile */
+  let startX=0;
+  mainImage.addEventListener("touchstart",(e)=>{
+    startX=e.touches[0].clientX;
+  });
+  mainImage.addEventListener("touchend",(e)=>{
+    let endX=e.changedTouches[0].clientX;
+    let diff=endX-startX;
+    if(Math.abs(diff)>50){
+      if(diff>0){ showImage(currentIndex-1); }
+      else { showImage(currentIndex+1); }
+    }
+  });
+
+  // 🌟 2. زراعة نفس محرك التشغيل الذاتي الناجح والمستقل الخاص بالـ Card
+  function initGalleryWishlist() {
+    const trigger = document.querySelector('.product-gallery .custom-wishlist-trigger');
+    if (!trigger) return;
+    
+    const storageKey = 'bold_wishlist';
+    const productId = String(trigger.getAttribute('data-product-id')).trim();
+
+    // قراءة البيانات المحلية الحالية فوراً وتلوين الأيقونة إن كانت مضافة مسبقاً
+    let savedItems = [];
+    try {
+      const localData = localStorage.getItem(storageKey);
+      savedItems = localData ? JSON.parse(localData).map(id => String(id).trim()) : [];
+    } catch(e) {}
+
+    if (savedItems.includes(productId)) {
+      trigger.classList.add('is-active');
+      trigger.setAttribute('data-active', 'true');
+      trigger.style.color = '#C8A060';
+    } else {
+      trigger.classList.remove('is-active');
+      trigger.removeAttribute('data-active');
+      trigger.style.color = '#444444';
+    }
+
+    // ربط النقر المباشر والصارم وحفظ البيانات
+    trigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      let currentList = [];
+      try {
+        currentList = JSON.parse(localStorage.getItem(storageKey)) || [];
+        currentList = currentList.map(id => String(id).trim());
+      } catch(err) {}
+
+      if (currentList.includes(productId)) {
+        // حذف من المفضلة
+        currentList = currentList.filter(id => id !== productId);
+        this.classList.remove('is-active');
+        this.removeAttribute('data-active');
+        this.style.color = '#444444';
+      } else {
+        // إضافة إلى المفضلة
+        currentList.push(productId);
+        this.classList.add('is-active');
+        this.setAttribute('data-active', 'true');
+        this.style.color = '#C8A060';
+        
+        // أنيميشن النبض الفخم
+        this.style.transform = 'scale(1.25)';
+        setTimeout(() => this.style.transform = '', 180);
+      }
+
+      localStorage.setItem(storageKey, JSON.stringify(currentList));
+
+      // مزامنة صامتة وفورية مع السيرفر إذا كان العميل مسجل دخول
+      const formInput = document.getElementById('ajax-wishlist-note-input');
+      const form = document.getElementById('ajax-wishlist-sync-form');
+      if (formInput && form) {
+        formInput.value = currentList.join(',');
+        fetch('/contact', { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      }
+    });
+  }
+
+  // تشغيل فوري داخل الجاليري
+  initGalleryWishlist();
+});
+
+</script>
+
+{% schema %}
+{
+  "name": "Product Gallery",
+  "settings": [],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

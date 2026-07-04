@@ -1,0 +1,31 @@
+{% comment %}
+  bundle-card.liquid
+  ------------------
+  كارت برفان واحد قابل لإعادة الاستخدام - مستخدم في الـ single list (pure mode)
+  وفي الـ 2 accordion lists (mixed mode).
+
+  Parameters:
+    perfume -> product object
+    size    -> '50' / '100' / '' (فاضي لما تكون pure mode، وقتها الحجم بيتحدد من الـ composition type في الـ JS)
+{% endcomment %}
+
+<div class="scent-card" data-name="{{ perfume.title }}" data-handle="{{ perfume.handle }}" data-size="{{ size }}">
+  <div class="scent-card-img">
+    {% if perfume.featured_image %}
+      <img src="{{ perfume.featured_image | img_url: '400x400', crop: 'center' }}" alt="{{ perfume.title }}" loading="lazy">
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder' }}
+    {% endif %}
+  </div>
+
+  <span class="scent-name">{{ perfume.title }}</span>
+
+  <div class="selection-indicator"><i class="fa-solid fa-check"></i></div>
+
+  {% comment %} الـ Quantity Stepper - مخفي افتراضياً، بيظهر بـ animation لما الكارت يتختار {% endcomment %}
+  <div class="qty-stepper">
+    <button type="button" class="qty-btn qty-minus" aria-label="Decrease quantity">−</button>
+    <span class="qty-value">0</span>
+    <button type="button" class="qty-btn qty-plus" aria-label="Increase quantity">+</button>
+  </div>
+</div>

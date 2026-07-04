@@ -1,0 +1,131 @@
+<section class="search-results-page container">
+
+  {% paginate search.results by 12 %}
+
+    <h1>
+      {% if search.performed %}
+        {%- assign clean_terms = search.terms | remove: 'title:' | remove: '*' | escape -%}
+        Search results for "<span>{{ clean_terms }}</span>"
+      {% else %}
+        Search
+      {% endif %}
+    </h1>
+
+    {% if search.performed %}
+      {%- assign product_count = 0 -%}
+      {%- for item in search.results -%}
+        {%- if item.object_type == 'product' -%}
+          {%- assign product_count = product_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {% if product_count > 0 %}
+        <div class="grid">
+          {% for item in search.results %}
+            {% if item.object_type == 'product' %}
+              <div class="product-item-wrapper">
+                {% render 'product-card', product: item %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <div class="pagination-wrapper">
+            {{ paginate | default_pagination }}
+          </div>
+        {% endif %}
+
+      {% else %}
+        <div class="no-results-box">
+          <p class="text-muted">No perfumes found matching your search. Try another word.</p>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="no-results-box">
+        <p class="text-muted">Please type something to search...</p>
+      </div>
+    {% endif %}
+
+  {% endpaginate %}
+
+</section>
+
+<style>
+.search-results-page {
+  padding: 120px 20px 80px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-results-page h1 {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  margin-bottom: 40px;
+  font-size: 28px;
+  text-align: center;
+}
+
+.search-results-page .grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.no-results-box {
+  text-align: center;
+  padding: 60px 20px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.no-results-box p {
+  color: #A3ADB5;
+  font-size: 16px;
+}
+
+.pagination-wrapper {
+  text-align: center;
+  margin-top: 40px;
+  font-family: "Montserrat", sans-serif;
+  color: #A3ADB5;
+}
+
+.pagination-wrapper a, .pagination-wrapper span {
+  padding: 8px 16px;
+  color: #A3ADB5;
+  text-decoration: none;
+}
+
+.pagination-wrapper .current {
+  color: #C8A060;
+  font-weight: bold;
+}
+
+@media (max-width: 991px) {
+  .search-results-page .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-results-page {
+    padding: 100px 15px 60px 15px;
+  }
+  .search-results-page h1 {
+    font-size: 22px;
+    margin-bottom: 30px;
+  }
+  .search-results-page .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Search Results",
+  "settings": []
+}
+{% endschema %}

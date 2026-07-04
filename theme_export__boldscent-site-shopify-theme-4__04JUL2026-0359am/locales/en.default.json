@@ -1,0 +1,115 @@
+{
+  "general": {
+    "password_page": {
+      "login_form_heading": "Enter store using password:",
+      "login_password_button": "Enter using password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Your password",
+      "login_form_error": "Wrong password!",
+      "login_form_submit": "Enter",
+      "admin_link_html": "Are you the store owner? <a href=\"/admin\" class=\"link underlined-link\">Log in here</a>",
+      "powered_by_shopify_html": "This shop will be powered by {{ shopify }}"
+    },
+    "social": {
+      "links": {
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "facebook": "Facebook"
+      }
+    },
+    "continue_shopping": "Continue shopping",
+    "search": {
+      "search": "Search"
+    },
+    "cart": {
+      "view": "View cart",
+      "item_added": "Item added to your cart"
+    }
+  },
+  "sections": {
+    "announcement-bar": {
+      "name": "Announcement Bar"
+    },
+    "header": {
+      "name": "Header"
+    },
+    "footer": {
+      "name": "Footer"
+    },
+    "hero-banner": {
+      "name": "Hero Banner"
+    },
+    "signature-collection": {
+      "name": "Signature Collection"
+    },
+    "feature-icons": {
+      "name": "Feature Icons"
+    },
+    "craftsmanship-story": {
+      "name": "Craftsmanship Story"
+    },
+    "featured-products": {
+      "name": "Featured Products"
+    },
+    "testimonials": {
+      "name": "Testimonials"
+    },
+    "instagram-gallery": {
+      "name": "Instagram Gallery"
+    },
+    "newsletter": {
+      "name": "Newsletter"
+    },
+    "collection-banner": {
+      "name": "Collection Banner"
+    },
+    "collection-grid": {
+      "name": "Collection Grid"
+    },
+    "product-gallery": {
+      "name": "Product Gallery"
+    },
+    "product-info": {
+      "name": "Product Info"
+    },
+    "product-features": {
+      "name": "Product Features"
+    },
+    "product-accordion": {
+      "name": "Product Accordion"
+    },
+    "related-products": {
+      "name": "Related Products"
+    },
+    "cart-drawer": {
+      "name": "Cart Drawer"
+    },
+    "search-drawer": {
+      "name": "Search Drawer"
+    },
+    "cart-items": {
+      "name": "Cart Items"
+    },
+    "cart-summary": {
+      "name": "Cart Summary"
+    },
+    "login-form": {
+      "name": "Login Form"
+    },
+    "register-form": {
+      "name": "Register Form"
+    },
+    "about-hero": {
+      "name": "About Hero"
+    },
+    "contact-form": {
+      "name": "Contact Form"
+    },
+    "search-results": {
+      "name": "Search Results"
+    },
+    "main-404": {
+      "name": "404 Page"
+    }
+  }
+}

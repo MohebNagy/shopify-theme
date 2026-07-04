@@ -1,0 +1,1032 @@
+<div class="accordion bold-accordion-section" data-accordion data-animate-section>
+
+  {% for block in section.blocks %}
+    <div class="item" {{ block.shopify_attributes }} data-accordion-item>
+
+      <button class="accordion-btn" type="button" aria-expanded="false">
+        {{ block.settings.title }}
+      </button>
+
+      <div class="content" aria-hidden="true">
+        {% if block.settings.title contains 'Reviews' or block.settings.title contains 'reviews' or block.settings.title contains 'تقييم' %}
+          <div class="luxury-reviews__wrapper" data-product-id="{{ product.id }}">
+            
+            <div class="reviews-summary-card">
+              <div class="summary-card__left">
+                <h3 class="overall-rating-number" id="avgRatingNum">0.00</h3>
+                <div class="overall-stars" id="avgStarsRow"></div>
+                <p class="total-reviews-count" id="totalReviewsText">Based on 0 reviews</p>
+              </div>
+              <div class="summary-card__right" id="starsHistogram">
+                <div class="histogram-row" data-stars="5"><span>5 ★</span><div class="bar-bg"><div class="bar-fill"></div></div><span class="count">0</span></div>
+                <div class="histogram-row" data-stars="4"><span>4 ★</span><div class="bar-bg"><div class="bar-fill"></div></div><span class="count">0</span></div>
+                <div class="histogram-row" data-stars="3"><span>3 ★</span><div class="bar-bg"><div class="bar-fill"></div></div><span class="count">0</span></div>
+                <div class="histogram-row" data-stars="2"><span>2 ★</span><div class="bar-bg"><div class="bar-fill"></div></div><span class="count">0</span></div>
+                <div class="histogram-row" data-stars="1"><span>1 ★</span><div class="bar-bg"><div class="bar-fill"></div></div><span class="count">0</span></div>
+              </div>
+            </div>
+
+            <div class="reviews-controls">
+              <button type="button" class="btn-write-review" id="toggleReviewFormBtn">Write a review</button>
+              <div class="reviews-sort">
+                <label for="reviewSortSelect">Sort:</label>
+                <select id="reviewSortSelect">
+                  <option value="recent">Most Recent</option>
+                  <option value="high">Highest Rating</option>
+                  <option value="low">Lowest Rating</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="review-form-wrapper" id="reviewFormContainer">
+              {% form 'contact', id: 'luxuryReviewForm' %}
+                <h4 class="form-title" id="formActionTitle">Share Your Experience</h4>
+
+                {% if form.posted_successfully? %}
+                  <p style="color: #C8A060; margin-bottom: 15px; font-size: 14px;">Thank you! Your review has been submitted successfully.</p>
+                {% endif %}
+
+                <input type="hidden" name="contact[subject]" value="Review for {{ product.title }}">
+                <input type="hidden" name="contact[Product]" value="{{ product.title }}">
+                <input type="hidden" name="contact[Product ID]" value="{{ product.id }}">
+                <input type="hidden" name="contact[Handle]" value="{{ product.handle }}">
+                
+                <input type="hidden" id="revAnonymousHidden" name="contact[Hide Name From Review]" value="No">
+
+                <div class="form-group">
+                  <label>Your Rating *</label>
+                  <div class="star-rating-input" id="starInputRow">
+                    <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+                  </div>
+                  <input type="hidden" id="selectedRatingVal" name="contact[Rating]" value="0">
+                </div>
+
+                <div class="form-group">
+                  <label for="revNameInput">Your Name</label>
+                  <input type="text" id="revNameInput" name="contact[Reviewer Name]" placeholder="e.g., John" autocomplete="off" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="reviewEmail">Email</label>
+                  <input type="email" id="reviewEmail" name="contact[email]" placeholder="e.g., example@example.com" autocomplete="off" required>
+                </div>
+
+                <div class="form-group checkbox-group">
+                  <input type="checkbox" id="revAnonymousInput">
+                  <label for="revAnonymousInput">Submit review anonymously (Hide my name)</label>
+                </div>
+
+                <div class="form-group">
+                  <label for="revTextInput">Review Content (Optional - You can submit stars only)</label>
+                  <textarea id="revTextInput" name="contact[Review]" rows="4" placeholder="Write your review here..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="btn-submit-review" id="submitReviewFormBtn">Submit Review</button>
+                  <button type="button" class="btn-cancel-review" id="cancelReviewFormBtn">Cancel</button>
+                </div>
+              {% endform %}
+            </div>
+
+            <div class="reviews-feed-list" id="reviewsFeedContainer"></div>
+
+          </div>
+        {% else %}
+          {{ block.settings.content }}
+          {% if block.settings.title contains 'Description' or block.settings.title contains 'description' or block.settings.title contains 'الوصف' %}
+            {% if product.metafields.custom.inspired_by != blank %}
+              <p style="margin-top: 15px;"><strong>Inspired by:</strong> {{ product.metafields.custom.inspired_by }}</p>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </div>
+
+    </div>
+  {% else %}
+    <div class="item" data-accordion-item>
+      <button class="accordion-btn" type="button" aria-expanded="false">Description</button>
+      <div class="content" aria-hidden="true">
+        {{ product.description }}
+        {% if product.metafields.custom.inspired_by != blank %}
+          <p style="margin-top: 15px;"><strong>Inspired by:</strong> {{ product.metafields.custom.inspired_by }}</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+
+</div>
+
+<style>
+
+/* ============================================================
+   SECTION ENTRANCE ANIMATION
+   ============================================================ */
+
+.bold-accordion-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.bold-accordion-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   ACCORDION ITEM STAGGERED ENTRANCE
+   ============================================================ */
+
+[data-accordion-item] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+[data-accordion-item].item-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* stagger delays — up to 8 items */
+[data-accordion-item]:nth-child(1) { transition-delay: 0.05s; }
+[data-accordion-item]:nth-child(2) { transition-delay: 0.15s; }
+[data-accordion-item]:nth-child(3) { transition-delay: 0.25s; }
+[data-accordion-item]:nth-child(4) { transition-delay: 0.35s; }
+[data-accordion-item]:nth-child(5) { transition-delay: 0.45s; }
+[data-accordion-item]:nth-child(6) { transition-delay: 0.55s; }
+[data-accordion-item]:nth-child(7) { transition-delay: 0.65s; }
+[data-accordion-item]:nth-child(8) { transition-delay: 0.75s; }
+
+/* ============================================================
+   EXISTING STYLES (unchanged)
+   ============================================================ */
+
+.accordion {
+  margin-top: 40px;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px 60px;
+}
+
+.item {
+  border-bottom: 1px solid #242424;
+}
+
+.accordion-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 20px 0;
+  color: #C8A060;
+  font-family: "Playfair Display";
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.3s ease, transform 0.4s ease;
+}
+
+.accordion-btn::after {
+  content: '+';
+  font-size: 22px;
+  font-family: monospace;
+  color: #C8A060;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.item.is-open .accordion-btn::after {
+  transform: rotate(45deg);
+}
+/* ============================================================
+   CONTENT OPEN/CLOSE ANIMATION (الحركة الانسيابية الهادئة بالملّي)
+   ============================================================ */
+
+.content {
+  max-height: 0; /* تحكم كامل بالارتفاع عبر الـ JS للنعومة الكاملة */
+  overflow: hidden;
+  /* كيرف حركة مخصص بطيء وفخم يليق بـ BOLD */
+  transition: max-height 0.85s cubic-bezier(0.25, 1, 0.28, 1),
+              opacity 0.6s ease-in-out;
+  opacity: 0;
+  padding: 0 20px; /* بادينج جانبي ثابت */
+  color: #A3ADB5;
+  font-family: Montserrat;
+  line-height: 1.8;
+}
+
+/* الحالة عند الفتح الفعلي السلس */
+.item.is-open .content {
+  opacity: 1;
+}
+
+.content > * {
+  min-height: 0;
+}
+
+/* تنعيم مظهر العناصر الداخلية عند الفتح */
+.luxury-reviews__wrapper, 
+.content > * {
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+}
+
+.item.is-open .luxury-reviews__wrapper,
+.item.is-open .content > * {
+  opacity: 1;
+  transition-delay: 0.2s; /* يظهر النص بروقان بعد ما الأكورديون يفتح شوية */
+}
+
+/* حماية من تسريب أي مساحات هوامش والسكشن مقفول */
+.item:not(.is-open) .luxury-reviews__wrapper,
+.item:not(.is-open) .reviews-summary-card {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  height: 0 !important;
+  overflow: hidden;
+}
+
+.item.is-open .luxury-reviews__wrapper {
+  height: auto !important;
+}
+/* ============================================================
+   REVIEW CARDS FADE-IN ANIMATION
+   ============================================================ */
+
+@keyframes boldFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.review-card {
+  border-bottom: 1px solid #141414;
+  padding: 20px 0;
+  /* stagger handled via JS inline style */
+  opacity: 0;
+  animation: boldFadeUp 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* histogram bars animate when reviews section opens */
+.item.is-open .bar-fill {
+  transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.3s !important;
+}
+
+/* ============================================================
+   REVIEWS STYLES (unchanged from original)
+   ============================================================ */
+
+.luxury-reviews__wrapper {
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 15px;
+}
+
+.reviews-summary-card {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  padding: 30px;
+  border-radius: 0px !important;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.summary-card__left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #1a1a1a;
+  padding-right: 20px;
+}
+
+.overall-rating-number {
+  font-family: "Playfair Display", serif;
+  font-size: 48px;
+  color: #F7F4EE;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+.overall-stars, .review-card__stars {
+  color: #C8A060;
+  font-size: 20px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.total-reviews-count {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+.summary-card__right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.histogram-row {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #A3ADB5;
+  gap: 15px;
+}
+
+.histogram-row span {
+  width: 35px;
+}
+
+.histogram-row .bar-bg {
+  flex-grow: 1;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 0px !important;
+  overflow: hidden;
+}
+
+.histogram-row .bar-fill {
+  height: 100%;
+  width: 0%;
+  background: #C8A060;
+  border-radius: 0px !important;
+  transition: width 0.6s ease;
+}
+
+.histogram-row .count {
+  width: 20px;
+  text-align: right;
+  color: #555;
+}
+
+.reviews-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1a1a1a;
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+}
+
+.btn-write-review {
+  background: #C8A060;
+  color: #000;
+  border: none;
+  padding: 12px 28px;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 0px !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-write-review:hover {
+  background: #b58f52;
+}
+
+.reviews-sort {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.reviews-sort select {
+  background: #000;
+  color: #F7F4EE;
+  border: 1px solid #242424;
+  padding: 8px 12px;
+  border-radius: 0px !important;
+  font-family: Montserrat;
+  cursor: pointer;
+}
+
+.review-form-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+              opacity 0.4s ease;
+  background: #0a0a0a;
+  border-radius: 0px !important;
+  margin-bottom: 30px;
+}
+
+.review-form-wrapper.is-open {
+  max-height: 900px;
+  opacity: 1;
+  border: 1px solid #1a1a1a;
+  padding: 25px;
+}
+
+.form-title {
+  font-family: "Playfair Display";
+  color: #C8A060;
+  font-size: 20px;
+  margin: 0 0 20px 0;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: #F7F4EE;
+}
+
+.star-rating-input {
+  display: flex;
+  gap: 8px;
+}
+
+.star-rating-input span {
+  font-size: 28px;
+  color: #242424;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.star-rating-input span:hover {
+  transform: scale(1.2);
+}
+
+.star-rating-input span.hovered,
+.star-rating-input span.selected {
+  color: #C8A060;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea {
+  background: #000;
+  border: 1px solid #242424;
+  color: #F7F4EE;
+  padding: 12px;
+  border-radius: 0px !important;
+  font-family: Montserrat;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #C8A060;
+}
+
+.checkbox-group {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-group input {
+  accent-color: #C8A060;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.btn-submit-review {
+  background: transparent;
+  border: 2px solid #C8A060;
+  color: #C8A060;
+  padding: 10px 24px;
+  font-family: Montserrat;
+  font-weight: 600;
+  border-radius: 0px !important;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+  transition: background 0.3s ease;
+}
+
+.btn-submit-review:hover {
+  background: rgba(200, 160, 96, 0.08);
+}
+
+.btn-cancel-review {
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-family: Montserrat;
+  font-size: 13px;
+}
+
+.review-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.reviewer-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewer-name {
+  color: #F7F4EE;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.badge-verified,
+.btn-edit-review-trigger {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 0px !important;
+  font-weight: 600;
+}
+
+.badge-verified {
+  background: #111;
+  color: #C8A060;
+  border: 1px solid rgba(200, 160, 96, 0.3);
+}
+
+.btn-edit-review-trigger {
+  background: transparent;
+  border: 1px solid #333;
+  color: #888;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-edit-review-trigger:hover {
+  border-color: #C8A060;
+  color: #C8A060;
+}
+
+.review-date {
+  font-size: 12px;
+  color: #555;
+}
+
+.review-card__text {
+  color: #A3ADB5;
+  font-size: 14px;
+  margin: 0;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .reviews-summary-card {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 20px;
+  }
+  .summary-card__left {
+    border-right: none;
+    border-bottom: 1px solid #1a1a1a;
+    padding-right: 0;
+    padding-bottom: 20px;
+  }
+  .reviews-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  .reviews-sort {
+    justify-content: space-between;
+  }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* ============================================================
+     1. SECTION ENTRANCE — IntersectionObserver
+     ============================================================ */
+  const section = document.querySelector("[data-animate-section]");
+
+  if (section) {
+    const sectionObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+
+            /* staggered item reveal fires right after section becomes visible */
+            const items = entry.target.querySelectorAll("[data-accordion-item]");
+            items.forEach(function (item) {
+              item.classList.add("item-visible");
+            });
+
+            sectionObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+
+    sectionObserver.observe(section);
+  }
+/* ============================================================
+      2. ACCORDION OPEN / CLOSE (حساب الأبعاد ديناميكياً لضمان النعومة وظهور المحتوى كاملاً)
+     ============================================================ */
+  const accordionContainer = document.querySelector("[data-accordion]");
+  if (!accordionContainer) return;
+
+  const items = accordionContainer.querySelectorAll(".item");
+
+  items.forEach(function (item) {
+    const btn = item.querySelector(".accordion-btn");
+    const content = item.querySelector(".content");
+
+    btn.addEventListener("click", function () {
+      const isOpen = item.classList.contains("is-open");
+
+      /* 1. إغلاق جميع العناصر المفتوحة أولاً بحركة ناعمة */
+      items.forEach(function (i) {
+        const c = i.querySelector(".content");
+        if (i.classList.contains("is-open")) {
+          // بنثبت الارتفاع الحالي بالبكسل قبل تصفيره عشان المتصفح يشوف الأنميشن وهو بيقفل براحة
+          c.style.maxHeight = c.scrollHeight + "px";
+          setTimeout(function() {
+            c.style.maxHeight = "0";
+            c.style.paddingTop = "0";
+            c.style.paddingBottom = "0";
+          }, 10);
+        } else {
+          c.style.maxHeight = "0";
+        }
+        i.classList.remove("is-open");
+        i.querySelector(".accordion-btn").setAttribute("aria-expanded", "false");
+        c.setAttribute("aria-hidden", "true");
+      });
+
+      /* 2. فتح العنصر المطلوب بالملّي ووبطء */
+      if (!isOpen) {
+        item.classList.add("is-open");
+        btn.setAttribute("aria-expanded", "true");
+        content.setAttribute("aria-hidden", "false");
+
+        // إعطاء مساحة رأسية فخمة ومريحة للمحتوى داخل الأكورديون
+        content.style.paddingTop = "20px";
+        content.style.paddingBottom = "35px";
+
+        // الحسبة السحرية: بنقيس طول المحتوى الفعلي بالظبط ونمرره للـ max-height
+        const idealHeight = content.scrollHeight + 55; // 55 هي مجموع البادينج الإضافي الفخم
+        content.style.maxHeight = idealHeight + "px";
+
+        // لتأمين عدم اختفاء أي كلام نهائياً: بعد انتهاء الأنميشن البطيء (850ms) بنفتح الارتفاع بالكامل
+        setTimeout(function() {
+          if (item.classList.contains("is-open")) {
+            content.style.maxHeight = "none";
+          }
+        }, 850);
+
+        // إجبار المتصفح على إعادة الحساب لضمان فورم الريفيوهات والكروت الديناميكية
+        window.dispatchEvent(new Event('resize'));
+
+        if (window.innerWidth <= 768) {
+          setTimeout(function () {
+            btn.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 300);
+        }
+      }
+    });
+  });
+  /* ============================================================
+     3. REVIEWS SYSTEM
+     ============================================================ */
+  const wrapper = document.querySelector(".luxury-reviews__wrapper");
+  if (!wrapper) return;
+
+  const productId = wrapper.getAttribute("data-product-id") || "default";
+  const storageKey = "luxury_reviews_" + productId;
+  const userReviewTrackingKey = "user_review_tracker_" + productId;
+
+  const toggleFormBtn   = document.getElementById("toggleReviewFormBtn");
+  const formContainer   = document.getElementById("reviewFormContainer");
+  const reviewForm      = document.getElementById("luxuryReviewForm");
+  const cancelFormBtn   = document.getElementById("cancelReviewFormBtn");
+  const feedContainer   = document.getElementById("reviewsFeedContainer");
+  const sortSelect      = document.getElementById("reviewSortSelect");
+  const formActionTitle = document.getElementById("formActionTitle");
+  const submitFormBtn   = document.getElementById("submitReviewFormBtn");
+
+  const starInputSpans    = document.querySelectorAll("#starInputRow span");
+  const selectedRatingVal = document.getElementById("selectedRatingVal");
+  const nameInput         = document.getElementById("revNameInput");
+  const anonymousCheckbox = document.getElementById("revAnonymousInput");
+  const anonymousHidden   = document.getElementById("revAnonymousHidden");
+  const textInput         = document.getElementById("revTextInput");
+
+  const reviews = [
+    {% if product.metafields.custom.reviews.value != blank %}
+      {% for item in product.metafields.custom.reviews.value %}
+        {% assign parts = item | split: "|" %}
+        {
+          id: "review_{{ forloop.index }}",
+          name: {{ parts[0] | json }},
+          isAnonymous: {% if parts[0] == "Anonymous" %}true{% else %}false{% endif %},
+          rating: {{ parts[1] | default: 5 }},
+          text: {{ parts[2] | json }},
+          timestamp: new Date("{{ parts[3] | default: '2026-01-01' }}").getTime(),
+          isVerified: true
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% else %}
+      {
+        id: "mock_1",
+        name: "Yasmine",
+        isAnonymous: false,
+        rating: 5,
+        text: "Nice",
+        timestamp: new Date("2025-07-18").getTime(),
+        isVerified: true
+      }
+    {% endif %}
+  ];
+
+  let editingReviewId = null;
+
+  if (window.location.search.includes("contact_posted=true")) {
+    const reviewItem = wrapper.closest(".item");
+    if (reviewItem) {
+      reviewItem.classList.add("is-open");
+      reviewItem.querySelector(".accordion-btn").setAttribute("aria-expanded", "true");
+      reviewItem.querySelector(".content").setAttribute("aria-hidden", "false");
+    }
+  }
+
+  starInputSpans.forEach(function (span) {
+    span.addEventListener("mouseover", function () {
+      highlightStars(parseInt(this.getAttribute("data-value")), true);
+    });
+    span.addEventListener("mouseout", function () {
+      highlightStars(parseInt(selectedRatingVal.value), false);
+    });
+    span.addEventListener("click", function () {
+      const val = parseInt(this.getAttribute("data-value"));
+      selectedRatingVal.value = val;
+      highlightStars(val, false);
+    });
+  });
+
+  function highlightStars(count, isHover) {
+    starInputSpans.forEach(function (span) {
+      const val = parseInt(span.getAttribute("data-value"));
+      const cls = isHover ? "hovered" : "selected";
+      if (val <= count) {
+        span.classList.add(cls);
+      } else {
+        span.classList.remove(cls);
+      }
+    });
+  }
+
+  toggleFormBtn.addEventListener("click", function () {
+    resetForm();
+    formContainer.classList.toggle("is-open");
+  });
+
+  cancelFormBtn.addEventListener("click", function () {
+    formContainer.classList.remove("is-open");
+    resetForm();
+  });
+
+  function resetForm() {
+    editingReviewId = null;
+    formActionTitle.textContent = "Share Your Experience";
+    submitFormBtn.textContent   = "Submit Review";
+    reviewForm.reset();
+    selectedRatingVal.value = "0";
+    highlightStars(0, false);
+    if (anonymousHidden) anonymousHidden.value = "No";
+  }
+
+  if (anonymousCheckbox && anonymousHidden) {
+    anonymousCheckbox.addEventListener("change", function () {
+      anonymousHidden.value = this.checked ? "Yes" : "No";
+    });
+  }
+
+  reviewForm.addEventListener("submit", function (e) {
+    const rating = parseInt(selectedRatingVal.value);
+    if (rating === 0) {
+      e.preventDefault();
+      alert("Please select a star rating.");
+      return;
+    }
+
+    const name        = nameInput.value.trim() || "Anonymous";
+    const isAnonymous = anonymousCheckbox.checked;
+    const text        = textInput.value.trim();
+    const now         = Date.now();
+
+    if (anonymousHidden) {
+      anonymousHidden.value = isAnonymous ? "Yes" : "No";
+    }
+
+    if (editingReviewId) {
+      const revIndex = reviews.findIndex(function (r) { return r.id === editingReviewId; });
+      if (revIndex !== -1) {
+        reviews[revIndex].rating      = rating;
+        reviews[revIndex].name        = name;
+        reviews[revIndex].isAnonymous = isAnonymous;
+        reviews[revIndex].text        = text;
+      }
+    } else {
+      const newId = "rev_" + now;
+      reviews.push({
+        id: newId,
+        name: name,
+        isAnonymous: isAnonymous,
+        rating: rating,
+        text: text,
+        timestamp: now,
+        isVerified: true
+      });
+      localStorage.setItem(userReviewTrackingKey, JSON.stringify({ id: newId, timestamp: now }));
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(reviews));
+  });
+
+  function renderReviewsComponent() {
+    const total = reviews.length;
+    let sum = 0;
+    const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+    reviews.forEach(function (r) {
+      sum += r.rating;
+      if (counts[r.rating] !== undefined) counts[r.rating]++;
+    });
+
+    const avg = total > 0 ? sum / total : 0;
+
+    document.getElementById("avgRatingNum").textContent     = avg.toFixed(2);
+    document.getElementById("totalReviewsText").textContent = "Based on " + total + " review" + (total === 1 ? "" : "s");
+
+    let avgStarsHtml = "";
+    const roundedAvg = Math.round(avg);
+    for (let i = 1; i <= 5; i++) {
+      avgStarsHtml += i <= roundedAvg ? "★" : "☆";
+    }
+    document.getElementById("avgStarsRow").innerHTML = avgStarsHtml;
+
+    for (let s = 5; s >= 1; s--) {
+      const row = document.querySelector(".histogram-row[data-stars='" + s + "']");
+      if (row) {
+        const count = counts[s];
+        const pct   = total > 0 ? (count / total) * 100 : 0;
+        row.querySelector(".bar-fill").style.width = pct + "%";
+        row.querySelector(".count").textContent    = count;
+      }
+    }
+
+    const sortBy       = sortSelect.value;
+    let sortedReviews  = reviews.slice();
+
+    if (sortBy === "high") {
+      sortedReviews.sort(function (a, b) { return b.rating - a.rating || b.timestamp - a.timestamp; });
+    } else if (sortBy === "low") {
+      sortedReviews.sort(function (a, b) { return a.rating - b.rating || b.timestamp - a.timestamp; });
+    } else {
+      sortedReviews.sort(function (a, b) { return b.timestamp - a.timestamp; });
+    }
+
+    const trackerData   = JSON.parse(localStorage.getItem(userReviewTrackingKey));
+    const twoHoursInMs  = 2 * 60 * 60 * 1000;
+    let activeTrackedId = null;
+
+    if (trackerData) {
+      if (Date.now() - trackerData.timestamp < twoHoursInMs) {
+        activeTrackedId = trackerData.id;
+      } else {
+        localStorage.removeItem(userReviewTrackingKey);
+      }
+    }
+
+    feedContainer.innerHTML = "";
+
+    if (sortedReviews.length === 0) {
+      feedContainer.innerHTML = '<p style="text-align:center;color:#555;font-style:italic;padding:20px 0;">No reviews yet. Be the first to review!</p>';
+      return;
+    }
+
+    sortedReviews.forEach(function (r, index) {
+      const dateObj       = new Date(r.timestamp);
+      const formattedDate =
+        String(dateObj.getMonth() + 1).padStart(2, "0") + "/" +
+        String(dateObj.getDate()).padStart(2, "0") + "/" +
+        dateObj.getFullYear();
+
+      let starsStr = "";
+      for (let i = 1; i <= 5; i++) {
+        starsStr += i <= r.rating ? "★" : "☆";
+      }
+
+      const displayName = r.isAnonymous ? "Anonymous" : r.name;
+      const showEditBtn  = r.id === activeTrackedId;
+      const editBtnHtml  = showEditBtn
+        ? '<button type="button" class="btn-edit-review-trigger" data-edit-id="' + r.id + '">Edit</button>'
+        : "";
+
+      const card       = document.createElement("div");
+      card.className   = "review-card";
+
+      /* ── staggered animation delay per card ── */
+      card.style.animationDelay = (index * 0.08) + "s";
+
+      card.innerHTML =
+        '<div class="review-card__header">' +
+          '<div class="reviewer-meta">' +
+            '<span class="reviewer-name">' + displayName + '</span>' +
+            '<span class="badge-verified">Verified</span>' +
+            editBtnHtml +
+          '</div>' +
+          '<span class="review-date">' + formattedDate + '</span>' +
+        '</div>' +
+        '<div class="review-card__stars">' + starsStr + '</div>' +
+        (r.text ? '<p class="review-card__text">' + r.text + '</p>' : "");
+
+      feedContainer.appendChild(card);
+    });
+
+    document.querySelectorAll(".btn-edit-review-trigger").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const idToEdit  = this.getAttribute("data-edit-id");
+        const targetRev = reviews.find(function (r) { return r.id === idToEdit; });
+
+        if (targetRev) {
+          editingReviewId             = idToEdit;
+          formActionTitle.textContent = "Edit Your Review";
+          submitFormBtn.textContent   = "Save Changes";
+
+          selectedRatingVal.value  = targetRev.rating;
+          highlightStars(targetRev.rating, false);
+          nameInput.value          = targetRev.name === "Anonymous" ? "" : targetRev.name;
+          anonymousCheckbox.checked = targetRev.isAnonymous;
+          if (anonymousHidden) anonymousHidden.value = targetRev.isAnonymous ? "Yes" : "No";
+          textInput.value          = targetRev.text;
+
+          formContainer.classList.add("is-open");
+          formContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      });
+    });
+  }
+
+  sortSelect.addEventListener("change", renderReviewsComponent);
+  renderReviewsComponent();
+});
+</script>
+
+{% schema %}
+{
+  "name": "Product Accordion",
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Accordion Item",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "richtext", "id": "content", "label": "Content" }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

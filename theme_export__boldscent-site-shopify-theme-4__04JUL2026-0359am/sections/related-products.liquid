@@ -1,0 +1,406 @@
+<product-recommendations
+  class="related"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=8"
+>
+  <div class="container" id="LuxuryRelatedContainer">
+    {% if section.settings.title != blank %}
+      <h2 class="related-title">{{ section.settings.title }}</h2>
+      <div class="luxury-divider"></div>
+    {% endif %}
+
+    {% if recommendations.performed and recommendations.products_count > 0 %}
+      <div class="slider-wrapper" id="LuxurySliderWrapper">
+        <div class="grid" id="LuxuryRelatedGrid">
+          {% for product in recommendations.products %}
+            <div class="slider-item" data-card-item>
+              {% render 'product-card', product: product %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="scroll-indicator-bar">
+        <div class="scroll-progress-thumb" id="LuxuryScrollThumb"></div>
+      </div>
+    {% endif %}
+  </div>
+</product-recommendations>
+
+<style>
+/* ============================================================
+   SECTION BASE
+   ============================================================ */
+.related {
+  display: block;
+  background-color: #000000;
+  padding: 80px 0;
+  border-top: 1px solid #111111;
+  overflow: hidden;
+
+  /* ── Section entrance animation ── */
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.related.section-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.related .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.related-title {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  margin-bottom: 12px;
+  font-size: 28px;
+  text-align: center;
+  letter-spacing: 1px;
+
+  /* title fades in slightly after section */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease 0.2s,
+              transform 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.2s;
+}
+
+.related.section-visible .related-title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.luxury-divider {
+  width: 50px;
+  height: 1px;
+  background-color: #C8A060;
+  margin: 0 auto 40px;
+
+  opacity: 0;
+  transform: scaleX(0);
+  transition: opacity 0.5s ease 0.35s,
+              transform 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.35s;
+  transform-origin: center;
+}
+
+.related.section-visible .luxury-divider {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* ============================================================
+   SLIDER WRAPPER
+   ============================================================ */
+.related .slider-wrapper {
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.related .slider-wrapper::-webkit-scrollbar {
+  display: none !important;
+}
+
+.related .grid {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 24px;
+  scroll-snap-type: x mandatory;
+}
+
+/* ============================================================
+   SLIDER ITEMS — RIGHT-TO-LEFT ENTRANCE ANIMATION
+   ============================================================ */
+.related .slider-item {
+  flex: 0 0 calc(25% - 18px) !important;
+  width: calc(25% - 18px) !important;
+  scroll-snap-align: start;
+
+  /* start: hidden, pushed to the RIGHT */
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.related .slider-item.card-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* stagger: each card comes in a bit after the previous */
+.related .slider-item:nth-child(1) { transition-delay: 0.10s; }
+.related .slider-item:nth-child(2) { transition-delay: 0.20s; }
+.related .slider-item:nth-child(3) { transition-delay: 0.30s; }
+.related .slider-item:nth-child(4) { transition-delay: 0.40s; }
+.related .slider-item:nth-child(5) { transition-delay: 0.50s; }
+.related .slider-item:nth-child(6) { transition-delay: 0.60s; }
+.related .slider-item:nth-child(7) { transition-delay: 0.70s; }
+.related .slider-item:nth-child(8) { transition-delay: 0.80s; }
+
+/* ============================================================
+   PRODUCT CARD OVERRIDES — fix visibility inside slider
+   ============================================================ */
+
+/* the product-card-wrap is the root element rendered by product-card snippet */
+.related .slider-item .product-card-wrap {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #111111 !important;
+  border: 1px solid #242424 !important;
+  /* keep BOLD sharp-edge identity — override any rounded radius from snippet */
+  border-radius: 0px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* image container must fill width and keep 4:5 ratio */
+.related .slider-item .product-card-image {
+  width: 100% !important;
+  aspect-ratio: 4 / 5 !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+
+.related .slider-item .product-card-image img,
+.related .slider-item .product-card-image svg {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 0 !important;
+  display: block !important;
+}
+
+/* make sure the anchor fills the wrap correctly */
+.related .slider-item .product-card {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  text-decoration: none !important;
+  color: #F7F4EE !important;
+}
+
+/* info area */
+.related .slider-item .product-card-info {
+  padding: 14px 16px !important;
+  flex: 1 !important;
+}
+
+.related .slider-item .product-card h3 {
+  font-family: "Playfair Display", serif !important;
+  color: #C8A060 !important;
+  font-size: 16px !important;
+  margin: 0 0 4px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.related .slider-item .fragrance-family {
+  font-family: Montserrat, sans-serif !important;
+  color: #6D7881 !important;
+  font-size: 11px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  margin: 0 0 6px !important;
+}
+
+.related .slider-item .product-card .price,
+.related .slider-item .product-price {
+  font-family: Montserrat, sans-serif !important;
+  color: #A3ADB5 !important;
+  font-size: 13px !important;
+  margin: 0 !important;
+}
+
+/* quick-add button */
+.related .slider-item .quick-add-btn {
+  margin: 0 16px 14px !important;
+  width: calc(100% - 32px) !important;
+  height: 40px !important;
+  border-radius: 0px !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  background: #C8A060 !important;
+  color: #0B0B0B !important;
+  border: none !important;
+  cursor: pointer !important;
+  opacity: 0 !important;
+  transform: translateY(6px) !important;
+  transition: opacity 0.3s ease, transform 0.3s ease,
+              background 0.25s ease !important;
+}
+
+.related .slider-item .product-card-wrap:hover .quick-add-btn {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.related .slider-item .quick-add-btn:hover {
+  background: #D8B57A !important;
+}
+
+/* ============================================================
+   SCROLL PROGRESS BAR
+   ============================================================ */
+.scroll-indicator-bar {
+  width: 120px;
+  height: 2px;
+  background-color: #1a1a1a;
+  margin: 30px auto 0;
+  position: relative;
+  overflow: hidden;
+
+  opacity: 0;
+  transition: opacity 0.5s ease 0.5s;
+}
+
+.related.section-visible .scroll-indicator-bar {
+  opacity: 1;
+}
+
+.scroll-progress-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #C8A060;
+  width: 30%;
+  transform: translateX(0%);
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .related .slider-item {
+    flex: 0 0 calc(40% - 12px) !important;
+    width: calc(40% - 12px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .related {
+    padding: 60px 0;
+  }
+  .related .container {
+    padding: 0 16px;
+  }
+  .related-title {
+    font-size: 24px;
+  }
+  .luxury-divider {
+    margin-bottom: 30px;
+  }
+  .related .grid {
+    gap: 16px;
+  }
+  .related .slider-item {
+    flex: 0 0 calc(50% - 8px) !important;
+    width: calc(50% - 8px) !important;
+  }
+  .scroll-indicator-bar {
+    width: 90px;
+  }
+}
+</style>
+
+<script>
+if (!customElements.get('product-recommendations')) {
+  customElements.define('product-recommendations', class ProductRecommendations extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      const handleIntersection = (entries, observer) => {
+        if (!entries[0].isIntersecting) return;
+        observer.unobserve(this);
+
+        fetch(this.dataset.url)
+          .then(response => response.text())
+          .then(text => {
+            const html = new DOMParser().parseFromString(text, 'text/html');
+            const recommendationsContainer = html.querySelector('#LuxuryRelatedContainer');
+
+            if (recommendationsContainer && recommendationsContainer.innerHTML.trim().length > 0) {
+              this.innerHTML = recommendationsContainer.outerHTML;
+
+              /* ── trigger section entrance ── */
+              requestAnimationFrame(() => {
+                this.classList.add('section-visible');
+
+                /* ── trigger card slide-in from right ── */
+                const cards = this.querySelectorAll('[data-card-item]');
+                cards.forEach(card => {
+                  card.classList.add('card-visible');
+                });
+
+                /* ── scroll progress thumb ── */
+                setTimeout(() => {
+                  const slider = this.querySelector('#LuxurySliderWrapper');
+                  const thumb  = this.querySelector('#LuxuryScrollThumb');
+
+                  if (slider && thumb) {
+                    const updateThumb = () => {
+                      const maxScroll = slider.scrollWidth - slider.clientWidth;
+                      if (maxScroll <= 0) {
+                        thumb.style.width     = '100%';
+                        thumb.style.transform = 'translateX(0)';
+                        return;
+                      }
+                      const scrollRatio      = slider.scrollLeft / maxScroll;
+                      const thumbWidthPct    = 30;
+                      const maxTranslatePct  = 100 - thumbWidthPct;
+                      const currentTranslate = scrollRatio * maxTranslatePct;
+                      thumb.style.width      = thumbWidthPct + '%';
+                      thumb.style.transform  = 'translateX(' + ((currentTranslate / thumbWidthPct) * 100) + '%)';
+                    };
+
+                    slider.addEventListener('scroll', updateThumb, { passive: true });
+                    window.addEventListener('resize', updateThumb, { passive: true });
+                    updateThumb();
+                  }
+                }, 80);
+              });
+            }
+          })
+          .catch(e => console.error('Related products fetch error:', e));
+      };
+
+      new IntersectionObserver(handleIntersection, { rootMargin: '0px 0px 400px 0px' }).observe(this);
+    }
+  });
+}
+</script>
+
+{% schema %}
+{
+  "name": "Related Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "You May Also Like"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

@@ -1,0 +1,121 @@
+<section class="features container" id="feat-section-{{ section.id }}">
+
+  {% for block in section.blocks %}
+    <div class="feature feat-anim-item" {{ block.shopify_attributes }} style="--feat-index: {{ forloop.index0 }};">
+
+      <div class="icon">{% render 'icon', name: block.settings.icon %}</div>
+
+      <h3>{{ block.settings.title }}</h3>
+      <p>{{ block.settings.text }}</p>
+
+    </div>
+  {% endfor %}
+
+</section>
+
+<style>
+.features{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:40px;
+  padding:100px 0;
+  text-align:center;
+}
+
+/* تحضير عناصر الأيقونات للأنيميشن صعوداً */
+.features .feat-anim-item {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), 
+              transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* تتابع الأنيمايشن الفاخر فور ظهور السكشن */
+.features.feat-activated .feat-anim-item {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--feat-index, 0) * 0.12s);
+}
+
+.feature h3{
+  font-family:"Playfair Display";
+  color:#C8A060;
+}
+
+.feature p{
+  font-family:Montserrat;
+  color:#A3ADB5;
+  font-size:14px;
+}
+
+.icon{
+  font-size:28px;
+  color:#C8A060;
+  margin-bottom:10px;
+}
+
+@media(max-width:768px){
+  .features {
+    /* 🌟 نزول السكشن بالكامل لأسفل ليعوض إزاحة الكروت الفخمة السابقة */
+    margin-top: 50px !important; 
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 30px 16px !important;
+    padding: 60px 16px !important;
+  }
+}
+
+/* 🛡️ الـ Fallback الآمن للـ Features */
+.no-js .features .feat-anim-item {
+  opacity: 1 !important;
+  transform: none !important;
+}
+</style>
+
+<script>
+(function() {
+  function initFeatAnimation() {
+    const section = document.getElementById('feat-section-{{ section.id }}');
+    if (!section) return;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            section.classList.add('feat-activated');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      observer.observe(section);
+    } else {
+      section.classList.add('feat-activated');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFeatAnimation);
+  } else {
+    initFeatAnimation();
+  }
+  document.addEventListener('shopify:section:load', initFeatAnimation);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Feature Icons",
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        { "type": "text", "id": "icon", "label": "Icon" },
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "text", "id": "text", "label": "Text" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Feature Icons" }]
+}
+{% endschema %}

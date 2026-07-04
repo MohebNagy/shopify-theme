@@ -1,0 +1,219 @@
+<div class="features-box">
+  <div class="features-grid">
+    
+    <div class="feature-item">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="6.5" cy="6.5" r="2.5"/>
+          <circle cx="17.5" cy="17.5" r="2.5"/>
+          <line x1="19" y1="5" x2="5" y2="19"/>
+        </svg>
+      </div>
+      <p>30% Extrait De Parfum</p>
+    </div>
+
+    <div class="feature-item">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z" />
+        </svg>
+      </div>
+      <p>Premium French Oils</p>
+    </div>
+
+    <div class="feature-item">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      </div>
+      <p>8-12 Hours Performance</p>
+    </div>
+
+    <div class="feature-item">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5" />
+          <path d="M14 10V5a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5" />
+          <path d="M10 10.5V7.5a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6.5" />
+          <path d="M6 14v-1.5a1.5 1.5 0 0 0-3 0V16a5 5 0 0 0 5 5h4a8 8 0 0 0 6-3v-1" />
+          <path d="M19 2v4m0 0v4m0-4h-4m4 0h4" stroke-width="1.2" />
+        </svg>
+      </div>
+      <p>Handcrafted With Precision</p>
+    </div>
+
+    <div class="feature-item">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" />
+          <path d="M3 20h18" />
+        </svg>
+      </div>
+      <p>Elegant Feminine Signature</p>
+    </div>
+
+  </div>
+</div>
+<style>
+/* البوكس الرئيسي المحتضن للميزات - تم إبادة البوردر والخلفية والتدويرة ليدمج بالخلفية الأساسية */
+.features-box {
+  margin-top: 40px;
+  padding: 55px 30px; /* زيادة الطول الرأسي والمساحة الداخلية لإعطاء مظهر ممتد وفخم */
+  border: none !important; /* إلغاء البوردر تماماً */
+  background: transparent !important; /* جعل الخلفية شفافة لتقرأ من الموقع مباشرة */
+  border-radius: 0px !important; /* إلغاء الحواف الدائرية */
+  box-shadow: none !important; /* تأمين عدم وجود أي ظلال */
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity .8s cubic-bezier(0.25, 1, 0.5, 1),
+              transform .8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.features-box.features-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 💻 شبكة العرض للكمبيوتر واللاب توب */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); 
+  gap: 50px 20px; /* زيادة الفراغ الرأسي بين الصفوف لزيادة طول السكشن الكلي */
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity .6s cubic-bezier(0.25, 1, 0.5, 1), 
+              transform .6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* توزيع الأعمدة المتقن */
+.feature-item:nth-child(1),
+.feature-item:nth-child(2),
+.feature-item:nth-child(3) {
+  grid-column: span 2;
+}
+
+.feature-item:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.feature-item:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+.features-box.features-visible .feature-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* التتابع الزمني للظهور */
+.features-box.features-visible .feature-item:nth-child(1) { transition-delay: .08s; }
+.features-box.features-visible .feature-item:nth-child(2) { transition-delay: .16s; }
+.features-box.features-visible .feature-item:nth-child(3) { transition-delay: .24s; }
+.features-box.features-visible .feature-item:nth-child(4) { transition-delay: .32s; }
+.features-box.features-visible .feature-item:nth-child(5) { transition-delay: .40s; }
+
+/* ضبط الأيقونات هندسياً ومنع أي انضغاط */
+.feature-icon {
+  width: 28px;
+  height: 28px;
+  color: #C8A060; /* الذهبي الفخم لـ BOLD */
+  margin-bottom: 16px; /* مسافة مريحة تحت الأيقونة */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.feature-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* تنسيق النص باللون الرمادي */
+.feature-item p {
+  font-family: "Montserrat", sans-serif;
+  color: #A3ADB5;
+  font-size: 13px;
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+
+/* 📱 تنسيق الموبايل المتجاوب */
+@media (max-width: 768px) {
+  .features-box {
+    padding: 45px 20px; /* زيادة الطول على الموبايل لمنع التكدس */
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 45px 15px; /* مسافات عمودية مريحة جداً وممتدة */
+  }
+
+  .feature-item:nth-child(1),
+  .feature-item:nth-child(2),
+  .feature-item:nth-child(3),
+  .feature-item:nth-child(4) {
+    grid-column: span 1 !important;
+  }
+
+  .feature-item:nth-child(5) {
+    grid-column: 1 / span 2 !important;
+    justify-self: center;
+    max-width: 85%;
+  }
+
+  .feature-icon {
+    width: 26px;
+    height: 26px;
+    margin-bottom: 12px;
+  }
+
+  .feature-item p {
+    font-size: 11.5px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const featuresBox = document.querySelector(".features-box");
+  if (!featuresBox) return;
+
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      featuresBox.classList.add("features-visible");
+      observer.disconnect();
+    }
+  }, { threshold: 0.1 });
+
+  observer.observe(featuresBox);
+});
+</script>
+
+{% schema %}
+{
+  "name": "Product Features",
+  "settings": [],
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "presets": [
+    {
+      "name": "Product Features"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,161 @@
+<section class="featured-wrapper" id="featured-section-{{ section.id }}">
+  <section class="featured container">
+
+    <h2 class="featured-title">{{ section.settings.title }}</h2>
+
+    <div class="products">
+
+      {% if section.settings.collection != blank %}
+        {% for product in section.settings.collection.products limit: 4 %}
+          <div class="feat-card-item" style="--feat-item-index: {{ forloop.index0 }};">
+            {% render 'product-card', product: product %}
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for product in collections.all.products limit: 4 %}
+          <div class="feat-card-item" style="--feat-item-index: {{ forloop.index0 }};">
+            {% render 'product-card', product: product %}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+    </div>
+
+  </section>
+</section>
+
+<style>
+/* ======================================================= */
+/* 💻 أولاً: تنسيق اللاب توب (توسيط المنتجات تلقائياً في المنتصف) */
+/* ======================================================= */
+.featured-wrapper {
+  width: 100%;
+  background-color: #0B0B0B;
+}
+
+.featured {
+  padding: 100px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* تجهيز عنوان السكشن */
+.featured h2.featured-title {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  margin-bottom: 50px;
+  font-size: 36px;
+  text-align: center;
+  
+  opacity: 0;
+  transform: translateY(-15px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.featured-wrapper.featured-activated h2.featured-title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* استخدام Flex Matrix لتوسيط الكروت تلقائياً مهما كان عددها */
+.products {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important; 
+  gap: 30px; 
+}
+
+/* الحاوية المغلفة للكارت للتحكم بالأنيميشن دون تدمير ستايل الكارت الأصلي */
+.feat-card-item {
+  flex: 0 1 calc(25% - 23px); 
+  min-width: 250px; 
+  
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), 
+              transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* إطلاق تأثير الـ Stagger التتابعي الساحر */
+.featured-wrapper.featured-activated .feat-card-item {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--feat-item-index, 0) * 0.12s);
+}
+
+/* ======================================================= */
+/* 📱 ثانياً: تنسيق الموبايل (ضبط العرض وحواف الشاشة والترتيب) */
+/* ======================================================= */
+@media (max-width: 768px) {
+  .featured {
+    padding: 60px 16px !important; 
+  }
+
+  .featured h2.featured-title {
+    font-size: 28px !important;
+    margin-bottom: 35px !important;
+  }
+
+  /* تحويل النظام لـ Grid محكم يحقق شروطك بالملي */
+  .products {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 25px 16px !important; 
+  }
+
+  /* إلغاء تأثير الـ flex القديم في الموبايل واستقرار الحوايا */
+  .feat-card-item {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+/* 🛡️ الـ Fallback للحماية الاحتياطية */
+.no-js .featured h2.featured-title,
+.no-js .feat-card-item {
+  opacity: 1 !important;
+  transform: none !important;
+}
+</style>
+
+<script>
+(function() {
+  function initFeaturedAnimation() {
+    const section = document.getElementById('featured-section-{{ section.id }}');
+    if (!section) return;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            section.classList.add('featured-activated');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      observer.observe(section);
+    } else {
+      section.classList.add('featured-activated');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFeaturedAnimation);
+  } else {
+    initFeaturedAnimation();
+  }
+  document.addEventListener('shopify:section:load', initFeaturedAnimation);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Featured Products",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Best Sellers" },
+    { "type": "collection", "id": "collection", "label": "Collection" }
+  ],
+  "presets": [{ "name": "Featured Products" }]
+}
+{% endschema %}

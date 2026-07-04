@@ -1,0 +1,17 @@
+{% comment %}
+  bundle-summary.liquid
+  ----------------------
+  صندوق ملخص صغير بيعرض إجمالي العناصر المختارة مقابل المطلوب، والسعر النهائي.
+  بيتحدّث بالكامل من الـ JS (bundle-builder.js).
+{% endcomment %}
+
+<div class="bundle-summary-box" id="bundleSummaryBox">
+  <div class="summary-row">
+    <span>Selected</span>
+    <strong id="summaryTotalSelected">0 / 0</strong>
+  </div>
+  <div class="summary-row">
+    <span>Bundle Price</span>
+    <strong id="summaryFinalPrice">—</strong>
+  </div>
+</div>

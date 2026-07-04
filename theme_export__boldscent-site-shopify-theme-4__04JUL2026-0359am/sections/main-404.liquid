@@ -1,0 +1,33 @@
+<section class="page-404 container">
+
+  <h1>404</h1>
+  <p>The page you're looking for doesn't exist.</p>
+  <a href="{{ routes.root_url }}" class="btn-primary">Back to Home</a>
+
+</section>
+
+<style>
+.page-404{
+  padding:120px 20px;
+  text-align:center;
+}
+
+.page-404 h1{
+  font-family:"Playfair Display";
+  color:#C8A060;
+  font-size:72px;
+}
+
+.page-404 p{
+  font-family:Montserrat;
+  color:#A3ADB5;
+  margin:20px 0 40px;
+}
+</style>
+
+{% schema %}
+{
+  "name": "404 Page",
+  "settings": []
+}
+{% endschema %}

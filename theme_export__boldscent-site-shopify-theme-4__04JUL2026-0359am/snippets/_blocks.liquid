@@ -1,0 +1,142 @@
+{% comment %}
+  BOLD Theme - Custom Quote Block
+{% endcomment %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+<style>
+
+  /* 1. إبادة أي بوردر أو حواف دائرية على السكشن الأب والبلوكات المحيطة */
+  [data-block-id] {
+    border: none !important;
+    border-width: 0px !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0px !important;
+  }
+
+  /* 2. استهداف كلاسات الـ Wrapper الشهيرة في ثيمات شوبيفاي (زي Dawn وثيمات الـ OS 2.0) */
+  .shopify-section, 
+  .shopify-block,
+  [id^="shopify-block-"],
+  [id^="shopify-section-"] {
+    border: none !important;
+    border-width: 0px !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0px !important;
+  }
+
+  /* 3. إلغاء التنسيق الافتراضي للكارد اللي الثيم بيفرضه */
+  .card, 
+  .product-block, 
+  .grid__item, 
+  .collapsible-content,
+  div[class*="wrapper"], 
+  div[class*="inner"] {
+    border: none !important;
+    border-width: 0px !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 0px !important;
+  }
+  /* استهداف مباشر ومكثف للبلوك لإلغاء أي بوردر أو ستايل كارد يفرضه السكشن الأب */
+  .bold-quote-block-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.background_color | default: '#000000' }};
+    padding: {{ block.settings.padding_top | default: 40 }}px {{ block.settings.padding_horizontal | default: 20 }}px {{ block.settings.padding_bottom | default: 40 }}px;
+    margin: 0 auto;
+    text-align: {{ block.settings.text_alignment | default: 'center' }};
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0px !important;
+  }
+
+  /* إجبار العنصر الحاضن مباشرة للبلوك (الـ wrapper الافتراضي) على الاختفاء */
+  .bold-quote-block-{{ ai_gen_id }} *,
+  [data-block-id="{{ block.id }}"] {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0px !important;
+  }
+
+  .bold-quote-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width | default: 800 }}px;
+    margin: 0 auto;
+  }
+
+  .bold-quote-icon-{{ ai_gen_id }} {
+    color: {{ block.settings.icon_color | default: '#C8A060' }};
+    margin-bottom: {{ block.settings.icon_spacing | default: 20 }}px;
+    opacity: {{ block.settings.icon_opacity | default: 0.3 }};
+  }
+
+  .bold-quote-icon-{{ ai_gen_id }} svg {
+    width: {{ block.settings.icon_size | default: 40 }}px;
+    height: {{ block.settings.icon_size | default: 40 }}px;
+    display: inline-block;
+  }
+
+  .bold-quote-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.quote_size | default: 24 }}px;
+    line-height: 1.5;
+    color: {{ block.settings.quote_color | default: '#F7F4EE' }};
+    margin: 0 0 {{ block.settings.quote_spacing | default: 20 }}px;
+  }
+
+  .bold-quote-author-{{ ai_gen_id }} {
+    font-size: {{ block.settings.author_size | default: 16 }}px;
+    color: {{ block.settings.author_color | default: '#C8A060' }};
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  .bold-quote-divider-{{ ai_gen_id }} {
+    width: {{ block.settings.divider_width | default: 60 }}px;
+    height: {{ block.settings.divider_height | default: 2 }}px;
+    background-color: {{ block.settings.divider_color | default: '#C8A060' }};
+    margin: {{ block.settings.divider_spacing | default: 20 }}px auto;
+  }
+
+  @media screen and (max-width: 749px) {
+    .bold-quote-block-{{ ai_gen_id }} {
+      padding: 30px 15px;
+    }
+    .bold-quote-text-{{ ai_gen_id }} {
+      font-size: 18px;
+    }
+  }
+</style>
+
+<div class="bold-quote-block-{{ ai_gen_id }}">
+  <div class="bold-quote-container-{{ ai_gen_id }}">
+    
+    {% if block.settings.show_icon %}
+      <div class="bold-quote-icon-{{ ai_gen_id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
+        </svg>
+      </div>
+    {% endif %}
+
+    {% if block.settings.quote != blank %}
+      <div class="bold-quote-text-{{ ai_gen_id }}">
+        {{ block.settings.quote }}
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_divider %}
+      <div class="bold-quote-divider-{{ ai_gen_id }}"></div>
+    {% endif %}
+
+    {% if block.settings.author != blank %}
+      <p class="bold-quote-author-{{ ai_gen_id }}">
+        {{ block.settings.author }}
+      </p>
+    {% endif %}
+
+  </div>
+</div>

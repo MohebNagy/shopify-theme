@@ -1,0 +1,622 @@
+<section class="contact-page-wrapper">
+  
+  <!-- 📽️ السيكشن العلوي: الكلام والصورة السينمائية الخلفية المتجاوبة مع الـ Fade -->
+  <div class="contact-top-hero">
+    <div class="contact-cinematic-bg">
+      <picture>
+        <!-- صورة الموبايل: تظهر على الشاشات الأصغر من 991 بكسل -->
+        {% if section.settings.bg_image_mobile != blank %}
+          <source media="(max-width: 991px)" srcset="{{ section.settings.bg_image_mobile | image_url: width: 800 }}">
+        {% endif %}
+        
+        <!-- صورة اللاب توب الافتراضية: تظهر على الشاشات الكبيرة -->
+        {% if section.settings.bg_image_desktop != blank %}
+          <img 
+            src="{{ section.settings.bg_image_desktop | image_url: width: 1920 }}" 
+            alt="BOLD Contact Background"
+            loading="lazy"
+            width="1920"
+            height="600"
+          >
+        {% else %}
+          <!-- fallback في حال عدم رفع صورة -->
+          <div class="cinematic-placeholder"></div>
+        {% endif %}
+      </picture>
+      <div class="cinematic-gradient-overlay"></div>
+    </div>
+
+    <div class="container contact-hero-grid">
+      <!-- الجانب الأيسر: معلومات التواصل والستايل الـ Minimal الفخم -->
+      <div class="contact-info-side">
+        <div class="info-content">
+          <h1 class="contact-main-title">{{ section.settings.title }}</h1>
+          <p class="contact-subtitle">{{ section.settings.subtitle }}</p>
+          
+          <div class="contact-channels">
+            {% if section.settings.whatsapp_text != blank %}
+              <div class="channel-item">
+                <div class="channel-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </div>
+                <div class="channel-details">
+                  <label>WHATSAPP</label>
+                  <a href="https://wa.me/{{ section.settings.whatsapp_link }}">{{ section.settings.whatsapp_text }}</a>
+                </div>
+              </div>
+            {% endif %}
+
+            {% if section.settings.instagram_text != blank %}
+              <div class="channel-item">
+                <div class="channel-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                </div>
+                <div class="channel-details">
+                  <label>INSTAGRAM</label>
+                  <a href="{{ section.settings.instagram_link }}" target="_blank">{{ section.settings.instagram_text }}</a>
+                </div>
+              </div>
+            {% endif %}
+
+            {% if section.settings.email_text != blank %}
+              <div class="channel-item">
+                <div class="channel-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="channel-details">
+                  <label>EMAIL</label>
+                  <a href="mailto:{{ section.settings.email_text }}">{{ section.settings.email_text }}</a>
+                </div>
+              </div>
+            {% endif %}
+
+            {% if section.settings.location_text != blank %}
+              <div class="channel-item">
+                <div class="channel-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div class="channel-details">
+                  <label>LOCATION</label>
+                  <span>{{ section.settings.location_text }}</span>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <div class="contact-hero-blank-side"></div>
+    </div>
+  </div>
+
+  <!-- 🔍 سيكشن الأسئلة الشائعة (FAQ) المدمج حديثاً -->
+  <div class="contact-faq-section">
+    <div class="container small-container">
+      <h3 class="faq-section-title">FREQUENTLY ASKED QUESTIONS</h3>
+      
+      <div class="faq-accordion-group">
+        
+        <!-- السؤال الأول -->
+        <div class="faq-accordion-item">
+          <button type="button" class="faq-accordion-trigger">
+            <span>How long does shipping and delivery take?</span>
+            <span class="faq-custom-icon"></span>
+          </button>
+          <div class="faq-accordion-panel">
+            <p>All orders are processed within 24–48 business hours. Domestic shipping typically takes 2–4 business days, while international delivery ranges from 5–9 business days depending on your destination.</p>
+          </div>
+        </div>
+
+        <!-- السؤال الثاني -->
+        <div class="faq-accordion-item">
+          <button type="button" class="faq-accordion-trigger">
+            <span>What is your return and exchange policy?</span>
+            <span class="faq-custom-icon"></span>
+          </button>
+          <div class="faq-accordion-panel">
+            <p>We offer a complimentary 14-day return policy for unaltered and unworn items. Products must be returned in their original packaging, including all security tags intact.</p>
+          </div>
+        </div>
+
+        <!-- السؤال الثالث -->
+        <div class="faq-accordion-item">
+          <button type="button" class="faq-accordion-trigger">
+            <span>How can I track my shipment?</span>
+            <span class="faq-custom-icon"></span>
+          </button>
+          <div class="faq-accordion-panel">
+            <p>Once dispatched, a unique tracking link will be delivered via email or SMS. You will be able to follow the journey of your parcel in real-time until it arrives at your doorstep.</p>
+          </div>
+        </div>        <!-- السؤال الثالث -->
+        <div class="faq-accordion-item">
+          <button type="button" class="faq-accordion-trigger">
+            <span>How can I track my shipment?</span>
+            <span class="faq-custom-icon"></span>
+          </button>
+          <div class="faq-accordion-panel">
+            <p>Once dispatched, a unique tracking link will be delivered via email or SMS. You will be able to follow the journey of your parcel in real-time until it arrives at your doorstep.</p>
+          </div>
+        </div>        <!-- السؤال الثالث -->
+        <div class="faq-accordion-item">
+          <button type="button" class="faq-accordion-trigger">
+            <span>How can I track my shipment?</span>
+            <span class="faq-custom-icon"></span>
+          </button>
+          <div class="faq-accordion-panel">
+            <p>Once dispatched, a unique tracking link will be delivered via email or SMS. You will be able to follow the journey of your parcel in real-time until it arrives at your doorstep.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 📥 السيكشن السفلي: صندوق فورم الرسائل الممتد بالكامل تحت البانر العلوي -->
+  <div class="contact-bottom-form-section">
+    <div class="container small-container">
+      <h3 class="form-section-title">SEND US A MESSAGE</h3>
+
+      {% form 'contact' %}
+        {{ form.errors | default_errors }}
+
+        {% if form.posted_successfully? %}
+          <p class="success-message">Thank you for your message. We will get back to you soon.</p>
+        {% endif %}
+
+        <div class="input-row">
+          <div class="input-field">
+            <input type="text" name="contact[name]" id="ContactFormName" placeholder="Your Name" required>
+          </div>
+          <div class="input-field">
+            <input type="email" name="contact[email]" id="ContactFormEmail" placeholder="Email Address" required>
+          </div>
+        </div>
+
+        <div class="input-field full-width">
+          <textarea name="contact[body]" id="ContactFormMessage" placeholder="Message" rows="5" required></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit-luxury">SEND MESSAGE</button>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+
+</section>
+
+<style>
+/* ======================================================= */
+/* 💻 أولاً: تنسيق نسخة اللاب توب والكمبيوتر */
+/* ======================================================= */
+.contact-page-wrapper {
+  background-color: #0B0B0B;
+  color: #F7F4EE;
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+}
+
+.contact-top-hero {
+  position: relative;
+  min-height: 550px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.contact-cinematic-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 55%; 
+  height: 100%;
+  z-index: 1;
+}
+
+.contact-cinematic-bg picture,
+.contact-cinematic-bg img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.contact-cinematic-bg img {
+  object-fit: cover;
+  object-position: center right;
+}
+
+.cinematic-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, 
+    #0B0B0B 0%, 
+    rgba(11, 11, 11, 0.95) 25%,
+    rgba(11, 11, 11, 0.6) 55%, 
+    rgba(11, 11, 11, 0) 100%
+  );
+  z-index: 2;
+}
+
+.contact-hero-grid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 40px;
+}
+
+.contact-main-title {
+  font-family: "Playfair Display", serif;
+  font-size: 56px;
+  color: #F7F4EE;
+  margin: 0 0 20px 0;
+  letter-spacing: 1px;
+}
+
+.contact-subtitle {
+  color: #A3ADB5;
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 440px;
+  margin-bottom: 45px;
+}
+
+.contact-channels {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.channel-item {
+  display: flex;
+  align-items: center; 
+  gap: 16px;
+}
+
+.channel-icon {
+  color: #C8A060 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; 
+}
+
+.channel-details label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #6C757D;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.channel-details a, 
+.channel-details span {
+  color: #F7F4EE;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.channel-details a:hover {
+  color: #C8A060;
+}
+
+/* 🔍 تنسيقات سيكشن الأسئلة الشائعة الجديد */
+.contact-faq-section {
+  padding: 80px 0 20px 0;
+  background-color: #0B0B0B;
+}
+
+.faq-section-title {
+  font-family: 'Montserrat', sans-serif;
+  color: #C8A060;
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin: 0 0 25px 0;
+  font-weight: 600;
+  text-align: left;
+}
+
+.faq-accordion-group {
+  width: 100%;
+}
+
+.faq-accordion-item {
+  border-bottom: 1px solid #1E1E1E;
+}
+
+.faq-accordion-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 22px 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  color: #F7F4EE;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  transition: color 0.3s ease;
+}
+
+.faq-accordion-trigger:hover {
+  color: #C8A060;
+}
+
+.faq-custom-icon {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  margin-left: 20px;
+}
+
+.faq-custom-icon::before,
+.faq-custom-icon::after {
+  content: '';
+  position: absolute;
+  background-color: #C8A060;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-custom-icon::before {
+  top: 5px;
+  left: 0;
+  width: 12px;
+  height: 1px;
+}
+
+.faq-custom-icon::after {
+  top: 0;
+  left: 5px;
+  width: 1px;
+  height: 12px;
+}
+
+.faq-accordion-item.is-open .faq-custom-icon::after {
+  transform: rotate(90deg);
+  opacity: 0;
+}
+
+.faq-accordion-item.is-open .faq-accordion-trigger {
+  color: #C8A060;
+}
+
+.faq-accordion-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-accordion-panel p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #A3ADB5;
+  padding-bottom: 22px;
+  margin: 0;
+}
+
+/* سيكشن الفورم السفلي المنفصل */
+.contact-bottom-form-section {
+  padding: 40px 0 100px 0;
+  background-color: #0B0B0B;
+}
+
+.small-container {
+  max-width: 750px !important; 
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.form-section-title {
+  font-family: 'Montserrat', sans-serif;
+  color: #C8A060;
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin: 0 0 35px 0;
+  font-weight: 600;
+  text-align: left;
+}
+
+.input-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.input-field {
+  flex: 1;
+}
+
+.input-field.full-width {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.contact-bottom-form-section input,
+.contact-bottom-form-section textarea {
+  width: 100%;
+  background: #111111;
+  border: 1px solid #1E1E1E;
+  padding: 16px 18px;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  border-radius: 2px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.contact-bottom-form-section input:focus,
+.contact-bottom-form-section textarea:focus {
+  outline: none;
+  border-color: #C8A060;
+  background: #141414;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end; 
+}
+
+.btn-submit-luxury {
+  background: #C8A060;
+  color: #000000;
+  border: none;
+  padding: 16px 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-submit-luxury:hover {
+  background: #DFB775;
+  transform: translateY(-2px);
+}
+
+.success-message {
+  color: #7C9A72;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+/* ======================================================= */
+/* 📱 ثانياً: تنسيق نسخة الموبايل (مخصصة للتحكم بالصورتين) */
+/* ======================================================= */
+@media (max-width: 991px) {
+  .contact-top-hero {
+    min-height: auto !important;
+    flex-direction: column !important;
+  }
+
+  .contact-cinematic-bg {
+    width: 100% !important;
+    height: 50vh !important; 
+    position: relative !important;
+  }
+
+  .cinematic-gradient-overlay {
+    background: linear-gradient(to bottom, 
+      rgba(11, 11, 11, 0) 0%, 
+      rgba(11, 11, 11, 0.8) 70%, 
+      #0B0B0B 100%
+    ) !important;
+  }
+
+  .contact-hero-grid {
+    grid-template-columns: 1fr !important;
+    padding: 0 24px !important;
+    margin-top: -60px !important; 
+  }
+
+  .contact-main-title {
+    font-size: 42px !important;
+  }
+
+  /* الموبايل للأسئلة الشائعة */
+  .contact-faq-section {
+    padding: 60px 0 10px 0 !important;
+  }
+
+  .faq-section-title {
+    text-align: center !important;
+  }
+
+  .faq-accordion-trigger {
+    font-size: 14px !important;
+    padding: 18px 0 !important;
+  }
+
+  .faq-accordion-panel p {
+    font-size: 13px !important;
+  }
+
+  .contact-bottom-form-section {
+    padding: 30px 0 70px 0 !important;
+  }
+
+  .small-container {
+    padding: 0 24px !important;
+  }
+
+  .form-section-title {
+    text-align: center !important;
+  }
+
+  .input-row {
+    flex-direction: column !important;
+    gap: 20px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .form-actions {
+    justify-content: center !important;
+  }
+
+  .btn-submit-luxury {
+    width: 100% !important;
+  }
+}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const faqItems = document.querySelectorAll(".faq-accordion-item");
+
+    faqItems.forEach(item => {
+      const trigger = item.querySelector(".faq-accordion-trigger");
+      
+      trigger.addEventListener("click", function () {
+        const isOpen = item.classList.contains("is-open");
+
+        // إغلاق أي سؤال آخر مفتوح تلقائياً لراحة بصرية أكبر
+        faqItems.forEach(otherItem => {
+          otherItem.classList.remove("is-open");
+          otherItem.querySelector(".faq-accordion-panel").style.maxHeight = null;
+        });
+
+        // إذا لم يكن مفتوحاً، قم بفتحه
+        if (!isOpen) {
+          item.classList.add("is-open");
+          const panel = item.querySelector(".faq-accordion-panel");
+          panel.style.maxHeight = panel.scrollHeight + "px";
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "settings": [
+    { "type": "image_picker", "id": "bg_image_desktop", "label": "Desktop Background Image (Horizontal)" },
+    { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile Background Image (Vertical)" },
+    { "type": "text", "id": "title", "label": "Title", "default": "GET IN TOUCH" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "We'd love to hear from you. Whether you have a question or just want to say hello." },
+    { "type": "header", "content": "Channels Info" },
+    { "type": "text", "id": "whatsapp_text", "label": "WhatsApp Text", "default": "+20 100 123 4567" },
+    { "type": "text", "id": "whatsapp_link", "label": "WhatsApp Number (Digits Only)", "default": "201001234567" },
+    { "type": "text", "id": "instagram_text", "label": "Instagram Text", "default": "@bold_perfumes" },
+    { "type": "text", "id": "instagram_link", "label": "Instagram Link URL" },
+    { "type": "text", "id": "email_text", "label": "Email", "default": "hello@boldperfumes.com" },
+    { "type": "text", "id": "location_text", "label": "Location", "default": "Egypt" }
+  ],
+  "presets": [{ "name": "Contact Form" }]
+}
+{% endschema %}

@@ -1,0 +1,49 @@
+<section class="about container">
+
+  <h1>{{ section.settings.title }}</h1>
+
+  <p>{{ section.settings.text }}</p>
+
+</section>
+
+<style>
+.about{
+  padding:120px 0;
+  text-align:center;
+}
+
+.about h1{
+  font-family:"Playfair Display";
+  color:#C8A060;
+  font-size:48px;
+}
+
+.about p{
+  color:#A3ADB5;
+  font-family:Montserrat;
+  max-width:700px;
+  margin:20px auto;
+  line-height:1.8;
+}
+</style>
+
+{% schema %}
+{
+  "name": "About Hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Our Story"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "BOLD is a luxury handcrafted perfume house. Every fragrance is designed to express personality with precision and passion."
+    }
+  ],
+  "presets": [{ "name": "About Hero" }]
+}
+{% endschema %}

@@ -1,0 +1,247 @@
+<div class="cart-summary container">
+
+  <div class="summary-box">
+    <h3>Order Summary</h3>
+    <p>Items: {{ cart.item_count }}</p>
+
+    <div class="promo">
+      <h4 class="promo-title">Promo code</h4>
+      <div class="promo-form" role="group" aria-label="Promo code">
+        <div class="promo-input-wrapper" style="position: relative; flex: 2; display: flex; align-items: center;">
+          <input
+            id="promoCode"
+            type="text"
+            name="discount"
+            placeholder="Enter code"
+            autocomplete="off"
+            value="{{ cart.discount_applications[0].title }}"
+            style="width: 100%;"
+          >
+        </div>
+        <button type="button" class="btn-secondary" id="applyPromoBtn">Apply</button>
+      </div>
+      <p class="promo-hint" id="promoHint" aria-live="polite"></p>
+    </div>
+
+    <p class="tax-shipping-note">Taxes and shipping calculated at checkout.</p>
+
+    {%- assign id_discount = false -%}
+    {%- if cart.discount_applications.size > 0 or cart.cart_level_discount_applications.size > 0 -%}
+      {%- assign id_discount = true -%}
+    {%- endif -%}
+
+    <div class="cart-discounts" id="cartDiscountsContainer" style="{% unless id_discount %}display: none;{% endunless %} margin: 20px 0 15px; padding: 12px 0; border-top: 1px dashed #242424; border-bottom: 1px dashed #242424;">
+      
+      {% for discount_application in cart.cart_level_discount_applications %}
+        <p class="discount-item auto-discount" style="color: #C8A060; font-size: 13px; margin: 6px 0; display: flex; justify-content: space-between; align-items: center;">
+          <span class="discount-title">Discount ({{ discount_application.title }}):</span>
+          <span class="discount-amount">-{{ discount_application.total_allocated_amount | money }}</span>
+        </p>
+      {% endfor %}
+
+      <div id="manualDiscountsWrapper">
+        {% for discount in cart.discount_applications %}
+          {%- assign savings = cart.original_total_price | minus: cart.total_price -%}
+          {%- assign percent = 0 -%}
+          {%- if cart.original_total_price > 0 -%}
+            {%- assign percent = savings | times: 100 | divided_by: cart.original_total_price -%}
+          {%- endif -%}
+          
+          <p class="discount-item manual-discount" style="color: #C8A060; font-size: 13px; margin: 6px 0; display: flex; justify-content: space-between; align-items: center;">
+            <span class="discount-title">Code: <strong style="letter-spacing: 1px; color: #F7F4EE;">{{ discount.title | upcase }} {% if percent > 0 %}({{ percent }}% OFF){% endif %}</strong></span>
+          </p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="total-wrapper" style="margin: 20px 0 25px 0;">
+      
+      <p class="original-price-row" id="originalPriceRow" style="{% if id_discount %}display: flex;{% else %}display: none;{% endif %} justify-content: space-between; font-size: 14px; color: #6C757D; margin: 0 0 10px 0; font-family: Montserrat, sans-serif;">
+        <span>Subtotal:</span>
+        <span id="cartOriginalAmount" style="text-decoration: line-through;">{{ cart.original_total_price | money }}</span>
+      </p>
+
+      {%- assign current_savings = cart.original_total_price | minus: cart.total_price -%}
+      <p class="discount-value-row" id="discountValueRow" style="{% if id_discount and current_savings > 0 %}display: flex;{% else %}display: none;{% endif %} justify-content: space-between; font-size: 14px; color: #C8A060; margin: 0 0 12px 0; font-family: Montserrat, sans-serif;">
+        <span>Discount Value:</span>
+        <span id="cartDiscountAmount">{% if current_savings > 0 %}-{{ current_savings | money }}{% endif %}</span>
+      </p>
+      
+      <p class="total">
+        <span>Total:</span> 
+        <span id="cartTotalAmount" style="{% if id_discount %}color: #C8A060;{% endif %}">{{ cart.total_price | money }}</span>
+      </p>
+    </div>
+    
+    <button type="button" id="proceedToCheckoutBtn" class="btn-primary">Proceed to Checkout</button>
+  </div>
+
+</div>
+
+<style>
+.cart-summary { padding: 0 20px 80px; }
+.summary-box { max-width: 400px; margin-left: auto; background: #111; border: 1px solid #242424; padding: 30px; border-radius: 12px; font-family: Montserrat, sans-serif; color: #A3ADB5; }
+.summary-box h3 { font-family: "Playfair Display", serif; color: #C8A060; margin-bottom: 20px; }
+.summary-box .total { font-size: 22px; color: #F7F4EE; margin: 0; font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
+#cartTotalAmount { font-weight: 600; transition: color 0.3s ease; }
+.summary-box .btn-primary { width: 100%; }
+.promo { margin: 18px 0; }
+.promo-title { font-family: "Playfair Display", serif; color: #C8A060; font-size: 18px; margin-bottom: 12px; }
+.promo-form { display: flex; gap: 10px; align-items: center; }
+#promoCode { height: 46px; padding: 0 14px; background: #111; border: 1px solid #242424; color: #F7F4EE; border-radius: 8px; font-family: Montserrat, sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box !important; }
+#promoCode:focus { border-color: #C8A060; }
+#applyPromoBtn { flex: 1; white-space: nowrap; height: 46px; padding: 0 15px; font-size: 14px; font-family: Montserrat, sans-serif; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #242424; box-sizing: border-box !important; background: transparent; color: #C8A060; cursor: pointer; transition: background 0.3s ease; min-height: unset !important; line-height: normal !important; }
+#applyPromoBtn:hover { background: rgba(200, 160, 96, 0.08); }
+.promo-hint { margin-top: 8px; font-family: Montserrat, sans-serif; font-size: 13px; color: #A3ADB5; min-height: 18px; }
+.tax-shipping-note { font-size: 12px; color: #6C757D; font-style: italic; margin-top: 15px; margin-bottom: 5px; line-height: 1.4; }
+@media (max-width: 375px) { .summary-box { padding: 20px; } #promoCode { padding: 0 10px; font-size: 13px; } #applyPromoBtn { padding: 12px 14px; font-size: 13px; } }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const promoInput = document.getElementById("promoCode");
+  const applyBtn = document.getElementById("applyPromoBtn");
+  const checkoutBtn = document.getElementById("proceedToCheckoutBtn");
+  const promoHint = document.getElementById("promoHint");
+  const discountsContainer = document.getElementById("cartDiscountsContainer");
+  const manualDiscountsWrapper = document.getElementById("manualDiscountsWrapper");
+  const totalAmountSpan = document.getElementById("cartTotalAmount");
+  
+  const originalPriceRow = document.getElementById("originalPriceRow");
+  const originalAmountSpan = document.getElementById("cartOriginalAmount");
+  const discountValueRow = document.getElementById("discountValueRow");
+  const discountAmountSpan = document.getElementById("cartDiscountAmount");
+
+  // دالة تحديث الحسابات وواجهة المستخدم بدقة لايف من السيرفر
+  function updateUI(cart, codeText = "") {
+    const formattedTotal = formatShopifyMoney(cart.total_price);
+    const hasDiscounts = cart.discount_applications && cart.discount_applications.length > 0;
+    
+    if (hasDiscounts || (cart.original_total_price > cart.total_price)) {
+      const originalPriceCents = cart.original_total_price;
+      const finalPriceCents = cart.total_price;
+      const savingsCents = originalPriceCents - finalPriceCents;
+      const discountPercentage = originalPriceCents > 0 ? Math.round((savingsCents / originalPriceCents) * 100) : 0;
+
+      if (originalAmountSpan) originalAmountSpan.textContent = formatShopifyMoney(originalPriceCents);
+      if (discountAmountSpan) discountAmountSpan.textContent = `-${formatShopifyMoney(savingsCents)}`;
+      if (totalAmountSpan) {
+        totalAmountSpan.textContent = formattedTotal;
+        totalAmountSpan.style.color = "#C8A060";
+      }
+
+      if (originalPriceRow) originalPriceRow.style.display = "flex";
+      if (discountValueRow) discountValueRow.style.display = "flex";
+      
+      if (discountsContainer) {
+        discountsContainer.style.display = "block";
+        if (manualDiscountsWrapper) {
+          const displayTitle = codeText ? codeText.toUpperCase() : cart.discount_applications[0].title.toUpperCase();
+          manualDiscountsWrapper.innerHTML = `
+            <p class="discount-item manual-discount" style="color: #C8A060; font-size: 13px; margin: 6px 0; display: flex; justify-content: space-between; align-items: center;">
+              <span class="discount-title">Code: <strong style="letter-spacing: 1px; color: #F7F4EE;">${displayTitle} (${discountPercentage}% OFF)</strong></span>
+            </p>
+          `;
+        }
+      }
+    } else {
+      if (totalAmountSpan) {
+        totalAmountSpan.textContent = formattedTotal;
+        totalAmountSpan.style.color = "#F7F4EE";
+      }
+      if (originalPriceRow) originalPriceRow.style.display = "none";
+      if (discountValueRow) discountValueRow.style.display = "none";
+      if (manualDiscountsWrapper) manualDiscountsWrapper.innerHTML = "";
+      
+      if (discountsContainer) {
+        const hasAuto = discountsContainer.querySelector('.auto-discount');
+        if (!hasAuto) discountsContainer.style.display = "none";
+      }
+    }
+  }
+
+  if (applyBtn && promoInput) {
+    applyBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      const code = promoInput.value.trim();
+
+      if (code === "") {
+        promoHint.style.color = "#E25C5C";
+        promoHint.textContent = "Please enter a valid promo code.";
+        return;
+      }
+
+      promoHint.style.color = "#C8A060";
+      promoHint.textContent = "Checking code...";
+
+      // 1. جلب حالة السلة الحالية لمعرفة السعر قبل تطبيق الكود
+      fetch('/cart.js?t=' + Date.now())
+      .then(res => res.json())
+      .then(initialCart => {
+        const initialTotal = initialCart.total_price;
+
+        // 2. ضرب الـ Endpoint الرسمية والآمنة للخصومات في شوبيفاي
+        fetch(`/discount/${encodeURIComponent(code)}?t=` + Date.now())
+        .then(() => {
+          // 3. جلب بيانات السلة الحديثة فوراً بعد معالجة الخصم
+          return fetch('/cart.js?t=' + Date.now());
+        })
+        .then(res => res.json())
+        .then(updatedCart => {
+          const appliedCodes = updatedCart.discount_applications || [];
+          const isCodeInCart = appliedCodes.some(d => d.title.toLowerCase() === code.toLowerCase());
+          const isPriceDropped = updatedCart.total_price < initialTotal;
+
+          if (isCodeInCart || isPriceDropped) {
+            // الكود سليم وتم قبوله بنجاح!
+            promoHint.style.color = "#C8A060";
+            promoHint.textContent = "Code applied successfully!";
+            updateUI(updatedCart, code);
+          } else {
+            // الكود غير صالح -> اظهر الخطأ فوراً وقم بعمل مسح آمن للـ Session المعلقة
+            promoHint.style.color = "#E25C5C";
+            promoHint.textContent = "Invalid promo code. Please try again.";
+            
+            fetch('/discount/CLEAR_ALL_DISCOUNTS_RESET')
+            .then(() => fetch('/cart.js?t=' + Date.now()))
+            .then(res => res.json())
+            .then(cleanCart => {
+              updateUI(cleanCart, "");
+            });
+          }
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        promoHint.style.color = "#E25C5C";
+        promoHint.textContent = "Error validating promo code.";
+      });
+    });
+  }
+
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      window.location.href = "/checkout";
+    });
+  }
+
+  function formatShopifyMoney(cents) {
+    const currencyFormat = "{{ shop.money_format }}";
+    let value = (cents / 100).toFixed(2);
+    if (currencyFormat.includes('amount_no_decimals')) {
+      value = Math.round(cents / 100).toString();
+    }
+    return currencyFormat.replace(/\{\{\s*amount\s*\}\}/, value)
+                          .replace(/\{\{\s*amount_no_decimals\s*\}\}/, value)
+                          .replace(/(<([^>]+)>)/gi, "");
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Cart Summary",
+  "settings": []
+}
+{% endschema %}

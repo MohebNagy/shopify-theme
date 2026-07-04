@@ -1,0 +1,151 @@
+/* =========================
+   BOLD THEME — COMPONENTS
+   Buttons, Cards, Forms, Inputs
+========================= */
+
+.btn-primary,
+.btn-secondary {
+  display: inline-block;
+  min-height: 56px;
+  padding: 16px 32px;
+  border-radius: var(--radius-button);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-primary {
+  background: var(--color-gold);
+  color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background: var(--color-gold-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+}
+
+.btn-secondary:hover {
+  background: rgba(200, 160, 96, 0.1);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--color-light);
+  font-family: var(--font-body);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-light);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+}
+
+.card,
+.product-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.card:hover,
+.product-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+select {
+  width: 100%;
+  padding: 15px;
+  background: var(--color-card);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-input);
+  color: var(--color-light);
+  font-size: 14px;
+  transition: var(--transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-gold);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-gray-light);
+}
+
+.variant-btn.active {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.qty button {
+  width: 40px;
+  height: 40px;
+  background: var(--color-card);
+  border: 1px solid var(--color-divider);
+  color: var(--color-light);
+  border-radius: var(--radius-button);
+}
+
+.qty input {
+  width: 60px;
+  text-align: center;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+

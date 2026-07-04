@@ -1,0 +1,284 @@
+<section class="hero">
+
+  <div class="hero-media">
+    {% if section.settings.image %}
+      <img
+        src="{{ section.settings.image | image_url: width: 1920 }}"
+        alt="{{ section.settings.image.alt | escape | default: section.settings.title }}"
+        loading="eager"
+        width="{{ section.settings.image.width }}"
+        height="{{ section.settings.image.height }}"
+        class="hero-img-desktop animate-luxury-zoom"
+      >
+    {% endif %}
+
+    {% if section.settings.image_mobile %}
+      <img
+        src="{{ section.settings.image_mobile | image_url: width: 800 }}"
+        alt="{{ section.settings.image_mobile.alt | escape | default: section.settings.title }}"
+        loading="lazy"
+        width="{{ section.settings.image_mobile.width }}"
+        height="{{ section.settings.image_mobile.height }}"
+        class="hero-img-mobile animate-luxury-zoom"
+      >
+    {% else %}
+      {% if section.settings.image %}
+        <img
+          src="{{ section.settings.image | image_url: width: 800 }}"
+          alt="{{ section.settings.image.alt | escape | default: section.settings.title }}"
+          loading="lazy"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+          class="hero-img-mobile animate-luxury-zoom"
+        >
+      {% endif %}
+    {% endif %}
+    
+    <div class="overlay-desktop"></div>
+    <div class="overlay-mobile"></div>
+  </div>
+
+  <div class="hero-content container">
+    <h1 class="reveal-on-scroll delay-1">{{ section.settings.title }}</h1>
+    <p class="reveal-on-scroll delay-2">{{ section.settings.subtitle }}</p>
+
+    <div class="hero-actions reveal-on-scroll delay-3">
+      {% if section.settings.primary_text != blank %}
+        <a href="{{ section.settings.primary_link }}" class="btn-primary">
+          {{ section.settings.primary_text }}
+        </a>
+      {% endif %}
+
+      {% if section.settings.secondary_text != blank %}
+        <a href="{{ section.settings.secondary_link }}" class="btn-secondary">
+          {{ section.settings.secondary_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+</section>
+
+<style>
+/* ======================================================= */
+/* 💻 أولاً: تنسيق نسخة اللاب توب والكمبيوتر (Desktop) */
+/* ======================================================= */
+.hero {
+  position: relative;
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  color: #F7F4EE;
+  overflow: hidden;
+  background-color: #0B0B0B;
+}
+
+.hero-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-img-desktop {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center right !important;
+}
+.hero-img-mobile {
+  display: none;
+}
+
+.overlay-desktop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(11,11,11,0.95) 30%, rgba(11,11,11,0.4) 55%, rgba(11,11,11,0) 100%) !important;
+  z-index: 2;
+  display: block;
+}
+
+.overlay-mobile {
+  display: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 550px;
+  margin-left: 5% !important;
+  text-align: left;
+}
+
+.hero-content h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 50px;
+  color: #C8A060;
+  margin: 0;
+}
+
+.hero-content p {
+  font-family: Montserrat, sans-serif;
+  margin-top: 20px;
+  max-width: 500px;
+  color: #A3ADB5;
+}
+
+.hero-actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+}
+
+.btn-primary {
+  background-color: #C8A060 !important;
+  color: #000000 !important;
+  padding: 15px 30px;
+  text-decoration: none;
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+}
+
+.btn-secondary {
+  border: 1px solid #C8A060 !important;
+  color: #C8A060 !important;
+  padding: 15px 30px;
+  text-decoration: none;
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+}
+
+/* ======================================================= */
+/* 📱 ثانياً: تنسيق نسخة الموبايل (المظهر المطور الفاخر) */
+/* ======================================================= */
+@media(max-width:768px){
+  .hero {
+    flex-direction: column !important;
+    height: auto !important;
+    align-items: stretch !important;
+    background-color: #0B0B0B !important;
+  }
+
+  .hero-img-desktop {
+    display: none !important;
+  }
+  .hero-img-mobile {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .hero-media {
+    position: relative !important;
+    height: 50vh !important; 
+    width: 100%;
+  }
+
+  .overlay-desktop {
+    display: none !important;
+  }
+
+  .overlay-mobile {
+    display: block !important;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(11,11,11,0) 40%, rgba(11,11,11,0.6) 75%, rgba(11,11,11,1) 100%) !important;
+    z-index: 2;
+  }
+
+  .hero-content {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px 24px 50px 24px !important;
+    background-color: #0B0B0B !important;
+    text-align: center !important;
+    z-index: 3;
+    box-sizing: border-box;
+  }
+
+  .hero-content h1 {
+    font-size: 30px !important;
+    line-height: 1.3 !important;
+  }
+
+  .hero-content p {
+    margin: 15px auto 0 auto !important;
+    font-size: 14px !important;
+    max-width: 320px;
+  }
+
+  .hero-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-top: 30px;
+    width: 100%;
+  }
+
+  .btn-primary, .btn-secondary {
+    display: block !important;
+    width: 100% !important;
+    max-width: 280px;
+    margin: 0 auto !important;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 14px 20px !important;
+    letter-spacing: 1px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // تفعيل سستم مراقبة العناصر الفخم (Intersection Observer)
+  const revealElements = document.querySelectorAll('.reveal-on-scroll');
+  
+  const observerOptions = {
+    root: null,
+    threshold: 0.1, // يبدأ الأنيمايشن أول ما 10% من السكشن يظهر
+    rootMargin: "0px 0px -50px 0px" /* يشتغل قبل ما يوصل للعين بحاجة بسيطة عشان السكرول يبقى طبيعي */
+  };
+
+  const animationObserver = new IntersectionObserver(function (entries, observer) {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        // بمجرد ما يظهر، بنشيل المراقبة عنه عشان نضمن ثبات الأداء
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  revealElements.forEach(element => {
+    animationObserver.observe(element);
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Hero Image (Desktop)" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Hero Image (Mobile)" },
+    { "type": "text", "id": "title", "label": "Title", "default": "You Can Dress How You Feel" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Luxury handcrafted perfumes designed to express personality." },
+    { "type": "text", "id": "primary_text", "label": "Primary Button", "default": "Shop Collection" },
+    { "type": "url", "id": "primary_link", "label": "Primary Link" },
+    { "type": "text", "id": "secondary_text", "label": "Secondary Button", "default": "Explore Story" },
+    { "type": "url", "id": "secondary_link", "label": "Secondary Link" }
+  ],
+  "presets": [{ "name": "Hero Banner" }]
+}
+{% endschema %}

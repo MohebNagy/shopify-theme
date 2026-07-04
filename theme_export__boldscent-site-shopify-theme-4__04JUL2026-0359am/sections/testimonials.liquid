@@ -1,0 +1,213 @@
+<section class="testimonials-wrapper" id="testi-section-{{ section.id }}">
+  <section class="testimonials container">
+
+    <h2 class="testi-title">{{ section.settings.title }}</h2>
+
+    <div class="grid">
+
+      {% for block in section.blocks %}
+        <div class="quote testi-anim-card" {{ block.shopify_attributes }} style="--testi-index: {{ forloop.index0 }};">
+          <p>"{{ block.settings.text }}"</p>
+          <span>{{ block.settings.name }}</span>
+        </div>
+      {% endfor %}
+
+    </div>
+
+  </section>
+</section>
+
+<style>
+/* ======================================================= */
+/* 💻 أولاً: تنسيق نسخة اللاب توب والكمبيوتر (Desktop) */
+/* ======================================================= */
+.testimonials-wrapper {
+  width: 100%;
+  background-color: #0B0B0B;
+}
+
+.testimonials{
+  padding:120px 0;
+  text-align:center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.testimonials h2.testi-title{
+  font-family:"Playfair Display", serif;
+  color:#C8A060;
+  margin-bottom:40px;
+  font-size: 36px;
+  
+  /* أنيميشن ناعم للعنوان */
+  opacity: 0;
+  transform: translateY(-15px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.testimonials-wrapper.testi-activated h2.testi-title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.testimonials .grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+}
+
+.quote{
+  background:#111111;
+  border:1px solid #242424;
+  padding:30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  box-sizing: border-box;
+  
+  /* تحضير الكروت للأنيميشن */
+  opacity: 0;
+  transform: translateY(35px);
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), 
+              transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* تفعيل التتابع الفاخر */
+.testimonials-wrapper.testi-activated .testi-anim-card {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--testi-index, 0) * 0.12s);
+}
+
+.quote p{
+  font-family: Montserrat, sans-serif;
+  color:#A3ADB5;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.quote span{
+  color:#C8A060;
+  font-family:"Playfair Display", serif;
+  font-size: 18px;
+  margin-top: 15px;
+  display: block;
+}
+
+/* ======================================================= */
+/* 📱 ثانياً: تنسيق نسخة الموبايل (تقليب الصفحات بالعرض - Carousel) */
+/* ======================================================= */
+@media(max-width:768px){
+  .testimonials {
+    padding: 60px 0 !important; 
+    overflow: hidden;
+  }
+
+  .testimonials h2.testi-title {
+    font-size: 28px !important;
+    margin-bottom: 30px !important;
+    padding: 0 20px; 
+  }
+
+  .testimonials .grid {
+    display: flex !important; 
+    flex-direction: row !important;
+    overflow-x: auto !important; 
+    scroll-snap-type: x mandatory !important; 
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; 
+    gap: 15px !important; 
+    padding: 10px 20px 25px 20px !important; 
+    box-sizing: border-box;
+  }
+
+  .testimonials .grid::-webkit-scrollbar {
+    display: none;
+  }
+  .testimonials .grid {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+  }
+
+  .quote {
+    flex: 0 0 85% !important; 
+    scroll-snap-align: center !important; 
+    padding: 35px 24px !important;
+    border-radius: 4px; 
+  }
+
+  /* الحفاظ على أنيميشن الدخول الناعم للكاروسيل في الموبايل */
+  .testimonials-wrapper.testi-activated .testi-anim-card {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  .quote p {
+    font-size: 14px !important;
+    line-height: 1.5;
+  }
+
+  .quote span {
+    font-size: 16px !important;
+    margin-top: 12px;
+  }
+}
+
+/* 🛡️ الحماية الاحتياطية للمتصفحات بدون JS */
+.no-js .testimonials h2.testi-title,
+.no-js .testi-anim-card {
+  opacity: 1 !important;
+  transform: none !important;
+}
+</style>
+
+<script>
+(function() {
+  function initTestiAnimation() {
+    const section = document.getElementById('testi-section-{{ section.id }}');
+    if (!section) return;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            section.classList.add('testi-activated');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      observer.observe(section);
+    } else {
+      section.classList.add('testi-activated');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTestiAnimation);
+  } else {
+    initTestiAnimation();
+  }
+  document.addEventListener('shopify:section:load', initTestiAnimation);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "What Our Clients Say" }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Quote",
+      "settings": [
+        { "type": "textarea", "id": "text", "label": "Quote" },
+        { "type": "text", "id": "name", "label": "Name" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Testimonials" }]
+}
+{% endschema %}

@@ -1,0 +1,132 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "BOLD Perfumes",
+    "theme_version": "1.0.0",
+    "theme_author": "BOLD",
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://help.shopify.com/"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Brand colors"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primary background",
+        "default": "#0B0B0B"
+      },
+      {
+        "type": "color",
+        "id": "color_gold",
+        "label": "Gold accent",
+        "default": "#C8A060"
+      },
+      {
+        "type": "color",
+        "id": "color_gold_hover",
+        "label": "Gold hover",
+        "default": "#D8B57A"
+      },
+      {
+        "type": "color",
+        "id": "color_light",
+        "label": "Light text",
+        "default": "#F7F4EE"
+      },
+      {
+        "type": "color",
+        "id": "color_card",
+        "label": "Card background",
+        "default": "#111111"
+      },
+      {
+        "type": "color",
+        "id": "color_divider",
+        "label": "Divider",
+        "default": "#242424"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Fonts"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Heading font",
+        "default": "playfair_display_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Body font",
+        "default": "montserrat_n4"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Social accounts"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok URL"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook URL"
+      }
+    ]
+  },
+  {
+    "name": "Announcement bar",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "announcement_bar_enabled",
+        "label": "Show announcement bar",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "announcement_bar_text",
+        "label": "Default announcement text",
+        "default": "Free shipping on all orders over $100"
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart type",
+        "options": [
+          { "value": "drawer", "label": "Drawer" },
+          { "value": "page", "label": "Page" }
+        ],
+        "default": "drawer"
+      }
+    ]
+  }
+]

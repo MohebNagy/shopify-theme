@@ -1,0 +1,86 @@
+<section class="cart-recommendations" aria-label="Recommended for you">
+
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <h2 class="section-title">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="recommendations-grid">
+      {% comment %}
+        Use Shopify’s product recommendations for cart upsell.
+        Note: product recommendations require a product context; Shopify will attempt to resolve them.
+        This section still renders safely even when none are available.
+      {% endcomment %}
+
+      {% if recommendations.performed and recommendations.products_count > 0 %}
+        {% for product in recommendations.products limit: section.settings.limit %}
+          {% render 'product-card', product: product %}
+        {% endfor %}
+      {% else %}
+        <div class="empty-recommendations" role="status">No recommendations available.</div>
+      {% endif %}
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .cart-recommendations{
+    padding:80px 0;
+  }
+
+  .section-title{
+    font-family:"Playfair Display";
+    color:#C8A060;
+    margin-bottom:40px;
+    font-size:36px;
+  }
+
+  .recommendations-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:25px;
+  }
+
+  .empty-recommendations{
+    grid-column:1 / -1;
+    color:#A3ADB5;
+    font-family:Montserrat;
+  }
+
+  @media(max-width:1024px){
+    .recommendations-grid{grid-template-columns:repeat(2,1fr);}
+    .section-title{font-size:30px;}
+  }
+
+  @media(max-width:768px){
+    .recommendations-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Cart Recommendations",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You May Also Like"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Products limit",
+      "min": 2,
+      "max": 8,
+      "step": 2,
+      "default": 4
+    }
+  ],
+  "enabled_on": {
+    "templates": ["cart"]
+  }
+}
+{% endschema %}
+

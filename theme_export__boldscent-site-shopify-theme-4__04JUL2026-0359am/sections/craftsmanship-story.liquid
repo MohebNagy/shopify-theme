@@ -1,0 +1,301 @@
+<section class="story-wrapper" id="story-section-{{ section.id }}">
+  <section class="story">
+
+    <div class="image-bg">
+      {% if section.settings.image %}
+        <img
+          src="{{ section.settings.image | image_url: width: 1920 }}"
+          alt="{{ section.settings.title | escape }}"
+          loading="lazy"
+          width="1920"
+          height="700"
+          class="story-img-desktop"
+        >
+      {% endif %}
+
+      {% if section.settings.image_mobile %}
+        <img
+          src="{{ section.settings.image_mobile | image_url: width: 800 }}"
+          alt="{{ section.settings.title | escape }}"
+          loading="lazy"
+          width="800"
+          height="420"
+          class="story-img-mobile"
+        >
+      {% else %}
+        {% if section.settings.image %}
+          <img
+            src="{{ section.settings.image | image_url: width: 800 }}"
+            alt="{{ section.settings.title | escape }}"
+            loading="lazy"
+            width="800"
+            height="420"
+            class="story-img-mobile"
+          >
+        {% endif %}
+      {% endif %}
+      
+      <div class="gradient-overlay"></div>
+    </div>
+
+    <div class="story-content-container">
+      <div class="content story-anim-block">
+        <h2>{{ section.settings.title }}</h2>
+        <p>{{ section.settings.text }}</p>
+
+        {% if section.settings.button != blank %}
+          <a href="{{ section.settings.link }}" class="btn-primary">
+            {{ section.settings.button }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </section>
+</section>
+
+<style>
+/* ======================================================= */
+/* 💻 أولاً: تنسيق اللاب توب والكمبيوتر (Full Width Cinematic) */
+/* ======================================================= */
+.story-wrapper {
+  width: 100%;
+  background-color: #0B0B0B;
+  position: relative;
+  overflow: hidden;
+}
+
+.story {
+  position: relative;
+  min-height: 700px; 
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.story .image-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  /* أنيميشن خفيف جداً لظهور الخلفية بنعومة */
+  opacity: 0.3;
+  transition: opacity 1.5s ease;
+}
+
+/* عندما يفتح السكشن ينور الجرافيك بالكامل */
+.story-wrapper.story-activated .image-bg {
+  opacity: 1;
+}
+
+.story-img-desktop {
+  display: block !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+}
+
+.story-img-mobile {
+  display: none !important;
+}
+
+.story .gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to left, 
+    #0B0B0B 0%,
+    rgba(11, 11, 11, 0.98) 40%,
+    rgba(11, 11, 11, 0.7) 70%, 
+    rgba(11, 11, 11, 0) 100%
+  ) !important;
+  z-index: 2;
+}
+
+.story-content-container {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* تحضير كتلة الكلام للأنيميشن الفخم */
+.story .content {
+  width: 100%;
+  max-width: 520px;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(35px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), 
+              transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* تفعيل الحركة السينمائية فور ظهور السكشن */
+.story-wrapper.story-activated .story-anim-block {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.story h2 {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  font-size: 46px;
+  margin: 0 0 25px 0;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+.story p {
+  font-family: "Montserrat", sans-serif;
+  color: #A3ADB5;
+  line-height: 1.8;
+  font-size: 15px;
+  margin-bottom: 40px;
+}
+
+.story .btn-primary {
+  display: inline-block;
+  padding: 14px 35px;
+  background: transparent;
+  color: #C8A060;
+  border: 1px solid #C8A060;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.story .btn-primary:hover {
+  background: #C8A060;
+  color: #0B0B0B;
+  transform: translateY(-2px);
+}
+
+/* ======================================================= */
+/* 📱 ثانياً: تنسيق نسخة الموبايل (تبديل الصورة المخصصة) */
+/* ======================================================= */
+@media (max-width: 768px) {
+  .story {
+    flex-direction: column !important;
+    padding: 0 0 60px 0 !important;
+  }
+
+  .story-img-desktop {
+    display: none !important;
+  }
+  
+  .story-img-mobile {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .story .image-bg {
+    position: relative !important;
+    width: 100% !important;
+    height: 420px !important; 
+  }
+
+  .story .gradient-overlay {
+    background: linear-gradient(to bottom, 
+      rgba(11, 11, 11, 0) 0%, 
+      rgba(11, 11, 11, 0.4) 50%, 
+      rgba(11, 11, 11, 0.85) 80%, 
+      #0B0B0B 100%
+    ) !important;
+  }
+
+  .story-content-container {
+    padding: 0 !important;
+  }
+
+  .story .content {
+    max-width: 100% !important;
+    padding: 0 24px !important;
+    margin-top: -50px !important; 
+    text-align: center !important; 
+  }
+
+  .story h2 {
+    font-size: 32px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .story p {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 35px !important;
+  }
+  
+  .story .btn-primary {
+    display: block !important;
+    width: 100% !important;
+    max-width: 280px;
+    margin: 0 auto !important;
+    padding: 14px 20px !important;
+    font-size: 12px !important;
+    box-sizing: border-box;
+  }
+}
+
+/* 🛡️ حماية حيوية لو الجافا سكريبت اتأخر تظهر فوراً بكامل البيانات */
+.no-js .story .image-bg { opacity: 1 !important; }
+.no-js .story .content { opacity: 1 !important; transform: none !important; }
+</style>
+
+<script>
+(function() {
+  function initStoryAnimation() {
+    const section = document.getElementById('story-section-{{ section.id }}');
+    if (!section) return;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            section.classList.add('story-activated');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      observer.observe(section);
+    } else {
+      section.classList.add('story-activated');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStoryAnimation);
+  } else {
+    initStoryAnimation();
+  }
+  document.addEventListener('shopify:section:load', initStoryAnimation);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Craftsmanship Story",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image (Desktop)" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Image (Mobile)" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Crafted with Precision" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "text", "id": "button", "label": "Button text", "default": "Learn More" },
+    { "type": "url", "id": "link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "Craftsmanship Story" }]
+}
+{% endschema %}

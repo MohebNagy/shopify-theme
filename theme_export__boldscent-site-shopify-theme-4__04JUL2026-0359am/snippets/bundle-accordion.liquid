@@ -1,0 +1,29 @@
+{% comment %}
+  bundle-accordion.liquid
+  -----------------------
+  Accordion section واحد لحجم معين (50ml أو 100ml) - مستخدم مرتين في الـ Mixed mode.
+  بيفتح واحد ويقفل التاني تلقائياً عن طريق الـ JS.
+
+  Parameters:
+    size     -> '50' / '100'
+    label    -> النص المعروض في الهيدر، مثلاً "50ML Fragrances"
+    products -> list البرفانات (collection products)
+{% endcomment %}
+
+<div class="bundle-accordion" data-accordion-size="{{ size }}">
+  <div class="bundle-accordion-header">
+    <span>{{ label }}</span>
+    <span class="accordion-meta">
+      <span class="accordion-count" id="summaryCount{{ size }}">0 / 0</span>
+      <span class="accordion-divider">&nbsp;—&nbsp;</span>
+      <span id="summaryPricePer{{ size }}">—</span>
+    </span>
+  </div>
+  <div class="bundle-accordion-body">
+    <div class="scent-selection-grid">
+      {% for perfume in products %}
+        {% render 'bundle-card', perfume: perfume, size: size %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

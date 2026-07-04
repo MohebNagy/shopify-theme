@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "about-hero",
+      "settings": {
+        "title": "Page",
+        "text": ""
+      }
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,440 @@
+<div class="cart-drawer" id="cartDrawer">
+
+  <div class="cart-header">
+    <h3>Your Cart</h3>
+    <button id="closeCart" type="button" aria-label="Close cart">✕</button>
+  </div>
+
+  <div class="shipping-goal-container" id="shippingGoalWrapper">
+    <p class="shipping-goal-text" id="shippingGoalText">You are <span>LE 1,500.00</span> away from Free Shipping</p>
+    <div class="shipping-progress-bar">
+      <div class="shipping-progress-fill" id="shippingProgressFill" style="width: 0%;"></div>
+    </div>
+  </div>
+
+  <div class="cart-drawer-items"></div>
+
+  <div class="cart-drawer-empty" id="cartEmptyState" style="display: none;">
+    <div class="empty-icon">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+    </div>
+    <h4>Your cart is empty</h4>
+    <p>Signatures of luxury are waiting for you.</p>
+    <button type="button" class="btn-continue-shopping" id="continueShoppingBtn">Continue Shopping</button>
+  </div>
+
+  <div class="cart-footer" id="cartFooterWrapper">
+    <div class="cart-summary-box">
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <span id="cartDrawerSubtotal">LE 0.00</span>
+      </div>
+      <div class="cart-total-row total-main">
+        <span>Total</span>
+        <span id="cartDrawerTotal">LE 0.00</span>
+      </div>
+      <p class="shipping-tax-note">Shipping & taxes calculated at checkout</p>
+    </div>
+    
+    <div class="cart-footer-buttons">
+      <a href="{{ routes.cart_url }}" class="btn-drawer-secondary">View Cart</a>
+      <a href="/checkout" class="btn-drawer-primary">Checkout</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="cart-drawer-overlay" id="cartOverlay"></div>
+
+<style>
+/* ---------------------------------------------------------
+   هندسة الأنيميشن الفاخر والمقاسات المستقرة
+   --------------------------------------------------------- */
+.cart-drawer {
+  position: fixed;
+  right: -100%;
+  top: 0;
+  width: 420px;
+  max-width: 100%;
+  height: 100%;
+  background: #0B0B0B;
+  border-left: 1px solid #1A1A1A;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 99999 !important; 
+  padding: 30px 24px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  touch-action: none;
+}
+
+.cart-drawer.active {
+  right: 0 !important;
+}
+
+.cart-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  z-index: 99998 !important; 
+}
+
+.cart-drawer-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* الـ Header */
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #C8A060;
+  font-family: "Playfair Display", serif;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #141414;
+}
+
+.cart-header h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.cart-header button {
+  background: none;
+  border: none;
+  color: #A3ADB5;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.cart-header button:hover { color: #C8A060; }
+
+/* ---------------------------------------------------------
+   1. شريط الشحن المجاني الفخم (Free Shipping Bar)
+   --------------------------------------------------------- */
+.shipping-goal-container {
+  padding: 15px 0 10px 0;
+  font-family: "Montserrat", sans-serif;
+  border-bottom: 1px solid #141414;
+}
+
+.shipping-goal-text {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #A3ADB5;
+  text-align: center;
+}
+
+.shipping-goal-text span {
+  color: #C8A060;
+  font-weight: 600;
+}
+
+.shipping-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #1A1A1A;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.shipping-progress-fill {
+  height: 100%;
+  background: #C8A060;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cart-drawer-items {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-top: 10px;
+}
+
+/* ---------------------------------------------------------
+   تنسيق كروت المنتجات المُعدل لضمان المحاذاة التامة
+   --------------------------------------------------------- */
+.cart-item {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding: 24px 0;
+  border-bottom: 1px solid #141414;
+  color: #F7F4EE;
+  font-family: "Montserrat", sans-serif;
+  box-sizing: border-box;
+}
+
+.cart-item img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 2px;
+  background: #111;
+  border: 1px solid #1C1C1C;
+  flex-shrink: 0;
+}
+
+.cart-item-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.cart-item-title {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #F7F4EE;
+  font-family: "Playfair Display", serif;
+  padding-right: 25px;
+  line-height: 1.4;
+}
+
+/* 🌟 ستايل منتقي الـ Variant المحسن والمستقر */
+.cart-item-variant-select {
+  background: #111;
+  color: #A3ADB5;
+  border: 1px solid #222;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  padding: 6px 10px;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+  max-width: 180px;
+  margin-bottom: 12px;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+.cart-item-variant-select:focus {
+  border-color: #C8A060;
+  color: #F7F4EE;
+}
+
+.cart-item-price-qty {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto; /* يدفع العداد والسعر لأسفل الكارت دائماً */
+  width: 100%;
+}
+
+/* 🌟 حل جذري لمشكلة اختفاء رقم العداد وضيق المساحة */
+.cart-item-qty-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid #242424;
+  background: #000;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+.qty-btn {
+  background: none;
+  border: none;
+  color: #A3ADB5;
+  width: 30px;
+  height: 100%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.qty-btn:hover { color: #C8A060; background: #111; }
+
+/* إظهار خط عداد المنتجات بوضوح تام ومنع النقاط */
+.qty-input {
+  width: 40px !important; /* زيادة العرض ليتسع للرقم بـ استقرار */
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: #F7F4EE !important; /* لون فاتح واضح جداً */
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  margin: 0;
+  -moz-appearance: textfield;
+}
+/* إخفاء أسهم الـ input الافتراضية المقيتة */
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.cart-item-price {
+  font-size: 14px;
+  font-weight: 500;
+  color: #C8A060;
+}
+
+.cart-item-remove {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 5px;
+  transition: color 0.2s;
+}
+.cart-item-remove:hover { color: #C8A060; }
+
+/* ---------------------------------------------------------
+   2. واجهة السلة الفارغة (Premium Empty State)
+   --------------------------------------------------------- */
+.cart-drawer-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 10px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.empty-icon {
+  color: #242424;
+  margin-bottom: 20px;
+}
+
+.cart-drawer-empty h4 {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  font-size: 20px;
+  margin: 0 0 10px 0;
+  font-weight: 400;
+}
+
+.cart-drawer-empty p {
+  color: #666;
+  font-size: 13px;
+  margin: 0 0 25px 0;
+}
+
+.btn-continue-shopping {
+  background: transparent;
+  color: #F7F4EE;
+  border: 1px solid #242424;
+  padding: 12px 30px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-continue-shopping:hover {
+  border-color: #C8A060;
+  color: #C8A060;
+}
+
+/* ---------------------------------------------------------
+   تنسيق الفوتر والأزرار الفاخرة
+   --------------------------------------------------------- */
+.cart-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #141414;
+  background: #0B0B0B;
+}
+
+.cart-summary-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #A3ADB5;
+}
+
+.cart-total-row.total-main {
+  font-size: 16px;
+  color: #F7F4EE;
+  padding-top: 8px;
+  border-top: 1px dotted #1A1A1A;
+}
+
+.cart-total-row.total-main #cartDrawerTotal {
+  color: #C8A060;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.shipping-tax-note {
+  margin: 4px 0 0 0;
+  font-size: 11px;
+  color: #444;
+  font-family: "Montserrat", sans-serif;
+}
+
+.cart-footer-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cart-footer-buttons a {
+  flex: 1;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-drawer-primary {
+  background: #C8A060;
+  color: #0B0B0B;
+  border: 1px solid #C8A060;
+}
+.btn-drawer-primary:hover { background: #b08b50; border-color: #b08b50; }
+
+.btn-drawer-secondary {
+  background: transparent;
+  color: #F7F4EE;
+  border: 1px solid #242424;
+}
+.btn-drawer-secondary:hover { border-color: #C8A060; color: #C8A060; }
+
+/* 🌟 تكييف نسخة الموبايل لتاخد 85% لراحة أفضل للعرض وسحب مستقر */
+@media (max-width: 768px) {
+  .cart-drawer {
+    width: 85% !important;
+    right: -85% !important; 
+    padding: 20px 16px;
+  }
+  .cart-header h3 { font-size: 20px; }
+  .cart-footer-buttons a { height: 44px; font-size: 11px; }
+  .cart-item img { width: 75px; height: 75px; }
+}
+</style>

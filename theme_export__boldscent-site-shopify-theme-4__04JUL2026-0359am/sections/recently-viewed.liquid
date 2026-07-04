@@ -1,0 +1,491 @@
+{% assign ai_gen_id = section.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-recently-viewed-{{ ai_gen_id }} {
+    display: none; 
+    background-color: #000000;
+    padding: {{ section.settings.section_padding }}px 0;
+    border-top: 1px solid #111111;
+    overflow: hidden;
+  }
+
+  .ai-recently-viewed__container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .ai-recently-viewed__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .ai-recently-viewed__title-{{ ai_gen_id }} {
+    font-size: {{ section.settings.heading_size }}px;
+    margin: 0 0 12px 0;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  
+  .rv-title-link {
+    color: #C8A060;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .rv-title-link:hover {
+    color: #F7F4EE;
+  }
+
+  .luxury-divider-{{ ai_gen_id }} {
+    width: 50px;
+    height: 1px;
+    background-color: #C8A060;
+    margin: 0 auto {{ section.settings.grid_spacing }}px;
+  }
+
+  .ai-recently-viewed-{{ ai_gen_id }} .slider-wrapper {
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: 10px;
+    scrollbar-width: none; 
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .ai-recently-viewed-{{ ai_gen_id }} .slider-wrapper::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* 🌟 استخدام نفس خصائص تنسيق الـ grid الخاصة بسكشن الـ Related Products المعروض */
+  .ai-recently-viewed-{{ ai_gen_id }} .grid {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: {{ section.settings.grid_gap }}px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .ai-recently-viewed-{{ ai_gen_id }} .slider-item {
+    flex: 0 0 calc(25% - 18px) !important;
+    width: calc(25% - 18px) !important;
+    scroll-snap-align: start;
+    display: flex;
+  }
+
+  /* 🌟 لضمان تطبيق كلاسات الثيم على الكروت المجلوبة ديناميكياً لتطابق الديزاين تماماً */
+  .ai-recently-viewed-{{ ai_gen_id }} .grid .product-card, 
+  .ai-recently-viewed-{{ ai_gen_id }} .grid .card {
+    border-radius: 0px !important;
+    border: 1px solid #242424 !important;
+    background: #111111 !important;
+    height: 100% !important;
+    width: 100%;
+  }
+
+  .ai-recently-viewed-{{ ai_gen_id }} .grid img {
+    border-radius: 0px !important;
+    object-fit: cover !important;
+  }
+
+  /* تصميم كارت الـ See All الفاخر */
+  .see-all-card-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+    background: #111111;
+    border: 1px solid #242424;
+    color: #C8A060;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 40px 20px;
+    box-sizing: border-box;
+  }
+
+  .see-all-card-{{ ai_gen_id }}:hover {
+    border-color: #C8A060;
+    background: #1a1a1a;
+    color: #F7F4EE;
+  }
+
+  .see-all-text-{{ ai_gen_id }} {
+    font-size: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+  }
+
+  .scroll-indicator-bar-{{ ai_gen_id }} {
+    width: 120px; 
+    height: 2px; 
+    background-color: #1a1a1a; 
+    margin: 30px auto 0; 
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scroll-progress-thumb-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #C8A060; 
+    width: 30%; 
+    transform: translateX(0%);
+    transition: transform 0.05s linear;
+    will-change: transform;
+  }
+
+  @media(max-width: 1024px) {
+    .ai-recently-viewed-{{ ai_gen_id }} .slider-item {
+      flex: 0 0 calc(40% - 12px) !important;
+      width: calc(40% - 12px) !important;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-recently-viewed-{{ ai_gen_id }} {
+      padding: 60px 0;
+    }
+    .ai-recently-viewed__container-{{ ai_gen_id }} {
+      padding: 0 16px;
+    }
+    .ai-recently-viewed__title-{{ ai_gen_id }} {
+      font-size: calc({{ section.settings.heading_size }}px * 0.8);
+    }
+    .ai-recently-viewed-{{ ai_gen_id }} .grid {
+      gap: 16px;
+    }
+    .ai-recently-viewed-{{ ai_gen_id }} .slider-item {
+      flex: 0 0 calc(50% - 8px) !important;
+      width: calc(50% - 8px) !important;
+    }
+    .scroll-indicator-bar-{{ ai_gen_id }} {
+      width: 90px;
+    }
+    .see-all-text-{{ ai_gen_id }} {
+      font-size: 16px;
+    }
+  }
+/* ===== Recently Viewed Entrance Animation ===== */
+
+.ai-recently-viewed-{{ ai_gen_id }}{
+  opacity:0;
+  transform:translateX(80px);
+  transition:
+    opacity .9s ease,
+    transform .9s cubic-bezier(.22,1,.36,1);
+}
+
+.ai-recently-viewed-{{ ai_gen_id }}.rv-visible{
+  opacity:1;
+  transform:translateX(0);
+}
+
+.slider-item{
+  opacity:0;
+  transform:translateX(40px);
+  transition:
+    opacity .7s ease,
+    transform .7s ease;
+}
+
+.slider-item.show{
+  opacity:1;
+  transform:translateX(0);
+}
+.ai-recently-viewed__header-{{ ai_gen_id }}{
+  opacity:0;
+  transform:translateY(-20px);
+  transition:all .8s ease;
+}
+
+.ai-recently-viewed__header-{{ ai_gen_id }}.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.luxury-divider-{{ ai_gen_id }}{
+  width:0;
+  height:1px;
+  background:#C8A060;
+  transition:width .8s ease .3s;
+}
+
+.luxury-divider-{{ ai_gen_id }}.show{
+  width:50px;
+}
+
+{% endstyle %}
+
+<recently-viewed-{{ ai_gen_id }}
+  class="ai-recently-viewed-{{ ai_gen_id }}"
+  data-products-limit="{{ section.settings.products_limit }}"
+  data-current-product="{% if template.name == 'product' %}{{ product.handle }}{% endif %}"
+  {{ section.shopify_attributes }}
+>
+  <div class="ai-recently-viewed__container-{{ ai_gen_id }}">
+    
+    {% if section.settings.heading != blank %}
+      <div class="ai-recently-viewed__header-{{ ai_gen_id }}">
+        <h2 class="ai-recently-viewed__title-{{ ai_gen_id }}">
+          <a href="{{ section.settings.see_all_url | default: '/collections/all' }}" class="rv-title-link">
+            {{ section.settings.heading }}
+          </a>
+        </h2>
+      </div>
+      <div class="luxury-divider-{{ ai_gen_id }}"></div>
+    {% endif %}
+
+    <div class="slider-wrapper" id="SliderWrapper-{{ ai_gen_id }}">
+      <div class="grid" id="RecentlyViewedGrid-{{ ai_gen_id }}">
+        </div>
+    </div>
+
+    <div class="scroll-indicator-bar-{{ ai_gen_id }}">
+      <div class="scroll-progress-thumb-{{ ai_gen_id }}" id="ScrollThumb-{{ ai_gen_id }}"></div>
+    </div>
+
+  </div>
+</recently-viewed-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    const currentProductHandle = "{% if template.name == 'product' %}{{ product.handle }}{% endif %}";
+    if (currentProductHandle) {
+      let rvProducts = JSON.parse(localStorage.getItem('bold_recently_viewed') || '[]');
+      rvProducts = rvProducts.filter(handle => handle !== currentProductHandle);
+      rvProducts.unshift(currentProductHandle);
+      if (rvProducts.length > 12) rvProducts.pop();
+      localStorage.setItem('bold_recently_viewed', JSON.stringify(rvProducts));
+    }
+
+    if (!customElements.get('recently-viewed-{{ ai_gen_id }}')) {
+      customElements.define('recently-viewed-{{ ai_gen_id }}', class RecentlyViewed extends HTMLElement {
+        constructor() {
+          super();
+        }
+        connectedCallback() {
+          this.initRecentlyViewed();
+        }
+
+        async initRecentlyViewed() {
+          const limit = parseInt(this.dataset.productsLimit) || 8;
+          const currentHandle = this.dataset.currentProduct;
+          let rvProducts = JSON.parse(localStorage.getItem('bold_recently_viewed') || '[]');
+
+          if (currentHandle) {
+            rvProducts = rvProducts.filter(handle => handle !== currentHandle);
+          }
+
+          if (rvProducts.length === 0) return;
+
+          const grid = this.querySelector('#RecentlyViewedGrid-{{ ai_gen_id }}');
+          const productsToFetch = rvProducts.slice(0, limit);
+          
+          let htmlContent = '';
+
+          for (const handle of productsToFetch) {
+            try {
+              // 🌟 الطريقة السحرية للتطابق الكامل: طلب صفحة المنتج مضافاً إليها ثيم وعرض الكارت الافتراضي للثيم
+              const response = await fetch(`/products/${handle}?view=card`);
+              
+              let cardHtml = '';
+              if (response.ok) {
+                cardHtml = await response.text();
+              }
+              
+              // حل بديل فوري إذا لم يكن القالب التجريبي متاحاً بالثيم لضمان عدم توقف السكشن
+              if (!cardHtml || cardHtml.trim() === "" || cardHtml.includes('<!DOCTYPE html>')) {
+                const fallbackRes = await fetch(`/products/${handle}.js`);
+                const product = await fallbackRes.json();
+                let rawPrice = (product.price / 100).toFixed(2);
+                let finalPriceString = "LE " + Number(rawPrice).toLocaleString('en-US', { minimumFractionDigits: 2 });
+                let productType = product.type || "Luxury Fragrance";
+                
+                cardHtml = `
+                  <div class="product-card card">
+                    <div class="card__inner" style="position: relative; padding-top: 135%; background: #0b0b0b; overflow: hidden; display: block; width:100%;">
+                      <img src="${product.featured_image}" alt="${product.title}" loading="lazy" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="card__content" style="padding: 30px 20px; text-align: center;">
+                      <h3 class="card__heading" style="font-size: 20px; color: #F7F4EE; margin: 0 0 8px 0; font-weight: 400;">${product.title}</h3>
+                      <div class="card__type" style="font-style: italic; font-size: 13px; color: #8E8E8E; margin: 0 0 25px 0;">${productType}</div>
+                      <div class="card__price" style="font-size: 13px; color: #C8A060;">50ML &nbsp;&middot;&nbsp; ${finalPriceString}</div>
+                    </div>
+                  </div>
+                `;
+              }
+
+              htmlContent += `
+                <div class="slider-item">
+                  ${cardHtml}
+                </div>
+              `;
+            } catch (e) {
+              console.error("Error loading product card for: " + handle, e);
+            }
+          }
+
+          if (htmlContent === '') return;
+
+          if (rvProducts.length > 4) {
+            const seeAllUrl = "{{ section.settings.see_all_url | default: '/collections/all' }}";
+            htmlContent += `
+              <div class="slider-item">
+                <a href="${seeAllUrl}" class="see-all-card-{{ ai_gen_id }}">
+                  <span class="see-all-text-{{ ai_gen_id }}">See All</span>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </div>
+            `;
+          }
+
+          grid.innerHTML = htmlContent;
+          this.style.display = 'block';
+
+requestAnimationFrame(() => {
+
+  this.classList.add('rv-visible');
+
+  const header =
+    this.querySelector('.ai-recently-viewed__header-{{ ai_gen_id }}');
+
+  const divider =
+    this.querySelector('.luxury-divider-{{ ai_gen_id }}');
+
+  header?.classList.add('show');
+  divider?.classList.add('show');
+
+  const items = this.querySelectorAll('.slider-item');
+
+  items.forEach((item,index)=>{
+
+    setTimeout(()=>{
+
+      item.classList.add('show');
+
+    },150*index);
+
+  });
+
+});
+
+          setTimeout(() => {
+            const slider = this.querySelector('#SliderWrapper-{{ ai_gen_id }}');
+            const thumb = this.querySelector('#ScrollThumb-{{ ai_gen_id }}');
+            
+            if (slider && thumb) {
+              const updateThumb = () => {
+                const maxScroll = slider.scrollWidth - slider.clientWidth;
+                if (maxScroll <= 0) {
+                  thumb.style.width = '100%';
+                  thumb.style.transform = 'translateX(0)';
+                  return;
+                }
+                const scrollRatio = slider.scrollLeft / maxScroll;
+                const thumbWidthPercent = 30; 
+                const maxTranslatePercent = 100 - thumbWidthPercent;
+                const currentTranslateX = scrollRatio * maxTranslatePercent;
+                
+                thumb.style.width = `${thumbWidthPercent}%`;
+                thumb.style.transform = `translateX(${(currentTranslateX / thumbWidthPercent) * 100}%)`;
+              };
+
+              slider.addEventListener('scroll', updateThumb, { passive: true });
+              window.addEventListener('resize', updateThumb, { passive: true });
+              updateThumb();
+            }
+          }, 100);
+        }
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Recently Viewed",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Recently Viewed"
+    },
+    {
+      "type": "url",
+      "id": "see_all_url",
+      "label": "See All Title/Card Link"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Maximum products to show",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Layout & Spacing"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 10,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding (Top/Bottom)",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "grid_spacing",
+      "label": "Divider bottom spacing",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recently Viewed Products"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,61 @@
+{% comment %}
+  Renders an SVG icon.
+
+  Accepts:
+  - name: {string} The name of the icon (e.g., 'search', 'cart', 'account', 'menu', 'close')
+  - class: {string} Optional class for styling
+{% endcomment %}
+
+{% assign icon_name = name | downcase %}
+
+{% case icon_name %}
+  {% when 'search' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search {{ class }}">
+      <circle cx="11" cy="11" r="8"/>
+      <path d="m21 21-4.3-4.3"/>
+    </svg>
+  {% when 'account' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user {{ class }}">
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+  {% when 'cart' %}
+    <svg class="icon icon-cart" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" width="24" height="24">
+      <path d="M12 11h23.5l-3.3 15.3c-.3 1.5-1.7 2.7-3.2 2.7H16.2c-1.5 0-2.8-1.1-3.2-2.5L10 5H4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="16" cy="36" r="2.5" fill="currentColor"/>
+      <circle cx="29" cy="36" r="2.5" fill="currentColor"/>
+    </svg>
+  {% when 'menu' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucude-menu {{ class }}">
+      <line x1="4" x2="20" y1="12" y2="12"/>
+      <line x1="4" x2="20" y1="6" y2="6"/>
+      <line x1="4" x2="20" y1="18" y2="18"/>
+    </svg>
+  {% when 'close' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x {{ class }}">
+      <path d="M18 6 6 18"/>
+      <path d="m6 6 12 12"/>
+    </svg>
+  {% when 'shipping' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck {{ class }}">
+      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M10 18h6a2 2 0 0 0 2-2v-4H10v4a2 2 0 0 1-2 2v0"/><path d="M22 12h-4l-3 3v-3h-2"/><path d="M7 18h.01"/>
+    </svg>
+  {% when 'concentration' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flask-conical {{ class }}">
+      <path d="M10 16a2 2 0 1 0 4 0c0-.52-.15-1-.44-1.34l-3.12-3.4c-.45-.49-1.11-.8-1.72-.8H9c-.61 0-1.27.31-1.72.8l-3.12 3.4C4.15 15 4 15.48 4 16a2 2 0 1 0 4 0h-.01"/><path d="M8.5 2h7"/><path d="M14 22H8c-2.76 0-5-2.24-5-5V6c0-1.74 1.15-3.23 2.76-3.83L7 2.01"/><path d="M10 22h4c2.76 0 5-2.24 5-5V6c0-1.74-1.15-3.23-2.76-3.83L17 2.01"/>
+    </svg>
+  {% when 'premium-oils' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet {{ class }}">
+      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.32 0z"/>
+    </svg>
+  {% when 'handmade' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand {{ class }}">
+      <path d="M18 10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2V9.8L5.5 8.5v6.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3.4L18 10z"/>
+    </svg>
+  {% when 'long-lasting' %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hourglass {{ class }}">
+      <path d="M12 2v6h.5a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H12v6"/><path d="M12 22v-6h-.5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2H12V2"/>
+    </svg>
+  {% else %}
+    <!-- Default or empty icon -->
+{% endcase %}

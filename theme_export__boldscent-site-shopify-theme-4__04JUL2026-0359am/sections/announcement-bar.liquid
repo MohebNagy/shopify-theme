@@ -1,0 +1,38 @@
+<div class="announcement-bar">
+  <div class="container">
+    <p class="announcement-text">
+      {{ section.settings.text }}
+    </p>
+  </div>
+</div>
+
+<style>
+.announcement-bar{
+  background:#0B0B0B;
+  border-bottom:1px solid #242424;
+  text-align:center;
+  padding:10px 0;
+}
+
+.announcement-text{
+  font-family:Montserrat;
+  font-size:12px;
+  color:#A3ADB5;
+  letter-spacing:1px;
+  margin:0;
+}
+</style>
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Free shipping on all orders over $100"
+    }
+  ]
+}
+{% endschema %}

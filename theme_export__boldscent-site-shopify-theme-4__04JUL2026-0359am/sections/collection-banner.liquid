@@ -1,0 +1,69 @@
+<section class="collection-banner">
+  <div class="container">
+
+    <div class="content collection-banner-anim">
+      <h1>
+        {% if section.settings.custom_title != blank %}
+          {{ section.settings.custom_title }}
+        {% else %}
+          {{ collection.title }}
+        {% endif %}
+      </h1>
+      
+      {% if collection.description != blank %}
+        <p>{{ collection.description }}</p>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+<style>
+.collection-banner{
+  background:#0B0B0B;
+  padding:120px 0 60px;
+  border-bottom:1px solid #242424;
+  overflow: hidden;
+}
+
+.collection-banner h1{
+  font-family:"Playfair Display";
+  font-size:48px;
+  color:#C8A060;
+}
+
+.collection-banner p{
+  font-family:Montserrat;
+  color:#A3ADB5;
+  max-width:600px;
+  margin-top:10px;
+}
+
+/* 🔮 محرك أنيميشن الدخول الفخم للبانر */
+.collection-banner-anim {
+  opacity: 0;
+  transform: translateY(-12px);
+  animation: boldBannerFade 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes boldBannerFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Collection Banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "custom_title",
+      "label": "Custom Banner Title",
+      "info": "اتركه فارغاً إذا كنت تريد عرض اسم المجموعة الحالي تلقائياً"
+    }
+  ]
+}
+{% endschema %}

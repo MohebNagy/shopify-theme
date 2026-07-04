@@ -1,0 +1,83 @@
+{
+  "general": {
+    "password_page": {
+      "login_form_heading": "Enter store using password:",
+      "login_password_button": "Enter using password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Your password",
+      "login_form_error": "Wrong password!",
+      "login_form_submit": "Enter",
+      "admin_link_html": "Are you the store owner? <a href=\"/admin\" class=\"link underlined-link\">Log in here</a>",
+      "powered_by_shopify_html": "This shop will be powered by {{ shopify }}"
+    }
+  },
+  "settings_schema": {
+    "colors": {
+      "name": "Colors",
+      "settings": {
+        "color_primary": {
+          "label": "Primary background"
+        },
+        "color_gold": {
+          "label": "Gold accent"
+        },
+        "color_gold_hover": {
+          "label": "Gold hover"
+        },
+        "color_light": {
+          "label": "Light text"
+        },
+        "color_card": {
+          "label": "Card background"
+        },
+        "color_divider": {
+          "label": "Divider"
+        }
+      }
+    },
+    "typography": {
+      "name": "Typography",
+      "settings": {
+        "font_heading": {
+          "label": "Heading font"
+        },
+        "font_body": {
+          "label": "Body font"
+        }
+      }
+    },
+    "social_media": {
+      "name": "Social media",
+      "settings": {
+        "social_instagram": {
+          "label": "Instagram URL"
+        },
+        "social_tiktok": {
+          "label": "TikTok URL"
+        },
+        "social_facebook": {
+          "label": "Facebook URL"
+        }
+      }
+    },
+    "announcement_bar": {
+      "name": "Announcement bar",
+      "settings": {
+        "announcement_bar_enabled": {
+          "label": "Show announcement bar"
+        },
+        "announcement_bar_text": {
+          "label": "Default announcement text"
+        }
+      }
+    },
+    "cart": {
+      "name": "Cart",
+      "settings": {
+        "cart_type": {
+          "label": "Cart type"
+        }
+      }
+    }
+  }
+}

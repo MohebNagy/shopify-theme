@@ -1,0 +1,167 @@
+{% comment %}
+  product-bundle-builder.liquid
+  -------------------------------
+  صفحة الـ Bundle Builder لبراند BOLD - بنفس الـ design language بتاع صفحة الـ Discovery Set.
+
+  البيانات اللي بيعتمد عليها السكشن ده:
+  - product.metafields.custom.bundle_size  -> عدد العطور الكلي في البندل (2 / 3 / 4 / 10)
+  - product.variants                       -> لازم تكون عناوينها مكتوبة بالضبط بالصيغة:
+                                               "All 50ml" / "All 100ml" / "<n>x50 + <m>x100"
+  - collections['bundles-products']        -> كل البرفانات المتاحة للإضافة لأي بندل
+
+  ملحوظة مهمة: الـ "سعر البرفان الواحد" المعروض في كل accordion بيتحسب تلقائياً
+  من سعر الـ variant بتاع "All 50ml" / "All 100ml" مقسوم على bundle_size،
+  مفيش حاجة من نوع price-per-item محتاج تتعمل يدوي.
+{% endcomment %}
+
+<div class="product-info bundle-builder-mode" id="bundleInfoContainer">
+
+  {%- if product.type != blank -%}
+    <span class="product-gender-badge">{{ product.type | upcase }}</span>
+  {%- endif -%}
+
+  <h1>{{ product.title }}</h1>
+  <p class="inspired-by">Build your own bundle. Choose your composition, then pick your fragrances.</p>
+
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  <p class="price" id="bundlePriceDisplay">
+    <span class="current-price" id="bundleCurrentPrice">Select a composition</span>
+    <span class="compare-price" id="bundleComparePrice" style="display:none; text-decoration: line-through; color: #888888; font-size: 16px; margin-left: 10px;"></span>
+  </p>
+
+  {%- assign bundle_size = product.metafields.custom.bundle_size | default: 0 -%}
+
+  {% comment %} ===== Step 1: Composition Type ===== {% endcomment %}
+  <div class="builder-step" style="margin: 25px 0;">
+    <span class="step-label">Bundle Composition</span>
+    <div class="variants" id="compositionSelector">
+      <button class="variant-btn composition-btn" type="button" data-type="pure-50">All 50ML</button>
+      <button class="variant-btn composition-btn" type="button" data-type="pure-100">All 100ML</button>
+      <button class="variant-btn composition-btn" type="button" data-type="mixed">Mixed Sizes</button>
+    </div>
+  </div>
+
+  {% comment %} ===== Step 2: Mixed Combo Sub-Selector (يظهر بس لو Mixed) ===== {% endcomment %}
+  <div class="builder-step combo-step" id="comboStep" style="margin: 25px 0; display:none;">
+    <span class="step-label">Choose Your Mix</span>
+    <div class="variants" id="comboSelector"></div>
+  </div>
+
+  {% comment %} ===== Step 3a: Single product list (Pure 50 / Pure 100) ===== {% endcomment %}
+  <div class="builder-step single-list-step" id="singleListStep" style="margin: 35px 0; display:none;">
+    <span class="step-label">
+      Select Your Fragrances (<span id="singleSelectionCounter">0</span> / <span id="singleLimitDisplay">{{ bundle_size }}</span>)
+    </span>
+    <div class="scent-selection-grid" id="singleProductGrid">
+      {% for perfume in collections['bundles-products'].products %}
+        {% render 'bundle-card', perfume: perfume, size: '' %}
+      {% endfor %}
+    </div>
+  </div>
+
+  {% comment %} ===== Step 3b: Dual accordion lists (Mixed) ===== {% endcomment %}
+  <div class="builder-step accordion-step" id="accordionStep" style="margin: 35px 0; display:none;">
+    {% render 'bundle-accordion', size: '50', label: '50ML Fragrances', products: collections['bundles-products'].products %}
+    {% render 'bundle-accordion', size: '100', label: '100ML Fragrances', products: collections['bundles-products'].products %}
+  </div>
+
+  {% comment %} ===== Step 4: Summary ===== {% endcomment %}
+  {% render 'bundle-summary' %}
+
+{% render 'bundle-summary' %}
+
+  {% comment %} ===== تحويل منطقة الشراء إلى فورم رسمي متوافق مع سكربت القالب ===== {% endcomment %}
+  {%- form 'product', product, id: 'bundleDynamicForm', class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+    
+    {% comment %} الحقل الإجباري لربط الـ Variant ID النشط حالياً {% endcomment %}
+    <input type="hidden" name="id" value="{{ current_variant.id }}" id="bundleMasterVariantInput">
+
+    <div id="bundleHiddenProperties"></div>
+
+    <div class="purchase-buttons-wrapper" id="mainPurchaseButtons" style="margin-top: 30px;">
+      <button
+        class="buy-it-now-luxury disabled-builder-btn"
+        id="bundleAddToCartBtn"
+        type="submit"
+        disabled
+        data-product-id="{{ product.id }}"
+        data-variant-id="{{ current_variant.id }}"
+      >
+        Select Your Composition First
+      </button>
+    </div>
+    
+  {%- endform -%}
+
+</div>
+
+<div class="sticky-atc-bar" id="bundleStickyAtcBar">
+  <div class="sticky-atc-container">
+    <button class="add-to-cart-luxury disabled" id="bundleStickyAddToCartBtn" type="button" disabled>
+      Select Your Composition First
+    </button>
+  </div>
+</div>
+
+{% comment %}
+  ====== Data Bridge: Liquid -> JS ======
+  بنحلل عناوين الـ variants هنا في الـ Liquid ونحولها لـ JSON عشان bundle-builder.js
+  يقدر يحدد الـ price والـ count50/count100 لكل variant من غير ما يعمل أي string parsing بنفسه.
+{% endcomment %}
+<script type="application/json" id="bundleVariantsData">
+[
+  {%- for variant in product.variants -%}
+    {%- assign vtitle = variant.title -%}
+    {%- assign count50 = 0 -%}
+    {%- assign count100 = 0 -%}
+    {%- assign vtype = 'mixed' -%}
+
+    {%- if vtitle contains 'All' -%}
+      {%- if vtitle contains '50' -%}
+        {%- assign count50 = bundle_size -%}
+        {%- assign vtype = 'pure-50' -%}
+      {%- elsif vtitle contains '100' -%}
+        {%- assign count100 = bundle_size -%}
+        {%- assign vtype = 'pure-100' -%}
+      {%- endif -%}
+    {%- else -%}
+      {%- assign parts = vtitle | split: '+' -%}
+      {%- for part in parts -%}
+        {%- assign clean_part = part | strip -%}
+        {%- assign sub = clean_part | split: 'x' -%}
+        {%- if sub.size == 2 -%}
+          {%- assign qty = sub[0] | strip | plus: 0 -%}
+          {%- assign sz = sub[1] | strip -%}
+          {%- if sz contains '50' -%}
+            {%- assign count50 = qty -%}
+          {%- elsif sz contains '100' -%}
+            {%- assign count100 = qty -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- assign vtype = 'mixed' -%}
+    {%- endif -%}
+
+    {
+      "id": {{ variant.id | json }},
+      "title": {{ variant.title | json }},
+      "price": {{ variant.price | money | json }},
+      "rawPrice": {{ variant.price | json }},
+      "comparePrice": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | json }}{% else %}false{% endif %},
+      "type": {{ vtype | json }},
+      "count50": {{ count50 | json }},
+      "count100": {{ count100 | json }}
+    }{% unless forloop.last %},{% endunless %}
+  {%- endfor -%}
+]
+</script>
+
+<script>
+  window.bundleBuilderData = {
+    bundleSize: {{ bundle_size | json }},
+    productId: {{ product.id | json }}
+  };
+</script>
+
+<link rel="stylesheet" href="{{ 'bundle-builder.css' | asset_url }}">
+<script src="{{ 'bundle-builder.js' | asset_url }}" defer></script>

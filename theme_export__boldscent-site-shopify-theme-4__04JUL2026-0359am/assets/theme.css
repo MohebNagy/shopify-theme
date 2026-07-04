@@ -1,0 +1,281 @@
+/* =========================
+   BOLD THEME — GLOBAL FOUNDATION
+   Design System: Black + Gold Luxury
+========================= */
+
+:root {
+  --color-primary: #0B0B0B;
+  --color-gold: #C8A060;
+  --color-gold-hover: #D8B57A;
+  --color-light: #F7F4EE;
+  --color-sand: #B88A3D;
+  --color-wood: #8D5D2F;
+  --color-gray: #6D7881;
+  --color-gray-light: #A3ADB5;
+  --color-success: #7C9A72;
+  --color-error: #C84B4B;
+  --color-divider: #242424;
+  --color-card: #111111;
+
+  --font-heading: "Playfair Display", Georgia, serif;
+  --font-body: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --radius-button: 6px;
+  --radius-input: 8px;
+  --radius-card: 12px;
+
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.15);
+  --shadow-card-hover: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  --transition: all 0.3s ease;
+}
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-primary);
+  color: var(--color-light);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0 0 0.5em;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.text-light {
+  color: var(--color-light);
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+#MainContent {
+  min-height: 50vh;
+}
+
+/* Product page two-column layout */
+.template-product #MainContent > .shopify-section:first-child,
+.template-product #MainContent > .shopify-section:nth-child(2) {
+  display: inline-block;
+  width: calc(50% - 30px);
+  vertical-align: top;
+}
+
+.template-product #MainContent > .shopify-section:first-child {
+  margin-right: 60px;
+}
+
+.template-product #MainContent > .shopify-section:nth-child(n+3) {
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .template-product #MainContent > .shopify-section:first-child,
+  .template-product #MainContent > .shopify-section:nth-child(2) {
+    display: block;
+    width: 100%;
+    margin-right: 0;
+  }
+}
+
+/* Collection page layout */
+.collection-page {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  padding: 60px 0;
+}
+
+@media (max-width: 1024px) {
+  .collection-page {
+    grid-template-columns: 1fr;
+  }
+}
+
+.utility-nav .icon-btn {
+  color: #C8A060 !important;
+}
+
+.utility-nav .icon-btn:hover {
+  opacity: 0.8;
+}
+
+.cart-trigger {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-trigger .cart-count {
+  position: absolute;
+  top: -4px;                     
+  right: -6px;                   
+  background-color: #000000 !important; 
+  color: #C8A060 !important;
+  font-family: "Montserrat", sans-serif;
+  font-size: 10px !important;    
+  font-weight: bold;
+  min-width: 16px;               
+  height: 16px;
+  border-radius: 50%;            
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  border: 1px solid #C8A060; 
+  line-height: 1;
+  padding: 0;
+}
+
+/* تخصيص التنسيقات للشاشات الصغيرة والموبايل فقط */
+@media (max-width: 768px) {
+  
+  /* 1. ضبط توزيع الهيدر بالتساوي على أطراف شاشة الموبايل */
+  .header-inner {
+    padding: 12px 15px !important; /* تقليل الحشو الرأسي وزيادة الجانبي */
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* تأمين بقاء اللوجو على اليسار بحجم مناسب */
+  .logo {
+    flex: 1;
+    text-align: left;
+  }
+  .logo-text {
+    font-size: 20px !important; /* تصغير اللوجو قليلاً ليناسب الموبايل */
+    letter-spacing: 2px !important;
+  }
+
+  /* 2. تجميع أيقونات البحث والحساب والسلة مع قائمة المنيو في اليمين بشكل مرتب */
+  .header-actions {
+    flex: initial !important;
+  }
+  
+  .utility-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important; /* مسافة متناسقة بين الأيقونات لمنع التداخل */
+  }
+
+  .utility-nav .icon-btn {
+    padding: 4px !important;
+    margin: 0 !important;
+  }
+
+  /* ضبط وضعية زر السلة المتطور الجديد على الموبايل لكي لا يختفي الإطار */
+  .cart-trigger .cart-count {
+    top: -6px;
+    right: -5px;
+    min-width: 14px;
+    height: 14px;
+    font-size: 9px !important;
+  }
+
+  /* 3. ضبط مساحات الـ Hero Section والأزرار على الموبايل */
+  .hero-section, .image-banner {
+    padding: 0 15px !important;
+  }
+
+  /* جعل الأزرار الكبيرة (Shop Collection) تأخذ مساحة متناسقة ولا تتداخل مع النصوص */
+  .hero-section .icon-btn, 
+  .hero-section button,
+  .hero-section a.button {
+    width: 100% !important; /* جعل الأزرار ممتدة بشكل شيك على الموبايل */
+    max-width: 320px;
+    margin: 8px auto !important;
+    display: block !important;
+  }
+}
+
+
+/* ======================================================= */
+/* ✨ LUXURY SMOOTH ANIMATIONS SYSTEM (BOLD BRAND)       */
+/* ======================================================= */
+
+/* الكلاس الأساسي لإخفاء العناصر قبل ظهورها */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px); /* حركة انسيابية من أسفل لأعلى */
+  transition: opacity 1.2s cubic-bezier(0.215, 0.610, 0.355, 1),
+              transform 1.2s cubic-bezier(0.215, 0.610, 0.355, 1);
+  will-change: transform, opacity;
+}
+
+/* الكلاس اللي هيتضاف بالـ JavaScript أول ما العميل يسكرول والعنصر يظهر */
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* تأثير الـ Delay (تأخير الظهور) لتأثير التتابع الفخم (Stagger Effect) */
+.delay-1 { transition-delay: 0.15s; }
+.delay-2 { transition-delay: 0.3s; }
+.delay-3 { transition-delay: 0.45s; }
+.delay-4 { transition-delay: 0.6s; }
+
+/* تأثير زووم خفيف وبطيء جداً خاص بالـ Hero Images أول ما الصفحة تفتح */
+@keyframes luxuryZoom {
+  0% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-luxury-zoom {
+  animation: luxuryZoom 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}

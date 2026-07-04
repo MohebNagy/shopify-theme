@@ -1,0 +1,89 @@
+<aside class="filters">
+
+  <h3>Filters</h3>
+
+  {% for filter in collection.filters %}
+    <div class="filter-group">
+
+      <h4>{{ filter.label }}</h4>
+
+      {% case filter.type %}
+        {% when 'list' %}
+          <ul class="filter-list">
+            {% for value in filter.values %}
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="{{ value.param_name }}"
+                    value="{{ value.value }}"
+                    {% if value.active %}checked{% endif %}
+                    {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                  >
+                  {{ value.label }} ({{ value.count }})
+                </label>
+              </li>
+            {% endfor %}
+          </ul>
+        {% when 'price_range' %}
+          <form class="price-filter">
+            <input type="number" name="{{ filter.min_value.param_name }}" placeholder="Min" value="{{ filter.min_value.value }}">
+            <input type="number" name="{{ filter.max_value.param_name }}" placeholder="Max" value="{{ filter.max_value.value }}">
+            <button type="submit" class="btn-secondary">Apply</button>
+          </form>
+      {% endcase %}
+
+    </div>
+  {% endfor %}
+
+</aside>
+
+<style>
+.filters{
+  background:#111;
+  border:1px solid #242424;
+  padding:20px;
+  font-family:Montserrat;
+  border-radius:12px;
+}
+
+.filters h3{
+  font-family:"Playfair Display";
+  color:#C8A060;
+}
+
+.filter-group{
+  margin-top:20px;
+}
+
+.filter-group h4{
+  color:#F7F4EE;
+  margin-bottom:10px;
+}
+
+.filter-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+
+.filter-group label{
+  display:block;
+  color:#A3ADB5;
+  font-size:14px;
+  margin:6px 0;
+}
+
+.price-filter{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+</style>
+
+{% schema %}
+{
+  "name": "Filters Sidebar",
+  "settings": []
+}
+{% endschema %}

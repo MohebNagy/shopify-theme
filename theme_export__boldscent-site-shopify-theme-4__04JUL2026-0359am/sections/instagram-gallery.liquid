@@ -1,0 +1,207 @@
+<section class="instagram-wrapper" id="insta-section-{{ section.id }}">
+  <section class="instagram container">
+
+    <div class="instagram-content insta-anim-left">
+      <h2>{{ section.settings.title }}</h2>
+    </div>
+
+    <div class="instagram-gallery insta-anim-right">
+      {% for block in section.blocks %}
+        {% if block.settings.image %}
+          <div class="instagram-img-box" {{ block.shopify_attributes }}>
+            <img
+              src="{{ block.settings.image | image_url: width: 800 }}"
+              alt="{{ block.settings.image.alt | escape }}"
+              loading="lazy"
+              width="800"
+              height="600"
+            >
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </section>
+</section>
+
+<style>
+/* ======================================================= */
+/* 💻 أولاً: تنسيق اللاب توب (نصف للعنوان ونصف للصورة تماماً) */
+/* ======================================================= */
+.instagram-wrapper {
+  width: 100%;
+  background-color: #0B0B0B;
+}
+
+.instagram {
+  display: flex !important;
+  align-items: center; 
+  justify-content: space-between;
+  padding: 100px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 50px;
+}
+
+/* تحضير الأنيميشن للكتلة اليسرى (العنوان) */
+.instagram-content {
+  flex: 1;
+  max-width: 45%;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* تحضير الأنيميشن للكتلة اليمنى (الصورة) */
+.instagram-gallery {
+  flex: 1;
+  max-width: 50%;
+  display: flex;
+  justify-content: flex-end; 
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* إطلاق الأنيمايشن المتوازن السينمائي عند السكرول */
+.instagram-wrapper.insta-activated .insta-anim-left,
+.instagram-wrapper.insta-activated .insta-anim-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.instagram h2 {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  font-size: 42px;
+  margin: 0;
+  text-align: left; 
+  letter-spacing: 1px;
+}
+
+.instagram-img-box {
+  width: 100%;
+  max-width: 480px; 
+}
+
+.instagram-gallery img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5; 
+  object-fit: cover;
+  border: 1px solid #242424; 
+}
+
+/* ======================================================= */
+/* 📱 ثانياً: تنسيق نسخة الموبايل (أبعاد الـ Instagram البورتريه الأصلية) */
+/* ======================================================= */
+@media (max-width: 768px) {
+  .instagram {
+    flex-direction: column !important; 
+    align-items: flex-start !important; 
+    padding: 50px 20px !important; 
+    gap: 20px !important;
+  }
+
+  .instagram-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: translateY(-20px) !important; /* تحويل اتجاه الحركة للموبايل صعوداً وهبوطاً بدلاً من الجوانب */
+  }
+
+  .instagram-gallery {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important; 
+    transform: translateY(20px) !important;
+  }
+
+  .instagram-wrapper.insta-activated .insta-anim-left,
+  .instagram-wrapper.insta-activated .insta-anim-right {
+    transform: translateY(0) !important;
+  }
+
+  .instagram h2 {
+    font-size: 28px !important;
+    text-align: left !important; 
+    padding-left: 0;
+    margin-bottom: 5px;
+  }
+
+  .instagram-gallery {
+    /* 🌟 نزول طفيف لتعويض تداخل المساحة وإعطاء متنفس للتصميم */
+    margin-top: 10px !important;
+  }
+
+  .instagram-img-box {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .instagram-gallery img {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 4 / 5 !important; 
+    object-fit: contain !important; 
+    background-color: #0B0B0B;
+    border: none;
+    border-radius: 4px;
+  }
+}
+
+/* 🛡️ حماية الـ Fallback */
+.no-js .insta-anim-left,
+.no-js .insta-anim-right {
+  opacity: 1 !important;
+  transform: none !important;
+}
+</style>
+
+<script>
+(function() {
+  function initInstaAnimation() {
+    const section = document.getElementById('insta-section-{{ section.id }}');
+    if (!section) return;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            section.classList.add('insta-activated');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      observer.observe(section);
+    } else {
+      section.classList.add('insta-activated');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInstaAnimation);
+  } else {
+    initInstaAnimation();
+  }
+  document.addEventListener('shopify:section:load', initInstaAnimation);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Instagram Gallery",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Instagram" }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Instagram Gallery" }]
+}
+{% endschema %}

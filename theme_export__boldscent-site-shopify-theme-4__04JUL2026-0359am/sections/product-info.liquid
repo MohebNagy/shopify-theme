@@ -1,0 +1,655 @@
+<div class="product-info" id="productInfoContainer">
+
+  {%- if product.type != blank -%}
+    <span class="product-gender-badge">{{ product.type | upcase }}</span>
+  {%- endif -%}
+
+  <h1>{{ product.title }}</h1>
+
+  {% assign inspired_tag = blank %}
+  {% for tag in product.tags %}
+    {% assign downcased_tag = tag | downcase %}
+    {% if downcased_tag contains 'inspired by' or downcased_tag contains 'inspired-by' %}
+      {% assign inspired_tag = tag | replace: 'inspired by', '' | replace: 'Inspired by', '' | replace: 'inspired-by', '' | replace: 'Inspired-by', '' | strip %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  {% if inspired_tag != blank %}
+    <p class="inspired-by">Inspired by {{ inspired_tag }}</p>
+  {% endif %}
+
+  <p class="price" id="productPrice">
+    {%- assign current_variant = product.selected_or_first_available_variant -%}
+    <span class="current-price" id="currentPriceDisplay">{{ current_variant.price | money }}</span>
+    <span class="compare-price" id="comparePriceDisplay" style="{% unless current_variant.compare_at_price > current_variant.price %}display: none;{% endunless %} text-decoration: line-through; color: #888888; font-size: 16px; margin-left: 10px;">
+      {{ current_variant.compare_at_price | money }}
+    </span>
+  </p>
+
+  <p class="inventory" id="productInventory" aria-live="polite">
+    {% if product.selected_or_first_available_variant.available %}
+      <span class="status-in">In stock</span>
+    {% else %}
+      <span class="status-out">Out of stock</span>
+    {% endif %}
+  </p>
+
+  <div class="variants">
+    {% for variant in product.variants %}
+      <button
+        class="variant-btn{% if variant == product.selected_or_first_available_variant %} active{% endif %}"
+        type="button"
+        data-id="{{ variant.id }}"
+        {% unless variant.available %}disabled{% endunless %}
+      >
+        {{ variant.title }}
+      </button>
+    {% endfor %}
+  </div>
+
+  <div class="qty">
+    <button id="qtyMinus" type="button" aria-label="Decrease quantity">-</button>
+    <input type="number" value="1" id="qtyInput" min="1" aria-label="Quantity">
+    <button id="qtyPlus" type="button" aria-label="Increase quantity">+</button>
+  </div>
+
+  <div class="luxury-sample-note">
+    <div class="sample-note__icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L14.4 8.4L21 9.3L16 13.7L17.5 20.2L12 16.8L6.5 20.2L8 13.7L3 9.3L9.6 8.4L12 2Z" fill="#C8A060"/>
+      </svg>
+    </div>
+    <div class="sample-note__content">
+      <h4>Complimentary 5ml Sample Included</h4>
+      <p>Try the fragrance before opening your full-size bottle. Eligible for return within 14 days if unopened.</p>
+    </div>
+  </div>
+
+  <div class="purchase-buttons-wrapper" id="mainPurchaseButtons">
+    <button
+      class="add-to-cart-luxury"
+      id="addToCartBtn"
+      type="button"
+      data-product-id="{{ product.id }}"
+      data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+    >
+      Add To Cart
+    </button>
+
+    <button
+      class="buy-it-now-luxury"
+      id="buyItNowBtn"
+      type="button"
+      data-product-id="{{ product.id }}"
+      data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+    >
+      Buy it now
+    </button>
+  </div>
+
+</div>
+
+<div class="luxury-sticky-bar" id="luxuryStickyBar">
+  <div class="sticky-bar-content">
+    <div class="sticky-product-meta">
+      <img src="{{ product.featured_image | img_url: 'small' }}" alt="{{ product.title }}" class="sticky-thumb">
+      <div class="sticky-text-details">
+        <span class="sticky-title">{{ product.title }}</span>
+        <span class="sticky-variant-info" id="stickyVariantTitle">{{ product.selected_or_first_available_variant.title }}</span>
+      </div>
+    </div>
+    
+    <div class="sticky-actions">
+      <span class="sticky-price" id="stickyProductPrice">
+        <span id="stickyCurrentPriceDisplay">{{ product.selected_or_first_available_variant.price | money }}</span>
+        <span id="stickyComparePriceDisplay" style="{% unless product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}display: none;{% endunless %} text-decoration: line-through; color: #888888; font-size: 13px; margin-left: 8px;">
+          {{ product.selected_or_first_available_variant.compare_at_price | money }}
+        </span>
+      </span>
+      <button class="sticky-cart-icon-btn" id="stickyAddToCartBtn" aria-label="Add to cart" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+{% comment %} تضمين مصفوفة الـ JSON الخاصة بالـ Variants والعملة التلقائية للمتجر للتحويل الفوري {% endcomment %}
+<script id="ProductJson-Data" type="application/json">
+  {{ product.variants | json }}
+</script>
+<script id="ShopMoney-Format" type="application/json">
+  { "format": {{ shop.money_format | json }} }
+</script>
+
+<style>
+/* 🌟 تطبيق الخط الملكي الموحد على القسم بالكامل */
+.product-info,
+.product-info h1,
+.product-info p,
+.product-info span,
+.product-info button,
+.product-info input,
+.luxury-sticky-bar {
+  font-family: "Montserrat", serif;
+}
+
+.product-info {
+  max-width: 620px;
+}
+
+/* ستايل بادج الـ Type الفاخر */
+.product-gender-badge {
+  display: inline-block;
+  background: #111111;
+  border: 1px solid #242424;
+  color: #C8A060;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 6px 16px;
+  margin-top: 35px;
+  border-radius: 2px;
+}
+
+/* ستايل الاسم الإفتراضي الفخم */
+.product-info h1 {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  font-size: 42px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+/* ستايل الـ Inspired By الموحد */
+.inspired-by {
+  font-size: 16px;
+  color: #888888 !important;
+  margin: 5px 0 15px 0;
+  letter-spacing: 1px;
+}
+
+/* ستايل السعر */
+.price {
+  color: #F7F4EE;
+  font-size: 22px;
+  font-weight: 500;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+}
+
+/* ستايل المخزن */
+.inventory {
+  font-size: 14px;
+  margin: 10px 0 20px 0;
+  letter-spacing: 0.5px;
+}
+
+.status-in {
+  color: #C8A060;
+}
+
+.status-out {
+  color: #E25C5C;
+}
+
+/* ستايل أزرار الأحجام والـ Variants */
+.variant-btn {
+  background: #111;
+  border: 1px solid #242424;
+  color: #F7F4EE;
+  padding: 10px 20px;
+  margin: 5px 5px 5px 0;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.variant-btn.active {
+  border-color: #C8A060;
+  background: rgba(200, 160, 96, 0.05);
+}
+
+.variant-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ستايل مربعات العدد */
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.qty button, #qtyInput {
+  background: #111;
+  border: 1px solid #242424;
+  color: #F7F4EE;
+  border-radius: 6px;
+  height: 45px;
+  box-sizing: border-box;
+}
+
+.qty button {
+  font-size: 18px;
+  cursor: pointer;
+  width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+#qtyInput {
+  font-size: 16px;
+  text-align: center;
+  width: 55px;
+  padding: 0;
+  margin: 0;
+  -moz-appearance: textfield;
+}
+
+#qtyInput::-webkit-outer-spin-button,
+#qtyInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#qtyInput:focus { outline: none; }
+
+/* ستايل نوت العينة المجانية الفخمة المحدثة */
+.luxury-sample-note {
+  display: flex;
+  gap: 15px;
+  background: #0A0A0A;
+  border: 1px solid rgba(200, 160, 96, 0.25);
+  padding: 18px 22px;
+  margin: 25px 0;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+.sample-note__icon {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 2px;
+}
+
+.sample-note__content h4 {
+  margin: 0 0 6px 0;
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.sample-note__content p {
+  margin: 0;
+  color: #A3ADB5;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* أزرار الشراء الفاخرة */
+.purchase-buttons-wrapper {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.add-to-cart-luxury, .buy-it-now-luxury {
+  width: 100%;
+  height: 52px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-to-cart-luxury {
+  background: transparent;
+  border: 2px solid #C8A060;
+  color: #C8A060;
+}
+
+.add-to-cart-luxury:hover {
+  background: rgba(200, 160, 96, 0.08);
+}
+
+.buy-it-now-luxury {
+  background: #C8A060;
+  border: none;
+  color: #000000;
+}
+
+.buy-it-now-luxury:hover {
+  background: #b58f52;
+}
+
+/* شريط الـ Sticky السفلي */
+.luxury-sticky-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #111111;
+  border-top: 1px solid #242424;
+  padding: 12px 24px;
+  z-index: 3000;
+  box-sizing: border-box;
+  transform: translateY(100%) scale(.98);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+}
+
+.luxury-sticky-bar.is-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.sticky-bar-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sticky-product-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sticky-thumb {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #242424;
+  background: #000;
+}
+
+.sticky-text-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.sticky-title {
+  color: #F7F4EE;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sticky-variant-info {
+  color: #A3ADB5;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.sticky-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.sticky-price {
+  color: #F7F4EE;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.sticky-cart-icon-btn {
+  background: #C8A060;
+  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sticky-cart-icon-btn:hover {
+  background: #b58f52;
+}
+
+@media (max-width: 768px){
+  .product-info {
+    padding-bottom: 80px;
+    margin: 20px;
+  }
+  .purchase-buttons-wrapper, .luxury-sample-note { max-width: 100%; }
+  .luxury-sticky-bar { padding: 10px 16px; }
+  .sticky-title {
+    font-size: 13px;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sticky-actions { gap: 12px; }
+  .sticky-price { font-size: 14px; }
+}
+
+.product-info > *{
+  opacity:0;
+  transform:translateY(25px);
+}
+
+.product-info > *.info-visible{
+  opacity:1;
+  transform:translateY(0);
+  transition:
+    opacity .8s ease,
+    transform .8s cubic-bezier(.22,1,.36,1);
+}
+
+.add-to-cart-luxury,
+.buy-it-now-luxury{
+  position:relative;
+  overflow:hidden;
+}
+
+.add-to-cart-luxury::before,
+.buy-it-now-luxury::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-120%;
+  width:100%;
+  height:100%;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.18),
+      transparent
+    );
+  transition:left .8s ease;
+}
+
+.add-to-cart-luxury:hover::before,
+.buy-it-now-luxury:hover::before{
+  left:120%;
+}
+.variant-btn{
+  transition:
+    transform .3s ease,
+    border-color .3s ease,
+    background .3s ease;
+}
+
+.variant-btn:hover{
+  transform:translateY(-3px);
+}
+
+.variant-btn.active{
+  transform:translateY(-3px);
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // 1. جلب مصفوفة الـ Variants والتنسيق من الـ JSON المخزن
+  const variantsDataEl = document.getElementById("ProductJson-Data");
+  const moneyFormatEl = document.getElementById("ShopMoney-Format");
+  if (!variantsDataEl) return;
+
+  const productVariants = JSON.parse(variantsDataEl.textContent);
+  const moneyFormat = moneyFormatEl ? JSON.parse(moneyFormatEl.textContent).format : "${{amount}}";
+
+  // دالة لتنسيق الأرقام إلى عملة متجر Shopify تلقائياً
+  function formatMoney(cents) {
+    if (typeof cents === 'string') cents = cents.replace('.', '');
+    let value = '';
+    let placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+    let formatString = moneyFormat;
+
+    function formatWithDelimiters(number, precision = 2, thousands = ',', decimal = '.') {
+      if (isNaN(number) || number == null) return 0;
+      number = (number / 100).toFixed(precision);
+      let parts = number.split('.'),
+          dollars = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands),
+          cents = parts[1] ? decimal + parts[1] : '';
+      return dollars + cents;
+    }
+
+    switch (formatString.match(placeholderRegex)[1]) {
+      case 'amount': value = formatWithDelimiters(cents, 2); break;
+      case 'amount_no_decimals': value = formatWithDelimiters(cents, 0); break;
+      case 'amount_with_comma_separator': value = formatWithDelimiters(cents, 2, '.', ','); break;
+      case 'amount_no_decimals_with_comma_separator': value = formatWithDelimiters(cents, 0, '.', ','); break;
+    }
+    return formatString.replace(placeholderRegex, value);
+  }
+
+  // 2. التحكم في إظهار الـ Sticky Bar
+  const mainButtons = document.getElementById("mainPurchaseButtons");
+  const stickyBar = document.getElementById("luxuryStickyBar");
+  
+  if (mainButtons && stickyBar) {
+    window.addEventListener("scroll", function() {
+      const buttonsTarget = mainButtons.getBoundingClientRect().bottom + window.scrollY;
+      const currentScroll = window.scrollY;
+      if (currentScroll > buttonsTarget) {
+        stickyBar.classList.add("is-visible");
+      } else {
+        stickyBar.classList.remove("is-visible");
+      }
+    });
+  }
+
+  // 3. عناصر الواجهة المطلوب تحديثها باستمرار
+  const variantButtons = document.querySelectorAll(".variant-btn");
+  const currentPriceDisplay = document.getElementById("currentPriceDisplay");
+  const comparePriceDisplay = document.getElementById("comparePriceDisplay");
+  const productInventory = document.getElementById("productInventory");
+  
+  const stickyCurrentPriceDisplay = document.getElementById("stickyCurrentPriceDisplay");
+  const stickyComparePriceDisplay = document.getElementById("stickyComparePriceDisplay");
+  const stickyVariantTitleElement = document.getElementById("stickyVariantTitle");
+  
+  const addToCartBtn = document.getElementById("addToCartBtn");
+  const buyItNowBtn = document.getElementById("buyItNowBtn");
+  const stickyAddToCartBtn = document.getElementById("stickyAddToCartBtn");
+
+  // 4. دالة معالجة وتحديث البيانات عند تغيير الـ Variant من الـ JSON
+  function updateProductUI(variantId) {
+    const variant = productVariants.find(v => v.id == variantId);
+    if (!variant) return;
+
+    // أ. تحديث الأسعار الأساسية والـ Sticky
+    if (currentPriceDisplay) currentPriceDisplay.textContent = formatMoney(variant.price);
+    if (stickyCurrentPriceDisplay) stickyCurrentPriceDisplay.textContent = formatMoney(variant.price);
+
+    // ب. إصلاح وتحديث السعر المشطوب بالاعتماد على المنطق الصارم للـ JSON
+    if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+      const formattedComparePrice = formatMoney(variant.compare_at_price);
+      
+      if (comparePriceDisplay) {
+        comparePriceDisplay.textContent = formattedComparePrice;
+        comparePriceDisplay.style.setProperty('display', 'inline-block', 'important');
+      }
+      if (stickyComparePriceDisplay) {
+        stickyComparePriceDisplay.textContent = formattedComparePrice;
+        stickyComparePriceDisplay.style.setProperty('display', 'inline-block', 'important');
+      }
+    } else {
+      if (comparePriceDisplay) comparePriceDisplay.style.setProperty('display', 'none', 'important');
+      if (stickyComparePriceDisplay) stickyComparePriceDisplay.style.setProperty('display', 'none', 'important');
+    }
+
+    // جـ. تحديث حالة المخزن (In stock / Out of stock)
+    if (productInventory) {
+      if (variant.available) {
+        productInventory.innerHTML = `<span class="status-in">In stock</span>`;
+      } else {
+        productInventory.innerHTML = `<span class="status-out">Out of stock</span>`;
+      }
+    }
+
+    // د. تحديث نصوص العناوين والـ Variant IDs في أزرار السلة والدفع الفوري
+    if (stickyVariantTitleElement) stickyVariantTitleElement.textContent = variant.title;
+    if (addToCartBtn) addToCartBtn.setAttribute("data-variant-id", variant.id);
+    if (buyItNowBtn) buyItNowBtn.setAttribute("data-variant-id", variant.id);
+    if (stickyAddToCartBtn) stickyAddToCartBtn.setAttribute("data-variant-id", variant.id);
+  }
+
+  // 5. الاستماع لحدث الضغط على الأزرار
+  variantButtons.forEach(button => {
+    button.addEventListener("click", function(e) {
+      e.preventDefault();
+      const variantId = this.getAttribute("data-id");
+      
+      variantButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+      
+      updateProductUI(variantId);
+    });
+  });
+});
+
+window.addEventListener("load", ()=>{
+  const items = document.querySelectorAll("#productInfoContainer > *");
+  items.forEach((item,index)=>{
+    setTimeout(()=>{
+      item.classList.add("info-visible");
+    },index*120);
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Product Info",
+  "settings": [],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

@@ -1,0 +1,518 @@
+{% doc %}
+  @prompt
+    I want a horizontal list of products (products cards) that have the same type (For Her, For Him, For Them) I want to choose the common thing that the list would display the products that have that common thing
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-product-type-list-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.section_padding }}px 0;
+  }
+
+  .ai-product-type-list__container-{{ ai_gen_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-product-type-list__header-{{ ai_gen_id }} {
+    margin-bottom: 32px;
+    text-align: {{ block.settings.heading_alignment }};
+  }
+
+  .ai-product-type-list__title-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px 0;
+  }
+
+  .ai-product-type-list__subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.subtitle_color }};
+    margin: 0;
+  }
+
+  .ai-product-type-list__scroll-container-{{ ai_gen_id }} {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: {{ block.settings.scrollbar_color }} transparent;
+  }
+
+  .ai-product-type-list__scroll-container-{{ ai_gen_id }}::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .ai-product-type-list__scroll-container-{{ ai_gen_id }}::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .ai-product-type-list__scroll-container-{{ ai_gen_id }}::-webkit-scrollbar-thumb {
+    background-color: {{ block.settings.scrollbar_color }};
+    border-radius: 4px;
+  }
+
+  .ai-product-type-list__grid-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.card_gap }}px;
+    padding-bottom: 16px;
+  }
+
+  .ai-product-type-list__card-{{ ai_gen_id }} {
+    flex: 0 0 {{ block.settings.card_width }}px;
+    background-color: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-product-type-list__card-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px);
+  }
+
+  .ai-product-type-list__image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    overflow: hidden;
+    background-color: #1a1a1a;
+  }
+
+  .ai-product-type-list__image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-product-type-list__image-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1a1a1a;
+  }
+
+  .ai-product-type-list__image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-product-type-list__info-{{ ai_gen_id }} {
+    padding: {{ block.settings.card_padding }}px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ai-product-type-list__product-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.product_title_size }}px;
+    color: {{ block.settings.product_title_color }};
+    margin: 0 0 8px 0;
+    font-weight: 500;
+  }
+
+  .ai-product-type-list__product-type-{{ ai_gen_id }} {
+    font-size: {{ block.settings.product_type_size }}px;
+    color: {{ block.settings.product_type_color }};
+    margin: 0 0 12px 0;
+    opacity: 0.7;
+  }
+
+  .ai-product-type-list__price-{{ ai_gen_id }} {
+    font-size: {{ block.settings.price_size }}px;
+    color: {{ block.settings.price_color }};
+    margin-top: auto;
+  }
+
+  .ai-product-type-list__empty-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 60px 20px;
+    color: {{ block.settings.subtitle_color }};
+    font-size: 16px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-product-type-list__card-{{ ai_gen_id }} {
+      flex: 0 0 {{ block.settings.card_width_mobile }}px;
+    }
+
+    .ai-product-type-list__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.75 }}px;
+    }
+  }
+{% endstyle %}
+
+<product-type-list-{{ ai_gen_id }} class="ai-product-type-list-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-product-type-list__container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank or block.settings.subtitle != blank %}
+      <div class="ai-product-type-list__header-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h2 class="ai-product-type-list__title-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+        {% endif %}
+        {% if block.settings.subtitle != blank %}
+          <p class="ai-product-type-list__subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% assign filtered_products = all_products | where: 'type', block.settings.product_type %}
+    {% assign products_to_show = block.settings.products_limit %}
+
+    {% if filtered_products.size > 0 %}
+      <div class="ai-product-type-list__scroll-container-{{ ai_gen_id }}">
+        <div class="ai-product-type-list__grid-{{ ai_gen_id }}">
+          {% for product in filtered_products limit: products_to_show %}
+            <a href="{{ product.url }}" class="ai-product-type-list__card-{{ ai_gen_id }}">
+              <div class="ai-product-type-list__image-wrapper-{{ ai_gen_id }}">
+                {% if product.featured_image %}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 600 }}"
+                    alt="{{ product.featured_image.alt | escape }}"
+                    class="ai-product-type-list__image-{{ ai_gen_id }}"
+                    loading="lazy"
+                    width="600"
+                    height="600"
+                  >
+                {% else %}
+                  <div class="ai-product-type-list__image-placeholder-{{ ai_gen_id }}">
+                    {{ 'product-1' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+              <div class="ai-product-type-list__info-{{ ai_gen_id }}">
+                <h3 class="ai-product-type-list__product-title-{{ ai_gen_id }}">{{ product.title }}</h3>
+                {% if block.settings.show_product_type and product.type != blank %}
+                  <p class="ai-product-type-list__product-type-{{ ai_gen_id }}">{{ product.type }}</p>
+                {% endif %}
+                <div class="ai-product-type-list__price-{{ ai_gen_id }}">
+                  {{ product.price | money }}
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="ai-product-type-list__empty-{{ ai_gen_id }}">
+        No products found with type "{{ block.settings.product_type }}"
+      </div>
+    {% endif %}
+  </div>
+</product-type-list-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ProductTypeList{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.scrollContainer = this.querySelector('.ai-product-type-list__scroll-container-{{ ai_gen_id }}');
+        if (this.scrollContainer) {
+          this.enableTouchScroll();
+        }
+      }
+
+      enableTouchScroll() {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        this.scrollContainer.addEventListener('mousedown', (e) => {
+          isDown = true;
+          this.scrollContainer.style.cursor = 'grabbing';
+          startX = e.pageX - this.scrollContainer.offsetLeft;
+          scrollLeft = this.scrollContainer.scrollLeft;
+        });
+
+        this.scrollContainer.addEventListener('mouseleave', () => {
+          isDown = false;
+          this.scrollContainer.style.cursor = 'grab';
+        });
+
+        this.scrollContainer.addEventListener('mouseup', () => {
+          isDown = false;
+          this.scrollContainer.style.cursor = 'grab';
+        });
+
+        this.scrollContainer.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - this.scrollContainer.offsetLeft;
+          const walk = (x - startX) * 2;
+          this.scrollContainer.scrollLeft = scrollLeft - walk;
+        });
+      }
+    }
+
+    customElements.define('product-type-list-{{ ai_gen_id }}', ProductTypeList{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product type list",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by Type"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Discover our curated collection"
+    },
+    {
+      "type": "text",
+      "id": "product_type",
+      "label": "Product type",
+      "default": "For Her"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Maximum products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_type",
+      "label": "Show product type",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width (desktop)",
+      "min": 200,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width (mobile)",
+      "min": 150,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap between cards",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card padding",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#111111"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#0B0B0B"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#F7F4EE"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle",
+      "default": "#C8A060"
+    },
+    {
+      "type": "color",
+      "id": "product_title_color",
+      "label": "Product title",
+      "default": "#F7F4EE"
+    },
+    {
+      "type": "color",
+      "id": "product_type_color",
+      "label": "Product type",
+      "default": "#F7F4EE"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price",
+      "default": "#C8A060"
+    },
+    {
+      "type": "color",
+      "id": "scrollbar_color",
+      "label": "Scrollbar",
+      "default": "#C8A060"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n4"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "product_title_size",
+      "label": "Product title size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "product_type_size",
+      "label": "Product type size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "label": "Price size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product type list"
+    }
+  ]
+}
+{% endschema %}

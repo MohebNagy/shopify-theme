@@ -1,0 +1,257 @@
+<footer class="site-footer">
+  
+  <button onclick="scrollToTop()" class="back-to-top">
+    <span>Back to top</span>
+  </button>
+
+  <div class="container footer-grid">
+
+    <div class="footer-column brand-info">
+      <h3>{{ shop.name }}</h3>
+      <p class="brand-description">Luxury handcrafted perfumes made with precision and passion.</p>
+    </div>
+
+    <div class="footer-column">
+      <h4>Shop & Explore</h4>
+      <div class="footer-links">
+        <a href="{{ routes.all_products_collection_url }}">Shop Collection</a>
+        <a href="/pages/about">Our Story</a>
+        <a href="/pages/contact">Contact Us</a>
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h4>Policies</h4>
+      <div class="footer-links">
+        {% if linklists.policies.links.size > 0 %}
+          {% for link in linklists.policies.links %}
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          {% endfor %}
+        {% else %}
+          <a href="/policies/refund-policy">Return and refund policy</a>
+          <a href="/policies/privacy-policy">Privacy policy</a>
+          <a href="/policies/terms-of-service">Terms of Service</a>
+          <a href="/policies/legal-notice">Legal Notice</a>
+          <a href="/policies/shipping-policy">Shipping Policy</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h4>Connect With Us</h4>
+      <div class="footer-links social-links">
+        <a href="https://wa.me/201217778588" target="_blank" rel="noopener">
+          <span>WhatsApp</span>
+        </a>
+
+        {% if settings.social_instagram != blank %}
+          <a href="{{ settings.social_instagram }}" target="_blank" rel="noopener">
+            <span>Instagram</span>
+          </a>
+        {% else %}
+          <a href="https://instagram.com" target="_blank" rel="noopener"><span>Instagram</span></a>
+        {% endif %}
+        
+        {% if settings.social_tiktok != blank %}
+          <a href="{{ settings.social_tiktok }}" target="_blank" rel="noopener">
+            <span>TikTok</span>
+          </a>
+        {% endif %}
+        
+        {% if settings.social_facebook != blank %}
+          <a href="{{ settings.social_facebook }}" target="_blank" rel="noopener">
+            <span>Facebook</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container footer-bottom-flex">
+      <p class="copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All Rights Reserved.</p>
+      <div class="brand-localization">
+        <span class="lang-badge">English</span>
+        <span class="country-badge">Egypt</span>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+<script>
+// دالة السكرول الناعم للأعلى عند الضغط على الزر
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+</script>
+
+<style>
+/* ======================================================= */
+/* 💻 أولاً: التنسيق العام ونسخة اللاب توب (Desktop Luxury) */
+/* ======================================================= */
+.site-footer {
+  background: #0B0B0B;
+  border-top: 1px solid #1A1A1A;
+  color: #A3ADB5;
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+}
+
+/* زر Back to top بنظام فخم */
+.back-to-top {
+  width: 100%;
+  background: #111111;
+  border: none;
+  border-bottom: 1px solid #1A1A1A;
+  padding: 16px 0;
+  color: #A3ADB5;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-to-top:hover {
+  background: #161616;
+  color: #C8A060;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr; /* تعديل المساحة لاستيعاب 4 أعمدة بشكل متزن */
+  gap: 40px; /* تقليل الجاب قليلاً ليتناسب مع الأعمدة الأربعة */
+  padding: 80px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-column h3 {
+  font-family: "Playfair Display", serif;
+  color: #C8A060;
+  font-size: 28px;
+  margin: 0 0 20px 0;
+  letter-spacing: 1px;
+}
+
+.brand-description {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #8A949D;
+  max-width: 280px; /* تعديل بسيط ليتناسب مع الهيكل الجديد */
+}
+
+.footer-column h4 {
+  color: #F7F4EE;
+  font-family: "Playfair Display", serif;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 22px 0;
+  letter-spacing: 0.5px;
+}
+
+.footer-links a {
+  display: block;
+  color: #A3ADB5;
+  text-decoration: none;
+  margin-bottom: 12px;
+  font-size: 14px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #C8A060;
+  transform: translateX(3px); /* حركة انزلاق خفيفة عند التمرير بالماوس */
+}
+
+/* شريط الحقوق السفلي */
+.footer-bottom {
+  border-top: 1px solid #1A1A1A;
+  padding: 30px 20px;
+  background: #070707;
+}
+
+.footer-bottom-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.copyright {
+  font-size: 12px;
+  color: #6C757D;
+  margin: 0;
+}
+
+.brand-localization {
+  display: flex;
+  gap: 15px;
+}
+
+.lang-badge, .country-badge {
+  font-size: 12px;
+  color: #8A949D;
+  border: 1px solid #242424;
+  padding: 4px 12px;
+  border-radius: 2px;
+  background: #111;
+}
+
+/* ======================================================= */
+/* 📱 ثانياً: نسخة الموبايل (نظيف ومقسم بشكل احترافي ومتزن) */
+/* ======================================================= */
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr !important; /* ترتيب العناصر عمودياً بسلاسة */
+    gap: 40px !important;
+    padding: 50px 24px !important;
+    text-align: left; /* محاذاة يسارية كلاسيكية أنيقة */
+  }
+
+  .footer-column h3 {
+    font-size: 24px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .brand-description {
+    max-width: 100% !important;
+    font-size: 13.5px !important;
+  }
+
+  .footer-column h4 {
+    font-size: 16px !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid #1A1A1A; /* خط خفيف جداً يفصل الأقسام لمنع التشتت */
+    padding-bottom: 8px;
+  }
+
+  .footer-links a {
+    margin-bottom: 14px !important; /* زيادة المساحة لتسهيل الضغط بالإصبع */
+    font-size: 13.5px !important;
+  }
+
+  .footer-bottom-flex {
+    flex-direction: column-reverse !important; /* وضع الحقوق في الأسفل خالص وتحتها اللوكاليزيشن */
+    gap: 20px;
+    text-align: center;
+  }
+
+  .brand-localization {
+    justify-content: center;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": []
+}
+{% endschema %}

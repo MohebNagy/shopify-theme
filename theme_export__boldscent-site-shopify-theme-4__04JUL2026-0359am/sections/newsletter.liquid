@@ -1,0 +1,141 @@
+<section class="newsletter" id="news-section-{{ section.id }}">
+
+  <div class="container news-anim-container">
+    <h2>{{ section.settings.title }}</h2>
+
+    {% form 'customer', class: 'newsletter-form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input type="email" name="contact[email]" placeholder="Enter your email" required aria-label="Email">
+      <button type="submit">Subscribe</button>
+    {% endform %}
+  </div>
+
+</section>
+
+<style>
+.newsletter{
+  padding:120px 0;
+  text-align:center;
+  background:#0B0B0B;
+}
+
+/* تحضير الحاوية الداخلية للصعود الفخم */
+.news-anim-container {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), 
+              transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* التفعيل الفوري مع السكرول الآمن */
+.newsletter.news-activated .news-anim-container {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.newsletter h2{
+  font-family:"Playfair Display";
+  color:#C8A060;
+  margin-bottom:30px;
+}
+
+.newsletter-form{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.newsletter input{
+  padding:15px;
+  width:300px;
+  max-width:100%;
+  background:#111;
+  border:1px solid #242424;
+  color:#fff;
+  transition: border-color 0.3s ease;
+}
+
+.newsletter input:focus {
+  outline: none;
+  border-color: #C8A060;
+}
+
+.newsletter button{
+  padding:15px 25px;
+  background:#C8A060;
+  border:none;
+  color:#0B0B0B;
+  font-family:Montserrat;
+  cursor:pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.newsletter button:hover {
+  background-color: #b0894f;
+  transform: translateY(-1px);
+}
+
+@media(max-width: 768px) {
+  .newsletter {
+    padding: 80px 16px !important;
+  }
+  .newsletter-form {
+    flex-direction: column;
+    width: 100%;
+  }
+  .newsletter input, 
+  .newsletter button {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+}
+
+/* 🛡️ الـ Fallback */
+.no-js .news-anim-container {
+  opacity: 1 !important;
+  transform: none !important;
+}
+</style>
+
+<script>
+(function() {
+  function initNewsAnimation() {
+    const section = document.getElementById('news-section-{{ section.id }}');
+    if (!section) return;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            section.classList.add('news-activated');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      observer.observe(section);
+    } else {
+      section.classList.add('news-activated');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNewsAnimation);
+  } else {
+    initNewsAnimation();
+  }
+  document.addEventListener('shopify:section:load', initNewsAnimation);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Join the World of BOLD" }
+  ],
+  "presets": [{ "name": "Newsletter" }]
+}
+{% endschema %}
